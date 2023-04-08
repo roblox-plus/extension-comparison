@@ -4,12 +4,10 @@ class HighchartsReact extends React.PureComponent {
     super(props);
     this.container = React.createRef();
   }
-
   createChart() {
     const props = this.props;
     const H = props.highcharts || Highcharts;
     const constructorType = props.constructorType || "chart";
-
     if (!H) {
       console.warn('The "highcharts" property was not passed.');
     } else if (!H[constructorType]) {
@@ -21,14 +19,11 @@ class HighchartsReact extends React.PureComponent {
       this.chart = H[constructorType](this.container.current, props.options, props.callback ? props.callback : undefined);
     }
   }
-
   componentDidMount() {
     this.createChart();
   }
-
   componentDidUpdate() {
     const props = this.props;
-
     if (props.allowChartUpdate !== false) {
       if (!props.immutable && this.chart) {
         this.chart.update(props.options, ...(props.updateArgs || [true, true]));
@@ -37,7 +32,6 @@ class HighchartsReact extends React.PureComponent {
       }
     }
   }
-
   componentWillUnmount() {
     // Destroy chart
     if (this.chart) {
@@ -45,12 +39,11 @@ class HighchartsReact extends React.PureComponent {
       this.chart = null;
     }
   }
-
   render() {
     // Create container for the chart
-    return React.createElement("div", { ...this.props.containerProps,
+    return React.createElement("div", {
+      ...this.props.containerProps,
       ref: this.container
     });
   }
-
 }

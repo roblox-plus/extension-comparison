@@ -9,7 +9,6 @@ class PremiumPayoutsSummary extends React.Component {
     };
     this.componentWillReceiveProps(props);
   }
-
   init(universeId, startDate, endDate) {
     this.setState({
       loading: true,
@@ -23,11 +22,9 @@ class PremiumPayoutsSummary extends React.Component {
           case "Projected":
             projectedRobuxEarned += payout.payoutInRobux;
             return;
-
           case "Actual":
             actualRobuxEarned += payout.payoutInRobux;
             return;
-
           default:
             console.warn("Unknown payout type", payout);
             return;
@@ -47,19 +44,16 @@ class PremiumPayoutsSummary extends React.Component {
       });
     });
   }
-
   componentWillReceiveProps(nextProps) {
     const startDate = new Date(nextProps.startDate);
     const endDate = new Date(nextProps.endDate);
     this.init(nextProps.universeId, this.formatDate(startDate), this.formatDate(endDate));
   }
-
   formatDate(date) {
     const month = date.getMonth() + 1;
     const day = date.getDate();
     return `${date.getFullYear()}-${month < 10 ? `0${month}` : month}-${day < 10 ? `0${day}` : day}`;
   }
-
   render() {
     if (this.state.loading) {
       return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
@@ -68,7 +62,6 @@ class PremiumPayoutsSummary extends React.Component {
         class: "spinner spinner-default"
       }));
     }
-
     if (this.state.errorMessage) {
       return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
         class: "payout-title"
@@ -76,7 +69,6 @@ class PremiumPayoutsSummary extends React.Component {
         class: "section-content-off"
       }, this.state.errorMessage));
     }
-
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
       class: "payout-title"
     }, "Summary"), /*#__PURE__*/React.createElement("table", {
@@ -99,7 +91,5 @@ class PremiumPayoutsSummary extends React.Component {
       class: "text-robux"
     }, " ", global.addCommas(this.state.actualRobuxEarned + this.state.projectedRobuxEarned)))))));
   }
-
 }
-
 ;

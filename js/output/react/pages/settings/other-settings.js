@@ -2,7 +2,6 @@ class OtherSettings extends SettingsTab {
   constructor(props) {
     super(props);
   }
-
   render() {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       class: "section"
@@ -127,5 +126,4 @@ class OtherSettings extends SettingsTab {
       class: "text-description"
     }, "Adds premium payout summary to premium tab. This feature is for Roblox+ Premium users only."))));
   }
-
 }

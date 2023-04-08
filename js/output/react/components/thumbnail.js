@@ -7,13 +7,11 @@ class Thumbnail extends React.Component {
     };
     this.componentWillReceiveProps(props);
   }
-
   init(thumbnailType, thumbnailTargetId, size) {
     this.setState({
       thumbnailType: thumbnailType,
       imageUrl: Roblox.thumbnails.getThumbnailForState(Roblox.thumbnails.states.Pending)
     });
-
     if (size) {
       this.loadThumbnail(thumbnailType, thumbnailTargetId, size.width, size.height);
     } else {
@@ -24,18 +22,15 @@ class Thumbnail extends React.Component {
       });
     }
   }
-
   componentWillReceiveProps(nextProps) {
     let size = Roblox.thumbnails.parseSize(nextProps.size);
     this.init(nextProps.thumbnailType, nextProps.thumbnailTargetId, size);
   }
-
   loadThumbnail(thumbnailType, thumbnailTargetId, width, height) {
     Roblox.thumbnails.getThumbnail(thumbnailType, thumbnailTargetId, width, height).then(thumbnail => {
       if (this.props.thumbnailTargetId !== thumbnailTargetId) {
         return;
       }
-
       this.setState({
         imageUrl: thumbnail.imageUrl
       });
@@ -43,30 +38,24 @@ class Thumbnail extends React.Component {
       if (this.props.thumbnailTargetId !== thumbnailTargetId) {
         return;
       }
-
       this.handleError(err);
     });
   }
-
   handleError(err) {
     console.error(err);
     this.setState({
       imageUrl: Roblox.thumbnails.getThumbnailForState(Roblox.thumbnails.states.Error)
     });
   }
-
   getClassName() {
     let className = "rplus-react-thumbnail";
-
     switch (this.state.thumbnailType) {
       case Roblox.thumbnails.types.userHeadshot:
         className += " avatar";
         break;
     }
-
     return className;
   }
-
   render() {
     return /*#__PURE__*/React.createElement("img", {
       class: this.getClassName(),
@@ -74,5 +63,4 @@ class Thumbnail extends React.Component {
       onError: this.handleError.bind(this)
     });
   }
-
 }

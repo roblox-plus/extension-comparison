@@ -5,13 +5,11 @@ class VerticalTabs extends React.Component {
       activeTab: props.defaultTab || props.tabs[0]
     };
   }
-
   selectTab(tab) {
     this.setState({
       activeTab: tab
     });
   }
-
   render() {
     let verticalTabs = this;
     let activeTab = this.state.activeTab;
@@ -39,5 +37,4 @@ class VerticalTabs extends React.Component {
       class: "tab-content rbx-tab-content"
     }, tabContentDivs));
   }
-
 }

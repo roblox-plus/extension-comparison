@@ -20,7 +20,6 @@ class About extends React.Component {
     RPlus.settings.get().then(settings => about.globalSettingsLoaded(settings)).catch(e => about.globalSettingsLoadFailure(e));
     Roblox.users.getAuthenticatedUser().then(user => about.authenticatedUserLoaded(user)).catch(e => about.authenticatedUserLoadFailure(e));
   }
-
   getFeatureRow(name, description, deprecated) {
     return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("span", {
       class: "icon-warning" + (deprecated ? "" : " hidden")
@@ -30,25 +29,20 @@ class About extends React.Component {
       class: "text-description"
     }, description));
   }
-
   authenticatedUserLoaded(authenticatedUser) {
     let premiumLoaded = this.premiumLoaded.bind(this);
     let premiumLoadFailure = this.premiumLoadFailure.bind(this);
-
     if (authenticatedUser) {
       RPlus.premium.getPremium(authenticatedUser.id).then(premiumLoaded).catch(premiumLoadFailure);
     }
-
     this.setState({
       authenticatedUser: authenticatedUser
     });
   }
-
   authenticatedUserLoadFailure(e) {
     console.error("authenticatedUserLoadFailure", e);
     this.premiumLoadFailure(e);
   }
-
   premiumLoaded(premium) {
     let hubLink = /*#__PURE__*/React.createElement("a", {
       class: "text-link",
@@ -56,10 +50,8 @@ class About extends React.Component {
       href: Roblox.games.getGameUrl(258257446, "Roblox+ Hub")
     }, "Roblox+ Hub");
     let newState = {};
-
     if (premium) {
       newState.isPremium = true;
-
       if (premium.expiration) {
         newState.premiumExpiration = new Date(premium.expiration);
         newState.premium = /*#__PURE__*/React.createElement("div", {
@@ -75,10 +67,8 @@ class About extends React.Component {
         class: "section-content"
       }, "To get Roblox+ Premium buy a VIP server from this place: ", hubLink);
     }
-
     this.setState(newState);
   }
-
   premiumLoadFailure(e) {
     console.error("premiumLoadFailure", e);
     this.setState({
@@ -87,19 +77,15 @@ class About extends React.Component {
       }, "Failed to load premium status.")
     });
   }
-
   setUpdateLogDraft(event) {
     this.setState({
       updateLogDraft: event.target.value
     });
   }
-
   viewUpdateLog(settings, event) {
     let about = this;
-
     if (event.target.tagName !== "TEXTAREA") {
       this.globalSettingsLoaded(settings);
-
       if (this.state.updateLogDraft !== this.state.updateLogPost) {
         let post = btoa(this.state.updateLogDraft);
         RPlus.settings.set({
@@ -118,12 +104,10 @@ class About extends React.Component {
       }
     }
   }
-
   editUpdateLog(settings) {
     if (!this.state.authenticatedUser || this.state.authenticatedUser.id !== 48103520) {
       return;
     }
-
     this.setState({
       updateLog: /*#__PURE__*/React.createElement("div", {
         class: "section-content rplus-update-log-section form-group form-has-feedback",
@@ -136,7 +120,6 @@ class About extends React.Component {
       }, this.state.updateLogSaveStatus))
     });
   }
-
   globalSettingsLoaded(settings) {
     let decodedPost = atob(settings.updateLogPost);
     let newState = {
@@ -154,18 +137,14 @@ class About extends React.Component {
         href: Roblox.groups.getGroupUrl(2518656, "Roblox+ Fan Group")
       }, "Roblox+ Fan Group")))
     };
-
     if (!this.state.updateLogDraft) {
       newState.updateLogDraft = decodedPost;
     }
-
     if (!this.state.updateLogPost) {
       newState.updateLogPost = decodedPost;
     }
-
     this.setState(newState);
   }
-
   globalSettingsLoadFailure(e) {
     console.error("globalSettingsLoadFailure", e);
     this.setState({
@@ -174,7 +153,6 @@ class About extends React.Component {
       }, "Update log failed to load.")
     });
   }
-
   reloadExtension() {
     Extension.Reload().then(() => {
       setTimeout(function () {
@@ -182,7 +160,6 @@ class About extends React.Component {
       }, 1000);
     }).catch(console.error);
   }
-
   render() {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       class: "section"
@@ -257,5 +234,4 @@ class About extends React.Component {
       href: "https://git.roblox.plus/Chrome"
     }, "https://git.roblox.plus"))))));
   }
-
 }

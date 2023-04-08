@@ -8,14 +8,11 @@ class UserInfoWidget extends React.Component {
       errorMessage: ""
     };
   }
-
   show(userId) {
     let processingId = ++this.processingId;
-
     if (this.state.user && this.state.user.id === userId) {
       return;
     }
-
     this.setState({
       loading: true,
       errorMessage: ""
@@ -24,7 +21,6 @@ class UserInfoWidget extends React.Component {
       if (this.processingId !== processingId) {
         return;
       }
-
       this.setState({
         loading: false,
         user: user
@@ -37,7 +33,6 @@ class UserInfoWidget extends React.Component {
       });
     });
   }
-
   hide() {
     this.processingId++;
     this.setState({
@@ -46,7 +41,6 @@ class UserInfoWidget extends React.Component {
       user: null
     });
   }
-
   render() {
     if (this.state.loading) {
       return /*#__PURE__*/React.createElement("div", {
@@ -55,7 +49,6 @@ class UserInfoWidget extends React.Component {
         class: "spinner spinner-default"
       }));
     }
-
     if (this.state.errorMessage) {
       return /*#__PURE__*/React.createElement("div", {
         class: "rplus-quick-info-widget-user"
@@ -63,11 +56,9 @@ class UserInfoWidget extends React.Component {
         class: "section-content-off"
       }, this.state.errorMessage));
     }
-
     if (!this.state.user) {
       return /*#__PURE__*/React.createElement("div", null);
     }
-
     return /*#__PURE__*/React.createElement("div", {
       class: "rplus-quick-info-widget-user"
     }, /*#__PURE__*/React.createElement(UserInfoWidgetUserCard, {
@@ -76,5 +67,4 @@ class UserInfoWidget extends React.Component {
       user: this.state.user
     }));
   }
-
 }

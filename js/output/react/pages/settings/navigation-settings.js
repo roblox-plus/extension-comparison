@@ -21,7 +21,6 @@ class NavigationSettings extends SettingsTab {
       });
     }).catch(console.warn);
   }
-
   updateCounterRoundAt(event) {
     let roundAt = event.target.value;
     this.setState({
@@ -33,7 +32,6 @@ class NavigationSettings extends SettingsTab {
       Extension.Storage.Singleton.blindSet("navigation", navigation);
     }).catch(console.warn);
   }
-
   updateNavigationLink(index, property, event) {
     let update = false;
     let navigationSettings = this;
@@ -42,7 +40,6 @@ class NavigationSettings extends SettingsTab {
       navigationLinks: this.state.navigationLinks.slice()
     };
     newState.navigationLinks[index][property] = value;
-
     if (property === "href") {
       if (value.startsWith("/") || value.startsWith("https://")) {
         newState.navigationLinks[index].hrefError = "";
@@ -58,13 +55,10 @@ class NavigationSettings extends SettingsTab {
         update = true;
       }
     }
-
     navigationSettings.setState(newState);
-
     if (!update) {
       return;
     }
-
     Extension.Storage.Singleton.get("navigation").then(function (navigation) {
       navigation = navigation || {};
       navigation.buttons = navigation.buttons || [{
@@ -78,7 +72,6 @@ class NavigationSettings extends SettingsTab {
         if (!newState.navigationLinks[i].hrefError) {
           button.href = newState.navigationLinks[i].href;
         }
-
         if (!newState.navigationLinks[i].textError) {
           button.text = newState.navigationLinks[i].text;
         }
@@ -86,13 +79,11 @@ class NavigationSettings extends SettingsTab {
       Extension.Storage.Singleton.blindSet("navigation", navigation);
     }).catch(console.warn);
   }
-
   blur(event) {
     if (event.keyCode === 13) {
       $(event.target).blur();
     }
   }
-
   render() {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       class: "section"
@@ -213,5 +204,4 @@ class NavigationSettings extends SettingsTab {
       class: "form-control-label"
     }, this.state.navigationLinks[1].textError)))));
   }
-
 }

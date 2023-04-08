@@ -21,9 +21,7 @@ class Settings extends React.Component {
       tabs: tabs
     })));
   }
-
 }
-
 if (location.search.includes("rplus")) {
   var container = $("<div id=\"rplus-settings\" class=\"page-content\">");
   var userAccount = $("#user-account").hide().after(container);
@@ -33,4 +31,6 @@ if (location.search.includes("rplus")) {
   var li = $("<li class=\"menu-option\">");
   var a = $("<a class=\"menu-option-content\">").append($("<span class=\"font-caption-header\">").text(Extension.Singleton.manifest.name)).attr("href", Extension.Singleton.manifest.homepage_url);
   $("#vertical-menu").append(li.append(a));
-} // WebGL3D
+}
+
+// WebGL3D

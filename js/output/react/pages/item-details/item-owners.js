@@ -12,7 +12,6 @@ class ItemOwners extends React.Component {
       return this.loadPage(pagingParameters);
     });
   }
-
   init() {
     this.setState({
       loading: true
@@ -25,7 +24,6 @@ class ItemOwners extends React.Component {
       }
     });
   }
-
   loadPage(pagingParameters) {
     this.setState({
       loading: true,
@@ -44,38 +42,31 @@ class ItemOwners extends React.Component {
       }).catch(reject);
     });
   }
-
   changeSortOrder(event) {
     this.setState({
       sortOrder: event.target.value
     });
     setTimeout(() => this.loadFirstPage(), 10);
   }
-
   loadFirstPage() {
     this.itemOwnersPager.loadFirstPage().then(data => this.handlePageLoad(data)).catch(err => this.handleError(err));
   }
-
   loadNextPage() {
     this.itemOwnersPager.loadNextPage().then(data => this.handlePageLoad(data)).catch(err => this.handleError(err));
   }
-
   loadPreviousPage() {
     this.itemOwnersPager.loadPreviousPage().then(data => this.handlePageLoad(data)).catch(err => this.handleError(err));
   }
-
   handlePageLoad(data) {
     this.setState({
       loading: false,
       owners: data
     });
   }
-
   handleError(err) {
     if (err.type !== cursorPaginationConstants.errorType.getItemsFailure) {
       return;
     }
-
     this.setState({
       loading: false,
       loadError: true
@@ -85,24 +76,20 @@ class ItemOwners extends React.Component {
       this.itemOwnersPager.getCurrentPage().then(data => this.handlePageLoad(data)).catch(err => this.handleError(err));
     }, 2000);
   }
-
   getSerialNumber(ownershipRecord) {
     if (!ownershipRecord.serialNumber) {
       return "";
     }
-
     return /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("span", {
       class: "separator"
     }, "-"), /*#__PURE__*/React.createElement("span", {
       class: "font-caption-body serial-number"
     }, `Serial #${ownershipRecord.serialNumber}`));
   }
-
   renderPager() {
     if (!this.itemOwnersPager.canLoadNextPage && !this.itemOwnersPager.canLoadPreviousPage) {
       return "";
     }
-
     return /*#__PURE__*/React.createElement("div", {
       class: "pager"
     }, /*#__PURE__*/React.createElement("div", {
@@ -142,11 +129,9 @@ class ItemOwners extends React.Component {
       class: "icon-last-page"
     })))));
   }
-
   renderOwners() {
     return this.state.owners.map(ownershipRecord => {
       let ownedSince = `${ownershipRecord.updated.toLocaleDateString()} ${ownershipRecord.updated.toLocaleTimeString()}`;
-
       if (!ownershipRecord.owner) {
         return /*#__PURE__*/React.createElement("li", {
           class: "list-item"
@@ -163,7 +148,6 @@ class ItemOwners extends React.Component {
           class: "text-secondary"
         }, "Owner since: ", ownedSince)));
       }
-
       return /*#__PURE__*/React.createElement("li", {
         class: "list-item"
       }, /*#__PURE__*/React.createElement("a", {
@@ -182,7 +166,6 @@ class ItemOwners extends React.Component {
       }, "Owner since: ", ownedSince)));
     });
   }
-
   render() {
     if (this.state.loading) {
       return /*#__PURE__*/React.createElement("div", {
@@ -197,12 +180,10 @@ class ItemOwners extends React.Component {
         class: "section-content-off"
       }, "Failed to load owners, trying again..."));
     }
-
     return /*#__PURE__*/React.createElement("div", {
       class: "rplus-item-owners"
     }, this.renderPager(), /*#__PURE__*/React.createElement("ul", {
       class: "vlist"
     }, this.renderOwners()));
   }
-
 }

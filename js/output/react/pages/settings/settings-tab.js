@@ -14,11 +14,9 @@ class SettingsTab extends React.Component {
       console.error("Failed to load premium status", e);
     });
   }
-
   getPillValue(settingName, callBack) {
     let notificationSettings = this;
     let embeddedSetting = settingName.split(".");
-
     if (embeddedSetting.length === 2) {
       Extension.Storage.Singleton.get(embeddedSetting[0]).then(function (embeddedObject) {
         embeddedObject = embeddedObject || {};
@@ -35,7 +33,6 @@ class SettingsTab extends React.Component {
       });
       return;
     }
-
     switch (settingName) {
       case "groupShoutNotifier_mode":
         Extension.Storage.Singleton.get(settingName).then(function (value) {
@@ -51,7 +48,6 @@ class SettingsTab extends React.Component {
           callBack(false);
         });
         break;
-
       default:
         Extension.Storage.Singleton.get(settingName).then(function (value) {
           var pillOverride = {};
@@ -66,11 +62,9 @@ class SettingsTab extends React.Component {
         });
     }
   }
-
   setPillValue(settingName, value) {
     let notificationSettings = this;
     let embeddedSetting = settingName.split(".");
-
     if (embeddedSetting.length === 2) {
       Extension.Storage.Singleton.get(embeddedSetting[0]).then(function (embeddedObject) {
         embeddedObject = embeddedObject || {};
@@ -84,7 +78,6 @@ class SettingsTab extends React.Component {
       }).catch(console.error);
       return;
     }
-
     switch (settingName) {
       case "groupShoutNotifier_mode":
         Extension.Storage.Singleton.blindSet(settingName, value ? "whitelist" : "all");
@@ -94,7 +87,6 @@ class SettingsTab extends React.Component {
           pills: Object.assign({}, notificationSettings.state.pills, pillOverride)
         });
         break;
-
       default:
         Extension.Storage.Singleton.set(settingName, value).then(() => {
           var pillOverride = {};
@@ -107,5 +99,4 @@ class SettingsTab extends React.Component {
         });
     }
   }
-
 }

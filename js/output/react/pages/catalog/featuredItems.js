@@ -15,21 +15,17 @@ class FeaturedCatalogItems extends React.Component {
       featuredCatalogItems.checkPageQuery();
     }, 100);
   }
-
   getPageNumber() {
     return Number(($(".pager span[ng-bind*='CurrentPage']").text().match(/(\d+)$/) || ["", ""])[1]);
   }
-
   checkPageQuery() {
     let pageNumber = this.getPageNumber();
-
     if (location.search !== this.backgroundState.query || pageNumber !== this.backgroundState.pageNumber) {
       this.backgroundState.query = location.search;
       this.backgroundState.pageNumber = pageNumber;
       this.loadSponsoredItems();
     }
   }
-
   loadSponsoredItems() {
     let id = ++this.backgroundState.loadId;
     let featuredCatalogItems = this;
@@ -37,29 +33,24 @@ class FeaturedCatalogItems extends React.Component {
       if (id !== featuredCatalogItems.backgroundState.loadId) {
         return;
       }
-
       if (sponsoredItems.length === 0) {
         featuredCatalogItems.setState({
           sponsoredItems: []
         });
         return;
       }
-
       let loadedItems = [];
       let finishedLoading = 0;
-
       let tryResolve = function () {
         if (id !== featuredCatalogItems.backgroundState.loadId) {
           return;
         }
-
         if (++finishedLoading === sponsoredItems.length) {
           featuredCatalogItems.setState({
             sponsoredItems: loadedItems
           });
         }
       };
-
       sponsoredItems.forEach(function (item) {
         featuredCatalogItems.translateItem(item).then(function (loadedItem) {
           loadedItems.push(loadedItem);
@@ -71,25 +62,19 @@ class FeaturedCatalogItems extends React.Component {
       });
     }).catch(console.error);
   }
-
   shouldShowSponsoredItems() {
     let query = location.search.toLowerCase();
-
     for (var n = 0; n < this.filterQueryParameterNames.length; n++) {
       if (query.includes(this.filterQueryParameterNames[n] + "=")) {
         return false;
       }
     }
-
     let pageNumber = this.getPageNumber();
-
     if (isNaN(pageNumber) || pageNumber === 0 || pageNumber === 1) {
       return true;
     }
-
     return false;
   }
-
   getSponsoredItems() {
     let featuredCatalogItems = this;
     return new Promise(function (resolve, reject) {
@@ -97,7 +82,6 @@ class FeaturedCatalogItems extends React.Component {
         resolve([]);
         return;
       }
-
       let category = Number((location.search.match(/category=(\d+)/i) || ["", ""])[1]);
       let subcategory = Number((location.search.match(/subcategory=(\d+)/i) || ["", ""])[1]);
       RPlus.sponsoredItems.getSponsoredItems(category, subcategory).then(function (items) {
@@ -106,7 +90,6 @@ class FeaturedCatalogItems extends React.Component {
       }).catch(reject);
     });
   }
-
   translateItem(item) {
     return new Promise(function (resolve, reject) {
       switch (item.type) {
@@ -114,11 +97,9 @@ class FeaturedCatalogItems extends React.Component {
           Roblox.catalog.getAssetInfo(item.id).then(function (asset) {
             Roblox.thumbnails.getAssetThumbnailUrl(asset.id, 420, 420).then(function (assetThumbnailUrl) {
               var creatorUrl = Roblox.users.getProfileUrl(asset.creator.id);
-
               if (asset.creator.type === "Group") {
                 creatorUrl = Roblox.groups.getGroupUrl(asset.creator.id, asset.creator.name);
               }
-
               resolve({
                 id: asset.id,
                 name: asset.name,
@@ -134,13 +115,11 @@ class FeaturedCatalogItems extends React.Component {
             }).catch(reject);
           }).catch(reject);
           break;
-
         default:
           reject("Unsupport item type: " + item.type);
       }
     });
   }
-
   getItemCards() {
     return this.state.sponsoredItems.map(function (item) {
       return /*#__PURE__*/React.createElement("li", {
@@ -184,7 +163,6 @@ class FeaturedCatalogItems extends React.Component {
       }, item.price ? " " + global.addCommas(item.price) : "")))));
     });
   }
-
   render() {
     return /*#__PURE__*/React.createElement("div", {
       className: this.state.sponsoredItems.length > 0 ? "results-container" : "hidden"
@@ -196,16 +174,15 @@ class FeaturedCatalogItems extends React.Component {
       class: "item-cards-stackable"
     }, this.getItemCards()))));
   }
-
 }
-
 RPlus.settings.get().then(function (settings) {
   if (!settings.sponsoredCatalogItemsEnabled) {
     return;
   }
-
   var container = $("<div id=\"rplus-featured-items\">");
   var results = $(".catalog-results").prepend(container);
   console.log("Render Roblox+ featured items in .catalog-results (" + results.length + ")");
   ReactDOM.render( /*#__PURE__*/React.createElement(FeaturedCatalogItems, null), container[0]);
-}).catch(console.error); // WebGL3D
+}).catch(console.error);
+
+// WebGL3D

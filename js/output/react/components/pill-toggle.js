@@ -6,7 +6,6 @@ class PillToggle extends React.Component {
     };
     this.getValue();
   }
-
   getValue() {
     let pillToggle = this;
     this.props.getValue(function (value) {
@@ -15,19 +14,16 @@ class PillToggle extends React.Component {
       });
     });
   }
-
   toggle() {
     if (this.props.disabled) {
       return;
     }
-
     var on = !this.state.on;
     this.setState({
       on: on
     });
     this.props.onToggle(on);
   }
-
   render() {
     return /*#__PURE__*/React.createElement("span", {
       class: "btn-toggle receiver-destination-type-toggle" + (this.state.on ? " on" : "") + (this.props.disabled ? " disabled" : ""),
@@ -40,5 +36,4 @@ class PillToggle extends React.Component {
       class: "toggle-off"
     }));
   }
-
 }

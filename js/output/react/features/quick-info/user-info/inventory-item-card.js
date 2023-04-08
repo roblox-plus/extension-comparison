@@ -5,20 +5,15 @@ class UserInfoWidgetInventoryItemCard extends React.Component {
       collectible: props.collectible
     };
   }
-
   getSerialNumberTooltip() {
     let serialNumbers = this.state.collectible.serialNumbers;
-
     if (serialNumbers.length === 1 && serialNumbers[0]) {
       return `#${serialNumbers[0]}/${this.state.collectible.assetStock}`;
     }
-
     return "";
   }
-
   renderNumberContainer() {
     let serialNumbers = this.state.collectible.serialNumbers;
-
     if (serialNumbers.length > 1) {
       return /*#__PURE__*/React.createElement("span", {
         class: "limited-number-container"
@@ -28,7 +23,6 @@ class UserInfoWidgetInventoryItemCard extends React.Component {
         class: "font-caption-header text-subheader limited-number"
       }, global.addCommas(serialNumbers.length)));
     }
-
     if (serialNumbers[0]) {
       return /*#__PURE__*/React.createElement("span", {
         class: "limited-number-container"
@@ -38,10 +32,8 @@ class UserInfoWidgetInventoryItemCard extends React.Component {
         class: "font-caption-header text-subheader limited-number"
       }, serialNumbers[0]));
     }
-
     return /*#__PURE__*/React.createElement("span", null);
   }
-
   render() {
     return /*#__PURE__*/React.createElement("li", {
       class: "item-card list-item"
@@ -73,5 +65,4 @@ class UserInfoWidgetInventoryItemCard extends React.Component {
       class: "text-robux ng-binding"
     }, this.state.collectible.recentAveragePrice !== Infinity ? global.addCommas(this.state.collectible.recentAveragePrice) : "Priceless")))));
   }
-
 }

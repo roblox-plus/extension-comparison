@@ -10,37 +10,30 @@ class GroupRevenue extends React.Component {
       });
     }).catch(console.error);
   }
-
   loadSalesData(days) {
     console.log("Load sales data", this.props.groupId);
     return RPlus.bucketedSales.getBucketedSellerSales("Group", this.props.groupId, days);
   }
-
   loadRevenueData(days) {
     console.log("Load revenue data", this.props.groupId);
     return RPlus.bucketedSales.getBucketedSellerRevenue("Group", this.props.groupId, days);
   }
-
   loadSalesDataByGame(days) {
     console.log("Load game sales data", this.props.groupId);
     return RPlus.bucketedSales.getBucketedGroupSalesByGame(this.props.groupId, days);
   }
-
   loadRevenueDataByGame(days) {
     console.log("Load game revenue data", this.props.groupId);
     return RPlus.bucketedSales.getBucketedGroupRevenueByGame(this.props.groupId, days);
   }
-
   getItemScanStatus() {
     return Roblox.economyTransactions.getGroupScanStatus(this.props.groupId);
   }
-
   translateGroupGameSeries(salesData, mode, translateBucket) {
     return new Promise((resolve, reject) => {
       var result = [];
       this.state.games.forEach(function (game) {
         var transactions = salesData[game.id];
-
         if (transactions) {
           result.push({
             name: game.name,
@@ -51,7 +44,6 @@ class GroupRevenue extends React.Component {
       resolve(result);
     });
   }
-
   getGameCharts() {
     if (this.state.games.length > 0) {
       return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(BucketedSalesChart, {
@@ -68,10 +60,8 @@ class GroupRevenue extends React.Component {
         name: "Revenue by game"
       }));
     }
-
     return "";
   }
-
   render() {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(BucketedSalesChart, {
       loadSalesData: this.loadSalesData.bind(this),
@@ -83,28 +73,21 @@ class GroupRevenue extends React.Component {
       name: "Revenue"
     }), this.getGameCharts());
   }
-
 }
-
 Roblox.users.getAuthenticatedUser().then(function (user) {
   var groupId = Roblox.groups.getIdFromUrl(location.href);
-
   if (isNaN(groupId) || groupId <= 0) {
     return;
   }
-
   RPlus.premium.isPremium(user.id).then(function (premium) {
     if (!premium) {
       // TODO: Missed oppurtunity to upsell.
       return;
     }
-
     setInterval(function () {
       var groupRevenueSummaryTab = $("revenue-summary");
-
       if (groupRevenueSummaryTab.length > 0) {
         var rplusRevenueContainer = groupRevenueSummaryTab.find("#rplus-group-revenue");
-
         if (rplusRevenueContainer.length <= 0) {
           rplusRevenueContainer = $("<div id=\"rplus-group-revenue\">");
           groupRevenueSummaryTab.append(rplusRevenueContainer);
@@ -116,4 +99,6 @@ Roblox.users.getAuthenticatedUser().then(function (user) {
       }
     }, 500);
   }).catch(console.error);
-}).catch(console.error); // WebGL3D
+}).catch(console.error);
+
+// WebGL3D

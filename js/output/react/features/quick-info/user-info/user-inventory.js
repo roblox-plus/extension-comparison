@@ -9,7 +9,6 @@ class UserInfoWidgetInventory extends React.Component {
     };
     this.componentWillReceiveProps(props);
   }
-
   loadInventory(userId) {
     this.setState({
       loading: true,
@@ -20,7 +19,6 @@ class UserInfoWidgetInventory extends React.Component {
       if (this.props.user.id !== userId) {
         return;
       }
-
       this.setState({
         loading: false,
         inventoryData: collectibles
@@ -29,27 +27,22 @@ class UserInfoWidgetInventory extends React.Component {
       if (this.props.user.id !== userId) {
         return;
       }
-
       let privateInventory = Array.isArray(err) && err[0] && err[0].code === 11;
-
       if (!privateInventory) {
         console.error(err);
       }
-
       this.setState({
         loading: false,
         privateInventory: privateInventory
       });
     });
   }
-
   componentWillReceiveProps(nextProps) {
     this.setState({
       user: nextProps.user
     });
     this.loadInventory(nextProps.user.id);
   }
-
   renderInventoryItems() {
     let mergedCollectibles = [];
     let collectibleMap = {};
@@ -58,7 +51,6 @@ class UserInfoWidgetInventory extends React.Component {
         collectibleMap[collectible.assetId].serialNumbers.push(collectible.serialNumber);
         return;
       }
-
       let mergedCollectible = {
         assetId: collectible.assetId,
         assetName: collectible.name,
@@ -77,7 +69,6 @@ class UserInfoWidgetInventory extends React.Component {
       });
     });
   }
-
   render() {
     if (this.state.loading) {
       return /*#__PURE__*/React.createElement("div", {
@@ -86,7 +77,6 @@ class UserInfoWidgetInventory extends React.Component {
         class: "spinner spinner-default"
       }));
     }
-
     if (this.state.privateInventory) {
       return /*#__PURE__*/React.createElement("div", {
         class: "rplus-quick-info-widget-inventory"
@@ -94,7 +84,6 @@ class UserInfoWidgetInventory extends React.Component {
         class: "section-content-off"
       }, "Private Inventory"));
     }
-
     if (!this.state.inventoryData) {
       return /*#__PURE__*/React.createElement("div", {
         class: "rplus-quick-info-widget-inventory"
@@ -102,10 +91,8 @@ class UserInfoWidgetInventory extends React.Component {
         class: "section-content-off"
       }, "Failed to load inventory."));
     }
-
     return /*#__PURE__*/React.createElement("ul", {
       class: "rplus-quick-info-widget-inventory item-cards item-cards-stackable"
     }, this.renderInventoryItems());
   }
-
 }

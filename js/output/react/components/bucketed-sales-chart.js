@@ -53,7 +53,6 @@ class BucketedSalesChart extends React.Component {
       props.getScanStatus().then(this.loadStatusSuccess.bind(this)).catch(this.loadStatusFailure.bind(this));
     }, 500);
   }
-
   addSales(sales) {
     let saleCount = 0;
     sales.forEach(function (hourlySales) {
@@ -61,29 +60,24 @@ class BucketedSalesChart extends React.Component {
     });
     return saleCount;
   }
-
   setDays(days) {
     this.setState({
       days: days
     });
   }
-
   getDateMinusDays(startDate, days) {
     var date = new Date(startDate);
     date.setDate(date.getDate() - days);
     return new Date(date);
   }
-
   filterItems(minDate, maxDate, salesData) {
     var filteredData = salesData.filter(function (item) {
       return item.date.getTime() >= minDate.getTime() && item.date.getTime() <= maxDate.getTime();
     });
     return filteredData;
   }
-
   translateBucket(salesData, mode) {
     var translatedSalesData = [];
-
     for (let date in salesData) {
       switch (mode) {
         case this.modes.daily:
@@ -92,7 +86,6 @@ class BucketedSalesChart extends React.Component {
             value: this.addSales(salesData[date])
           });
           break;
-
         case this.modes.hourly:
         default:
           salesData[date].forEach(function (hourlySales, i) {
@@ -106,14 +99,11 @@ class BucketedSalesChart extends React.Component {
           break;
       }
     }
-
     return translatedSalesData;
   }
-
   setChartDataForDays(days, mode) {
     var maxDate = this.state.startDate;
     var minDate = this.getDateMinusDays(maxDate, days);
-
     if (this.props.seriesTranslator) {
       this.props.seriesTranslator(this.salesData, mode, this.translateBucket.bind(this)).then(translatedSalesDatas => {
         var chartData = Object.assign({
@@ -143,24 +133,20 @@ class BucketedSalesChart extends React.Component {
       });
     }
   }
-
   setMode(event) {
     this.setChartDataForDays(this.state.days, event.target.value);
   }
-
   salesDataLoaded(days, salesData) {
     console.log(salesData);
     this.salesData = salesData;
     this.setChartDataForDays(days, this.state.mode);
   }
-
   salesDataLoadFailure(e) {
     console.error(e);
     this.setState({
       chartDataError: true
     });
   }
-
   loadStatusSuccess(status) {
     if (status) {
       var cursor = status.cursor || "loading";
@@ -175,31 +161,26 @@ class BucketedSalesChart extends React.Component {
       });
     }
   }
-
   loadStatusFailure() {
     this.setState({
       loadStatus: ""
     });
   }
-
   getChartElement() {
     if (this.state.chartDataError) {
       return /*#__PURE__*/React.createElement("div", {
         class: "message-banner"
       }, this.props.name, " data failed to load.");
     }
-
     if (this.state.chartData) {
       return /*#__PURE__*/React.createElement(HighchartsReact, {
         options: this.state.chartData
       });
     }
-
     return /*#__PURE__*/React.createElement("span", {
       class: "spinner spinner-default"
     });
   }
-
   render() {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", null, this.props.name), /*#__PURE__*/React.createElement("div", {
       class: "section-content"
@@ -222,5 +203,6 @@ class BucketedSalesChart extends React.Component {
       class: "item-sales-chart"
     }, this.getChartElement()), this.state.loadStatus));
   }
+}
 
-} // WebGL3D
+// WebGL3D

@@ -6,19 +6,16 @@ class NotificationSettings extends SettingsTab {
     this.state.showAddGroup = false;
     this.reloadWhitelistedGroups();
   }
-
   getCurrentAudioId(settingName, callBack) {
     Extension.Storage.Singleton.get("notifierSounds").then(function (notifierSounds) {
       if (notifierSounds && notifierSounds[settingName] && typeof notifierSounds[settingName] === "number") {
         callBack(notifierSounds[settingName]);
         return;
       }
-
       switch (settingName) {
         case "item":
           callBack(205318910);
           return;
-
         default:
           callBack(0);
       }
@@ -27,7 +24,6 @@ class NotificationSettings extends SettingsTab {
       callBack(0);
     });
   }
-
   promptAudioModal(title, description, currentAudioId) {
     return new Promise(function (resolve, reject) {
       let newAudioId = currentAudioId;
@@ -35,23 +31,19 @@ class NotificationSettings extends SettingsTab {
       let audioButton = Roblox.audio.createPlayButton();
       let audioInput = $("<input class=\"form-control input-field\"/>").change(function () {
         let tryParseNumber = Number($(this).val());
-
         if (isNaN(tryParseNumber)) {
           tryParseNumber = Roblox.catalog.getIdFromUrl($(this).val());
         }
-
         if (isNaN(tryParseNumber) || tryParseNumber < 0) {
           newAudioId = 0;
         } else {
           newAudioId = tryParseNumber;
         }
-
         if (newAudioId > 0) {
           $(this).val(Roblox.catalog.getAssetUrl(newAudioId, "Sound"));
         } else {
           $(this).val("");
         }
-
         audioButton.setAudioId(newAudioId);
         $(this).blur();
       }).attr("placeholder", "https://www.roblox.com/library/205318910/Sound");
@@ -59,13 +51,11 @@ class NotificationSettings extends SettingsTab {
       formGroup.append(audioButton);
       formGroup.append($("<span class=\"form-control-label\"/>").text("Put a link to a Roblox audio in the box."));
       audioButton.setAudioId(currentAudioId);
-
       if (newAudioId > 0) {
         audioInput.val(Roblox.catalog.getAssetUrl(newAudioId, "Sound"));
       } else {
         audioInput.val("");
       }
-
       Roblox.ui.confirm({
         header: title,
         bodyHtml: formGroup,
@@ -81,18 +71,15 @@ class NotificationSettings extends SettingsTab {
       }).catch(reject);
     });
   }
-
   promptChangeNotifierSound(settingName) {
     let title;
     let description;
     let notificationSettings = this;
-
     switch (settingName) {
       case "item":
         title = "Item Notifier Sound";
         description = "This is the sound that will play when an item notification pops up.";
         break;
-
       case "tradeInbound":
       case "tradeOutbound":
       case "tradeCompleted":
@@ -100,32 +87,26 @@ class NotificationSettings extends SettingsTab {
         title = "Trade Notifier Sound";
         description = "This is the sound that will play when you a trade status changes.";
         break;
-
       case "friend":
         title = "Friend Notifier Sound";
         description = "This is the sound that will play when a friend notification pops up.";
         break;
-
       case "groupShout":
         title = "Group Shout Notifier Sound";
         description = "This is the sound that will play when a group shout changes.";
         break;
-
       default:
         title = "Notifier Sound";
         description = "What sound would you like to play when a notification pops up?";
     }
-
     this.getCurrentAudioId(settingName, function (originalAudioId) {
       notificationSettings.promptAudioModal(title, description, originalAudioId).then(function (audioId) {
         if (originalAudioId === audioId) {
           return;
         }
-
         console.log("Set audio id:", audioId);
         Extension.Storage.Singleton.get("notifierSounds").then(function (notifierSounds) {
           notifierSounds = notifierSounds || {};
-
           if (settingName === "tradeInbound") {
             notifierSounds.tradeInbound = audioId;
             notifierSounds.tradeOutbound = audioId;
@@ -134,37 +115,31 @@ class NotificationSettings extends SettingsTab {
           } else {
             notifierSounds[settingName] = audioId;
           }
-
           Extension.Storage.Singleton.blindSet("notifierSounds", notifierSounds);
         }).catch(console.error);
-      }).catch(function () {// The user cancelled.
+      }).catch(function () {
+        // The user cancelled.
       });
     });
   }
-
   toggleAddWhitelistedGroup() {
     let newState = {
       showAddGroup: !this.state.showAddGroup
     };
-
     if (!newState.showAddGroup) {
       newState.groupError = "";
       this.clearGroupUrl();
     }
-
     this.setState(newState);
   }
-
   clearGroupUrl() {
     $("#rplus-groupshout-notifier-input").val("");
   }
-
   removeGroup(groupId) {
     Extension.Storage.Singleton.get("groupShoutNotifierList").then(whitelistedGroups => {
       if (!whitelistedGroups || typeof whitelistedGroups !== "object") {
         whitelistedGroups = {};
       }
-
       if (whitelistedGroups.hasOwnProperty(groupId)) {
         delete whitelistedGroups[groupId];
         Extension.Storage.Singleton.set("groupShoutNotifierList", whitelistedGroups).then(() => {
@@ -178,17 +153,14 @@ class NotificationSettings extends SettingsTab {
       this.reloadWhitelistedGroups();
     });
   }
-
   reloadWhitelistedGroups() {
     let notificationSettings = this;
     Extension.Storage.Singleton.get("groupShoutNotifierList").then(whitelistedGroups => {
       if (!whitelistedGroups || typeof whitelistedGroups !== "object") {
         whitelistedGroups = {};
       }
-
       if (Object.keys(whitelistedGroups).length > 0) {
         let tableRows = [];
-
         for (var groupId in whitelistedGroups) {
           tableRows.push( /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("a", {
             href: Roblox.groups.getGroupUrl(groupId, whitelistedGroups[groupId])
@@ -197,7 +169,6 @@ class NotificationSettings extends SettingsTab {
             onClick: notificationSettings.removeGroup.bind(notificationSettings, groupId)
           }))));
         }
-
         notificationSettings.setState({
           whitelistedGroups: /*#__PURE__*/React.createElement("table", {
             class: "table table-striped rplus-groupshout-whitelist"
@@ -219,15 +190,12 @@ class NotificationSettings extends SettingsTab {
       });
     });
   }
-
   tryAddGroup(event) {
     if (event.keyCode !== 13) {
       return;
     }
-
     let groupId = Roblox.groups.getIdFromUrl(event.target.value);
     let notificationSettings = this;
-
     if (groupId > 0) {
       Roblox.groups.getUserGroup(groupId, Roblox.users.authenticatedUserId).then(function (membership) {
         if (!membership) {
@@ -236,12 +204,10 @@ class NotificationSettings extends SettingsTab {
           });
           return;
         }
-
         Extension.Storage.Singleton.get("groupShoutNotifierList").then(whitelistedGroups => {
           if (!whitelistedGroups || typeof whitelistedGroups !== "object") {
             whitelistedGroups = {};
           }
-
           whitelistedGroups[groupId] = membership.group.name;
           Extension.Storage.Singleton.set("groupShoutNotifierList", whitelistedGroups).then(() => {
             notificationSettings.setState({
@@ -274,7 +240,6 @@ class NotificationSettings extends SettingsTab {
       });
     }
   }
-
   render() {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       class: "section"
@@ -426,5 +391,4 @@ class NotificationSettings extends SettingsTab {
       onToggle: this.setPillValue.bind(this, "startupNotification.visit")
     })))));
   }
-
 }

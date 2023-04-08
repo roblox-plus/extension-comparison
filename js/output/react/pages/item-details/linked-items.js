@@ -8,7 +8,6 @@ class LinkedItems extends React.Component {
       assetBundles: []
     };
   }
-
   init() {
     let loading = 2;
     Roblox.content.getDependentAssets(this.state.assetId).then(assets => {
@@ -34,12 +33,10 @@ class LinkedItems extends React.Component {
       });
     });
   }
-
   renderDependentAssets() {
     if (this.state.dependentAssets.length < 1) {
       return "";
     }
-
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       class: "container-header"
     }, /*#__PURE__*/React.createElement("h3", null, "Dependencies")), /*#__PURE__*/React.createElement("ul", {
@@ -63,12 +60,10 @@ class LinkedItems extends React.Component {
       }, asset.name))));
     })));
   }
-
   renderAssetBundles() {
     if (this.state.assetBundles.length < 1) {
       return "";
     }
-
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       class: "container-header"
     }, /*#__PURE__*/React.createElement("h3", null, "Bundles")), /*#__PURE__*/React.createElement("ul", {
@@ -92,23 +87,19 @@ class LinkedItems extends React.Component {
       }, bundle.name))));
     })));
   }
-
   render() {
     if (this.state.loading > 0) {
       return /*#__PURE__*/React.createElement("div", {
         class: "section-content-off"
       }, "Loading...");
     }
-
     if (this.state.dependentAssets.length < 1 && this.state.assetBundles.length < 1) {
       return /*#__PURE__*/React.createElement("div", {
         class: "section-content-off"
       }, "This item has no linked content.");
     }
-
     return /*#__PURE__*/React.createElement("div", {
       class: "rplus-linked-items"
     }, this.renderDependentAssets(), this.renderAssetBundles());
   }
-
 }

@@ -52,17 +52,14 @@ class RobuxHistoryChart extends React.Component {
     };
     this.loadRobuxHistory(props.currencyHolderType, props.currencyHolderId);
   }
-
   componentWillReceiveProps(nextProps) {
     this.setChartData(this.state.mode, Math.max(this.state.minDays, Math.min(nextProps.days, this.state.maxDays)));
   }
-
   getDateMinusDays(startDate, days) {
     var date = new Date(startDate);
     date.setDate(date.getDate() - days);
     return new Date(date);
   }
-
   translateRobuxHistory(robuxHistory, mode) {
     let translatedRobuxHistory = [];
     let robuxByDate = {};
@@ -71,20 +68,16 @@ class RobuxHistoryChart extends React.Component {
         date: new Date(robuxHistoryRecord.robuxDate),
         value: robuxHistoryRecord.robux
       };
-
       switch (mode) {
         case this.modes.daily:
           translatedRecord.date = new Date(new Date(robuxHistoryRecord.robuxDate).setHours(0, 0, 0, 0));
           break;
-
         case this.modes.hourly:
           translatedRecord.date = new Date(new Date(robuxHistoryRecord.robuxDate).setMinutes(0, 0, 0));
           break;
       }
-
       let dateKey = translatedRecord.date.toString();
       let existingRecord = robuxByDate[dateKey];
-
       if (existingRecord) {
         existingRecord.value = Math.max(existingRecord.value, translatedRecord.value);
       } else {
@@ -94,7 +87,6 @@ class RobuxHistoryChart extends React.Component {
     });
     return translatedRobuxHistory;
   }
-
   setChartData(mode, days) {
     var maxDate = this.state.startDate;
     var minDate = this.getDateMinusDays(maxDate, days);
@@ -110,47 +102,39 @@ class RobuxHistoryChart extends React.Component {
       chartData: chartData
     });
   }
-
   setMode(event) {
     this.setChartData(event.target.value, this.state.days);
   }
-
   loadRobuxHistory(currencyHolderType, currencyHolderId) {
     let startDateTime = this.getDateMinusDays(new Date(), this.state.maxDays);
     RPlus.robuxHistory.getRobuxHistory(currencyHolderType, currencyHolderId, startDateTime.getTime(), +new Date()).then(this.robuxHistoryLoaded.bind(this)).catch(this.robuxHistoryLoadFailure.bind(this));
   }
-
   robuxHistoryLoaded(robuxHistory) {
     console.log(robuxHistory);
     this.robuxHistory = robuxHistory;
     this.setChartData(this.state.mode, this.state.days);
   }
-
   robuxHistoryLoadFailure(e) {
     console.error(e);
     this.setState({
       chartDataError: true
     });
   }
-
   getChartElement() {
     if (this.state.chartDataError) {
       return /*#__PURE__*/React.createElement("div", {
         class: "message-banner"
       }, this.state.chartName, " data failed to load.");
     }
-
     if (this.state.chartData) {
       return /*#__PURE__*/React.createElement(HighchartsReact, {
         options: this.state.chartData
       });
     }
-
     return /*#__PURE__*/React.createElement("span", {
       class: "spinner spinner-default"
     });
   }
-
   render() {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", null, this.state.chartName), /*#__PURE__*/React.createElement("div", {
       class: "section-content"
@@ -158,28 +142,23 @@ class RobuxHistoryChart extends React.Component {
       class: "robux-history-chart"
     }, this.getChartElement())));
   }
+}
 
-} // TODO: Move this somewhere else
-
-
+// TODO: Move this somewhere else
 RPlus.robuxHistory.isEnabled().then(robuxHistoryEnabled => {
   if (!robuxHistoryEnabled) {
     return;
   }
-
   const getDays = () => {
     let days = [1, 7, 30, 366];
     let li = $(".transaction-date-dropdown ul>li");
-
     for (let i = 0; i < li.length; i++) {
       if ($(li[i]).hasClass("active")) {
         return days[i];
       }
     }
-
     return days[2];
   };
-
   let currentDays = getDays();
   let robuxHistoryContainer = $("<div id=\"rplus-robux-history\">");
   let transactionsPageContainer = $("#transactions-page-container").after(robuxHistoryContainer);
@@ -197,16 +176,15 @@ RPlus.robuxHistory.isEnabled().then(robuxHistoryEnabled => {
       robuxHistoryContainer.hide();
       return;
     }
-
     const nowDays = getDays();
-
     if (nowDays === currentDays) {
       return;
     }
-
     currentDays = nowDays;
     robuxHistoryChart.componentWillReceiveProps({
       days: nowDays
     });
   }, 500);
-}).catch(console.warn); // WebGL3D
+}).catch(console.warn);
+
+// WebGL3D

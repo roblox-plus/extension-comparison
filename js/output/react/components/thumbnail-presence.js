@@ -9,18 +9,14 @@ class ThumbnailPresence extends React.Component {
     };
     this.componentWillReceiveProps(props);
   }
-
   loadPresence(userId) {
     if (this.lastUserId === userId) {
       return;
     }
-
     this.lastUserId = userId;
-
     if (!userId || userId <= 0) {
       return;
     }
-
     this.setState({
       locationType: 0,
       locationLink: "",
@@ -30,18 +26,14 @@ class ThumbnailPresence extends React.Component {
       if (!presence || this.props.userId !== userId) {
         return;
       }
-
       let locationLink = "";
       let locationText = presence.locationName;
-
       if (presence.game) {
         locationText = presence.game.name || locationText;
-
         if (presence.game.placeId) {
           locationLink = Roblox.games.getGameUrl(presence.game.placeId, locationText);
         }
       }
-
       this.setState({
         locationType: presence.locationType,
         locationText: locationText,
@@ -51,34 +43,26 @@ class ThumbnailPresence extends React.Component {
       console.error(err);
     });
   }
-
   getPresenceIcon(locationType) {
     switch (locationType) {
       case 2:
         return "icon-online";
-
       case 3:
         return "icon-studio";
-
       case 4:
         return "icon-game";
     }
-
     return "";
   }
-
   componentWillReceiveProps(nextProps) {
     this.loadPresence(nextProps.userId);
   }
-
   render() {
     let icon = this.getPresenceIcon(this.state.locationType);
     let presenceClassName = "avatar-status " + icon;
-
     if (!icon) {
       return /*#__PURE__*/React.createElement("span", null);
     }
-
     if (this.state.locationLink) {
       return /*#__PURE__*/React.createElement("a", {
         className: presenceClassName,
@@ -86,11 +70,9 @@ class ThumbnailPresence extends React.Component {
         title: this.state.locationText
       });
     }
-
     return /*#__PURE__*/React.createElement("span", {
       className: presenceClassName,
       title: this.state.locationText
     });
   }
-
 }
