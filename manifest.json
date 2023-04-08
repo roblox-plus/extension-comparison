@@ -1,5 +1,5 @@
 {
-  "version": "2.4.47",
+  "version": "2.4.51",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Adds features and notifiers made by WebGL3D to the Roblox website",
@@ -28,6 +28,7 @@
     },
     {
       "js": [
+        "dist/pages/all.js",
         "/js/vendors/twemoji.min.js",
         "/js/vanilla/extension/extension.js",
         "/js/vanilla/extension/messaging.js",
@@ -271,6 +272,7 @@
     "webRequestBlocking",
     "tts",
     "notifications",
+    "storage",
     "*://*.roblox.com/*",
     "*://*.rbxcdn.com/*",
     "*://*.roblox.plus/*"
