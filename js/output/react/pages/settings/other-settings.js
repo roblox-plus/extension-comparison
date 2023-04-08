@@ -39,17 +39,6 @@ class OtherSettings extends SettingsTab {
       class: "section-content"
     }, /*#__PURE__*/React.createElement("span", {
       class: "text-lead"
-    }, "Ascending Servers"), /*#__PURE__*/React.createElement(PillToggle, {
-      getValue: this.getPillValue.bind(this, "ascendingGameServersSortOrder"),
-      onToggle: this.setPillValue.bind(this, "ascendingGameServersSortOrder")
-    }), /*#__PURE__*/React.createElement("div", {
-      class: "rbx-divider"
-    }), /*#__PURE__*/React.createElement("span", {
-      class: "text-description"
-    }, "Sort servers in from least players -> most players.")), /*#__PURE__*/React.createElement("div", {
-      class: "section-content"
-    }, /*#__PURE__*/React.createElement("span", {
-      class: "text-lead"
     }, "Badge Achievement Dates"), /*#__PURE__*/React.createElement(PillToggle, {
       getValue: this.getPillValue.bind(this, "badgeAchievementDatesEnabled"),
       onToggle: this.setPillValue.bind(this, "badgeAchievementDatesEnabled")

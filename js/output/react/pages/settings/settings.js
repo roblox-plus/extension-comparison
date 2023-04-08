@@ -31,6 +31,6 @@ if (location.search.includes("rplus")) {
   ReactDOM.render( /*#__PURE__*/React.createElement(Settings, null), container[0]);
 } else {
   var li = $("<li class=\"menu-option\">");
-  var a = $("<a class=\"rbx-tab-heading\">").append($("<span class=\"font-caption-header\">").text(Extension.Singleton.manifest.name)).attr("href", Extension.Singleton.manifest.homepage_url);
+  var a = $("<a class=\"menu-option-content\">").append($("<span class=\"font-caption-header\">").text(Extension.Singleton.manifest.name)).attr("href", Extension.Singleton.manifest.homepage_url);
   $("#vertical-menu").append(li.append(a));
 } // WebGL3D
