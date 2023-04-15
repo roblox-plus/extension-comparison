@@ -1,5 +1,5 @@
 {
-  "version": "2.4.75",
+  "version": "2.4.77",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Adds features and notifiers made by WebGL3D to the Roblox website",
@@ -99,7 +99,6 @@
         "/js/jquery/Profile.js",
         "/js/jquery/Game.js",
         "/js/jquery/Item.js",
-        "/js/jquery/Catalog.js",
         "/js/jquery/Messages.js",
         "/js/jquery/DeveloperStats.js",
         "/js/jquery/loadPages.js"

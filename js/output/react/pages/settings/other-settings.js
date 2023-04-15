@@ -78,21 +78,6 @@ class OtherSettings extends SettingsTab {
       class: "section"
     }, /*#__PURE__*/React.createElement("div", {
       class: "container-header"
-    }, /*#__PURE__*/React.createElement("h3", null, "Catalog")), /*#__PURE__*/React.createElement("div", {
-      class: "section-content"
-    }, /*#__PURE__*/React.createElement("span", {
-      class: "text-lead"
-    }, "Hide blocked users as sellers."), /*#__PURE__*/React.createElement(PillToggle, {
-      getValue: this.getPillValue.bind(this, "catalog.hideBlockedSellers"),
-      onToggle: this.setPillValue.bind(this, "catalog.hideBlockedSellers")
-    }), /*#__PURE__*/React.createElement("div", {
-      class: "rbx-divider"
-    }), /*#__PURE__*/React.createElement("span", {
-      class: "text-description"
-    }, "Users who you have blocked will not appear in catalog results."))), /*#__PURE__*/React.createElement("div", {
-      class: "section"
-    }, /*#__PURE__*/React.createElement("div", {
-      class: "container-header"
     }, /*#__PURE__*/React.createElement("h3", null, "Money")), /*#__PURE__*/React.createElement("div", {
       class: "section-content"
     }, /*#__PURE__*/React.createElement("span", {
