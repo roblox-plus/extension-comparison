@@ -20,6 +20,36 @@ const isBackgroundPage = chrome.runtime.getURL(manifest.background?.page || '') 
 
 /***/ }),
 
+/***/ "./src/js/services/inventoryService.ts":
+/*!*********************************************!*\
+  !*** ./src/js/services/inventoryService.ts ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "deleteAsset": () => (/* binding */ deleteAsset)
+/* harmony export */ });
+/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
+
+// Removes an asset from the authenticated user's inventory.
+const deleteAsset = async (assetId) => {
+    const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_0__["default"])(new URL(`https://assetgame.roblox.com/asset/delete-from-inventory`), {
+        method: 'POST',
+        body: JSON.stringify({
+            assetId: assetId,
+        }),
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to remove asset (${assetId})`);
+    }
+};
+globalThis.inventoryService = { deleteAsset };
+
+
+
+/***/ }),
+
 /***/ "./src/js/services/localizationService.ts":
 /*!************************************************!*\
   !*** ./src/js/services/localizationService.ts ***!
@@ -348,6 +378,50 @@ globalThis.settingsService = { getSettingValue, getToggleSettingValue, setSettin
 
 
 
+/***/ }),
+
+/***/ "./src/js/utils/xsrfFetch.ts":
+/*!***********************************!*\
+  !*** ./src/js/utils/xsrfFetch.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+const headerName = 'X-CSRF-Token';
+let xsrfToken = '';
+// A fetch request which will attach an X-CSRF-Token in all outbound requests.
+const xsrfFetch = async (url, requestDetails) => {
+    if (url.hostname.endsWith('.roblox.com')) {
+        if (!requestDetails) {
+            requestDetails = {};
+        }
+        requestDetails.credentials = 'include';
+        if (!requestDetails.headers) {
+            requestDetails.headers = new Headers();
+        }
+        if (requestDetails.headers instanceof Headers) {
+            if (xsrfToken) {
+                requestDetails.headers.set(headerName, xsrfToken);
+            }
+            if (requestDetails.body && !requestDetails.headers.has('Content-Type')) {
+                requestDetails.headers.set('Content-Type', 'application/json');
+            }
+        }
+    }
+    const response = await fetch(url, requestDetails);
+    const token = response.headers.get(headerName);
+    if (response.ok || !token) {
+        return response;
+    }
+    xsrfToken = token;
+    return xsrfFetch(url, requestDetails);
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (xsrfFetch);
+
+
 /***/ })
 
 /******/ 	});
@@ -414,13 +488,16 @@ var __webpack_exports__ = {};
   \****************************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "localizationService": () => (/* reexport module object */ _services_localizationService__WEBPACK_IMPORTED_MODULE_0__),
-/* harmony export */   "messageService": () => (/* reexport module object */ _services_messageService__WEBPACK_IMPORTED_MODULE_1__),
-/* harmony export */   "settingsService": () => (/* reexport module object */ _services_settingsService__WEBPACK_IMPORTED_MODULE_2__)
+/* harmony export */   "inventoryService": () => (/* reexport module object */ _services_inventoryService__WEBPACK_IMPORTED_MODULE_0__),
+/* harmony export */   "localizationService": () => (/* reexport module object */ _services_localizationService__WEBPACK_IMPORTED_MODULE_1__),
+/* harmony export */   "messageService": () => (/* reexport module object */ _services_messageService__WEBPACK_IMPORTED_MODULE_2__),
+/* harmony export */   "settingsService": () => (/* reexport module object */ _services_settingsService__WEBPACK_IMPORTED_MODULE_3__)
 /* harmony export */ });
-/* harmony import */ var _services_localizationService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/localizationService */ "./src/js/services/localizationService.ts");
-/* harmony import */ var _services_messageService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/messageService */ "./src/js/services/messageService.ts");
-/* harmony import */ var _services_settingsService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/settingsService */ "./src/js/services/settingsService.ts");
+/* harmony import */ var _services_inventoryService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/inventoryService */ "./src/js/services/inventoryService.ts");
+/* harmony import */ var _services_localizationService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/localizationService */ "./src/js/services/localizationService.ts");
+/* harmony import */ var _services_messageService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/messageService */ "./src/js/services/messageService.ts");
+/* harmony import */ var _services_settingsService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/settingsService */ "./src/js/services/settingsService.ts");
+
 
 
 

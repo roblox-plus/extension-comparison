@@ -1,6 +1,9 @@
 /*!********************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].use[1]!./node_modules/resolve-url-loader/index.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].use[3]!./src/css/pages/all.scss ***!
   \********************************************************************************************************************************************************************************************************************/
+.rplus-modal .modal {
+  display: block; }
+
 .rplus-notification-stream .notification-stream-item {
   overflow: hidden; }
   .rplus-notification-stream .notification-stream-item .notification-image-container {
@@ -324,4 +327,9 @@ body:not(.rbx-body) .rplus-quick-info-widget {
   color: #e0221a; }
 
 /* WebGL3D */
+img.emoji {
+  height: 1em;
+  width: 1em;
+  margin: 0 0.05em 0 0.1em;
+  vertical-align: -0.1em; }
 
