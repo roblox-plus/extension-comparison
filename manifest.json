@@ -1,5 +1,5 @@
 {
-  "version": "2.4.61",
+  "version": "2.4.65",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Adds features and notifiers made by WebGL3D to the Roblox website",
@@ -104,7 +104,6 @@
         "/js/jquery/Profile.js",
         "/js/jquery/Game.js",
         "/js/jquery/Item.js",
-        "/js/jquery/Avatar.js",
         "/js/jquery/Catalog.js",
         "/js/jquery/Messages.js",
         "/js/jquery/DeveloperStats.js",
@@ -142,6 +141,16 @@
         "*://*.roblox.com/*"
       ],
       "run_at": "document_start"
+    },
+    {
+      "js": [
+        "./dist/pages/avatar.js"
+      ],
+      "matches": [
+        "https://www.roblox.com/my/avatar",
+        "https://web.roblox.com/my/avatar"
+      ],
+      "run_at": "document_end"
     },
     {
       "js": [
