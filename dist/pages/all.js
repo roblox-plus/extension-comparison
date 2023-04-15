@@ -2,6 +2,18 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/css/pages/all.scss":
+/*!********************************!*\
+  !*** ./src/css/pages/all.scss ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
 /***/ "./src/js/constants/index.ts":
 /*!***********************************!*\
   !*** ./src/js/constants/index.ts ***!
@@ -340,6 +352,8 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_settingsService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../services/settingsService */ "./src/js/services/settingsService.ts");
 /* harmony import */ var twemoji__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! twemoji */ "./node_modules/twemoji/dist/twemoji.esm.js");
+/* harmony import */ var _css_pages_all_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../css/pages/all.scss */ "./src/css/pages/all.scss");
+
 
 
 // twemojis
