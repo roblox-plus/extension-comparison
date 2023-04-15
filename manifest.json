@@ -1,5 +1,5 @@
 {
-  "version": "2.4.53",
+  "version": "2.4.56",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Adds features and notifiers made by WebGL3D to the Roblox website",
@@ -29,7 +29,6 @@
     {
       "js": [
         "dist/pages/all.js",
-        "/js/vendors/twemoji.min.js",
         "/js/vanilla/extension/extension.js",
         "/js/vanilla/extension/messaging.js",
         "/js/vanilla/extension/event.js",

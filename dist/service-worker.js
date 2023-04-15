@@ -71,6 +71,7 @@ const sendMessage = async (destination, message) => {
                 destination,
                 message: serializedMessage,
             });
+            console.debug(`Sending message to '${destination}'`, serializedMessage);
             chrome.runtime.sendMessage(outboundMessage, (result) => {
                 if (result === undefined) {
                     reject(`Unexpected message result (undefined), suggests no listener in background page.\n\tDestination: ${destination}`);
@@ -168,25 +169,27 @@ globalThis.messageService = { sendMessage, addListener };
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getSettingValue": () => (/* binding */ getSettingValue),
+/* harmony export */   "getToggleSettingValue": () => (/* binding */ getToggleSettingValue),
 /* harmony export */   "setSettingValue": () => (/* binding */ setSettingValue)
 /* harmony export */ });
 /* harmony import */ var _messageService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./messageService */ "./src/js/services/messageService.ts");
 
 // Destination to be used with messaging.
-const messageDestination = 'settingsService';
+const messageDestinationPrefix = 'settingsService';
+// Fetches a locally stored setting value by its key.
 const getSettingValue = (key) => {
-    const method = 'getSettingValue';
-    console.debug(`${messageDestination}.${method}`, key);
-    return (0,_messageService__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {
-        method,
+    return (0,_messageService__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(`${messageDestinationPrefix}.getSettingValue`, {
         key,
     });
 };
+// Gets a boolean setting value, toggled to false by default.
+const getToggleSettingValue = async (key) => {
+    const value = await getSettingValue(key);
+    return !!value;
+};
+// Locally stores a setting value.
 const setSettingValue = (key, value) => {
-    const method = 'setSettingValue';
-    console.debug(`${messageDestination}.${method}`, key, value);
-    return (0,_messageService__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {
-        method,
+    return (0,_messageService__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(`${messageDestinationPrefix}.setSettingValue`, {
         key,
         value,
     });
@@ -210,50 +213,47 @@ const getValueFromLocalStorage = (key) => {
         return undefined;
     }
 };
-(0,_messageService__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
+(0,_messageService__WEBPACK_IMPORTED_MODULE_0__.addListener)(`${messageDestinationPrefix}.getSettingValue`, ({ key }) => {
     return new Promise((resolve, reject) => {
         // chrome.storage APIs are callback-based until manifest V3.
         // Currently in migration phase, to migrate settings from localStorage -> chrome.storage.local
-        switch (message.method) {
-            case 'getSettingValue':
-                const value = getValueFromLocalStorage(message.key);
-                if (value !== undefined) {
-                    chrome.storage.local.set({
-                        [message.key]: value,
-                    }, () => {
-                        localStorage.removeItem(message.key);
-                        resolve(value);
-                    });
-                }
-                else {
-                    chrome.storage.local.get(message.key, (values) => {
-                        resolve(values[message.key]);
-                    });
-                }
-                return;
-            case 'setSettingValue':
-                if (message.value === undefined) {
-                    chrome.storage.local.remove(message.key, () => {
-                        localStorage.removeItem(message.key);
-                        resolve(undefined);
-                    });
-                }
-                else {
-                    chrome.storage.local.set({
-                        [message.key]: message.value,
-                    }, () => {
-                        localStorage.removeItem(message.key);
-                        resolve(undefined);
-                    });
-                }
-                return;
-            default:
-                reject(`Unknown settings method: ${message.method}`);
-                return;
+        const value = getValueFromLocalStorage(key);
+        if (value !== undefined) {
+            chrome.storage.local.set({
+                [key]: value,
+            }, () => {
+                localStorage.removeItem(key);
+                resolve(value);
+            });
+        }
+        else {
+            chrome.storage.local.get(key, (values) => {
+                resolve(values[key]);
+            });
         }
     });
 });
-globalThis.settingsService = { getSettingValue, setSettingValue };
+(0,_messageService__WEBPACK_IMPORTED_MODULE_0__.addListener)(`${messageDestinationPrefix}.setSettingValue`, ({ key, value }) => {
+    return new Promise((resolve, reject) => {
+        // chrome.storage APIs are callback-based until manifest V3.
+        // Currently in migration phase, to migrate settings from localStorage -> chrome.storage.local
+        if (value === undefined) {
+            chrome.storage.local.remove(key, () => {
+                localStorage.removeItem(key);
+                resolve(undefined);
+            });
+        }
+        else {
+            chrome.storage.local.set({
+                [key]: value,
+            }, () => {
+                localStorage.removeItem(key);
+                resolve(undefined);
+            });
+        }
+    });
+});
+globalThis.settingsService = { getSettingValue, getToggleSettingValue, setSettingValue };
 
 
 
