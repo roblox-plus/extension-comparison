@@ -1,5 +1,5 @@
 {
-  "version": "2.4.71",
+  "version": "2.4.75",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Adds features and notifiers made by WebGL3D to the Roblox website",
@@ -187,18 +187,6 @@
       ],
       "matches": [
         "*://*.roblox.com/my/account*"
-      ],
-      "run_at": "document_end"
-    },
-    {
-      "js": [
-        "/js/output/react/pages/catalog/featuredItems.js"
-      ],
-      "css": [
-        "dist/css/catalog.css"
-      ],
-      "matches": [
-        "*://*.roblox.com/catalog/*"
       ],
       "run_at": "document_end"
     },

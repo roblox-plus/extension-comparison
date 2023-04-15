@@ -35031,15 +35031,10 @@ const getTranslationResource = async (namespace, key) => {
             value: r.translation || r.english,
         };
     }));
+}, {
+    // Ensure that multiple requests for this information can't be processed at once.
+    levelOfParallelism: 1,
 });
-setTimeout(async () => {
-    // Preload translation resources, for use later.
-    getTranslationResources()
-        .then()
-        .catch((err) => {
-        console.warn('Failed to preload translation resources', err);
-    });
-}, 0);
 globalThis.localizationService = { getTranslationResource };
 
 
@@ -35115,11 +35110,13 @@ const sendMessage = async (destination, message) => {
     });
 };
 // Listen for messages at a specific destination.
-const addListener = (destination, listener) => {
+const addListener = (destination, listener, options = {
+    levelOfParallelism: -1,
+}) => {
     if (listeners[destination]) {
         throw new Error(`${destination} already has message listener attached`);
     }
-    listeners[destination] = async (message) => {
+    const processMessage = async (message) => {
         try {
             console.debug(`Processing message for '${destination}'`, message);
             const result = await listener(message);
@@ -35138,6 +35135,23 @@ const addListener = (destination, listener) => {
             console.debug(`Failed message result from '${destination}':`, response, message, err);
             return response;
         }
+    };
+    listeners[destination] = (message) => {
+        if (options.levelOfParallelism !== 1) {
+            return processMessage(message);
+        }
+        return new Promise(async (resolve, reject) => {
+            // https://stackoverflow.com/a/73482349/1663648
+            await navigator.locks.request(`messageService:${destination}`, async () => {
+                try {
+                    const result = await processMessage(message);
+                    resolve(result);
+                }
+                catch (e) {
+                    reject(e);
+                }
+            });
+        });
     };
 };
 // If we're currently in the background page, listen for messages.
