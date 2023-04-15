@@ -1,5 +1,5 @@
 {
-  "version": "2.4.65",
+  "version": "2.4.67",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Adds features and notifiers made by WebGL3D to the Roblox website",
@@ -98,7 +98,6 @@
         "/js/output/react/features/notification-stream/notification-stream-widget.js",
         "/js/jquery/notificationStream.js",
         "/js/jquery/Login.js",
-        "/js/jquery/GroupV2.js",
         "/js/jquery/Inventory.js",
         "/js/jquery/Friends.js",
         "/js/jquery/Profile.js",
@@ -195,11 +194,15 @@
       "run_at": "document_end"
     },
     {
+      "js": [
+        "./dist/pages/groups.js"
+      ],
       "css": [
-        "dist/css/groups.css"
+        "./dist/css/groups.css"
       ],
       "matches": [
-        "*://*.roblox.com/groups/*/*"
+        "https://www.roblox.com/groups/*/*",
+        "https://web.roblox.com/groups/*/*"
       ],
       "run_at": "document_end"
     },

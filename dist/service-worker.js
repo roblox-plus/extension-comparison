@@ -20,6 +20,97 @@ const isBackgroundPage = chrome.runtime.getURL(manifest.background?.page || '') 
 
 /***/ }),
 
+/***/ "./src/js/services/localizationService.ts":
+/*!************************************************!*\
+  !*** ./src/js/services/localizationService.ts ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getTranslationResource": () => (/* binding */ getTranslationResource)
+/* harmony export */ });
+/* harmony import */ var _messageService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./messageService */ "./src/js/services/messageService.ts");
+
+const englishLocale = 'en_us';
+const messageDestination = 'localizationService.getTranslationResources';
+let translationResourceCache = [];
+let localeCache = '';
+// Gets the locale for the authenticated user.
+const getAuthenticatedUserLocale = async () => {
+    if (localeCache) {
+        return localeCache;
+    }
+    try {
+        const response = await fetch(`https://locale.roblox.com/v1/locales/user-locale`);
+        if (!response.ok) {
+            console.warn('Failed to fetch user locale - defaulting to English.', response.status);
+            return (localeCache = englishLocale);
+        }
+        const result = await response.json();
+        return (localeCache = result.supportedLocale.locale);
+    }
+    catch (e) {
+        console.warn('Unhandled error loading user locale - defaulting to English.', e);
+        return (localeCache = englishLocale);
+    }
+};
+// Fetches all the translation resources for the authenticated user.
+const getTranslationResources = async () => {
+    if (translationResourceCache.length > 0) {
+        return translationResourceCache;
+    }
+    return (translationResourceCache = await (0,_messageService__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {}));
+};
+// Fetches an individual translation resource.
+const getTranslationResource = async (namespace, key) => {
+    const translationResources = await getTranslationResources();
+    const resource = translationResources.find((r) => r.namespace === namespace && r.key === key);
+    if (!resource) {
+        console.warn(`No translation resource available.\n\tNamespace: ${namespace}\n\tKey: ${key}`);
+    }
+    return resource?.value || '';
+};
+// Listener to ensure these always happen in the background, for strongest caching potential.
+(0,_messageService__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, async () => {
+    if (translationResourceCache.length > 0) {
+        return translationResourceCache;
+    }
+    const locale = await getAuthenticatedUserLocale();
+    const response = await fetch(`https://translations.roblox.com/v1/translations?consumerType=Web`);
+    if (!response.ok) {
+        throw new Error(`Failed to load translation resources (${response.status})`);
+    }
+    const result = await response.json();
+    const resourcesUrl = result.data.find((r) => r.locale === locale) ||
+        result.data.find((r) => r.locale === englishLocale);
+    if (!resourcesUrl) {
+        throw new Error(`Failed to find translation resources for locale (${locale})`);
+    }
+    const resources = await fetch(resourcesUrl.url);
+    const resourcesJson = await resources.json();
+    return (translationResourceCache = resourcesJson.contents.map((r) => {
+        return {
+            namespace: r.namespace,
+            key: r.key,
+            value: r.translation || r.english,
+        };
+    }));
+});
+setTimeout(async () => {
+    // Preload translation resources, for use later.
+    getTranslationResources()
+        .then()
+        .catch((err) => {
+        console.warn('Failed to preload translation resources', err);
+    });
+}, 0);
+globalThis.localizationService = { getTranslationResource };
+
+
+
+/***/ }),
+
 /***/ "./src/js/services/messageService.ts":
 /*!*******************************************!*\
   !*** ./src/js/services/messageService.ts ***!
@@ -323,11 +414,14 @@ var __webpack_exports__ = {};
   \****************************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "messageService": () => (/* reexport module object */ _services_messageService__WEBPACK_IMPORTED_MODULE_0__),
-/* harmony export */   "settingsService": () => (/* reexport module object */ _services_settingsService__WEBPACK_IMPORTED_MODULE_1__)
+/* harmony export */   "localizationService": () => (/* reexport module object */ _services_localizationService__WEBPACK_IMPORTED_MODULE_0__),
+/* harmony export */   "messageService": () => (/* reexport module object */ _services_messageService__WEBPACK_IMPORTED_MODULE_1__),
+/* harmony export */   "settingsService": () => (/* reexport module object */ _services_settingsService__WEBPACK_IMPORTED_MODULE_2__)
 /* harmony export */ });
-/* harmony import */ var _services_messageService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/messageService */ "./src/js/services/messageService.ts");
-/* harmony import */ var _services_settingsService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/settingsService */ "./src/js/services/settingsService.ts");
+/* harmony import */ var _services_localizationService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/localizationService */ "./src/js/services/localizationService.ts");
+/* harmony import */ var _services_messageService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/messageService */ "./src/js/services/messageService.ts");
+/* harmony import */ var _services_settingsService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/settingsService */ "./src/js/services/settingsService.ts");
+
 
 
 // Currently exclusively populated by build hook (see build directory).
