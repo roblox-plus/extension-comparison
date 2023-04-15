@@ -1,5 +1,5 @@
 {
-  "version": "2.4.59",
+  "version": "2.4.61",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Adds features and notifiers made by WebGL3D to the Roblox website",
@@ -103,7 +103,6 @@
         "/js/jquery/Friends.js",
         "/js/jquery/Profile.js",
         "/js/jquery/Game.js",
-        "/js/jquery/Games.js",
         "/js/jquery/Item.js",
         "/js/jquery/Avatar.js",
         "/js/jquery/Catalog.js",
@@ -145,8 +144,11 @@
       "run_at": "document_start"
     },
     {
+      "js": [
+        "./dist/pages/games-list.js"
+      ],
       "css": [
-        "dist/css/games-list.css"
+        "./dist/css/games-list.css"
       ],
       "matches": [
         "https://www.roblox.com/discover",
