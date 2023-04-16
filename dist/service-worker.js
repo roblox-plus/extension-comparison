@@ -20,17 +20,44 @@ const isBackgroundPage = chrome.runtime.getURL(manifest.background?.page || '') 
 
 /***/ }),
 
-/***/ "./src/js/services/inventoryService.ts":
-/*!*********************************************!*\
-  !*** ./src/js/services/inventoryService.ts ***!
-  \*********************************************/
+/***/ "./src/js/enums/presenceType.ts":
+/*!**************************************!*\
+  !*** ./src/js/enums/presenceType.ts ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// The types of user presence.
+var PresenceType;
+(function (PresenceType) {
+    // The user is offline.
+    PresenceType["Offline"] = "Offline";
+    // The user is online.
+    PresenceType["Online"] = "Online";
+    // The user is currently in an experience.
+    PresenceType["Experience"] = "Experience";
+    // The user is currently in Roblox Studio.
+    PresenceType["Studio"] = "Studio";
+})(PresenceType || (PresenceType = {}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PresenceType);
+
+
+/***/ }),
+
+/***/ "./src/js/services/inventory/index.ts":
+/*!********************************************!*\
+  !*** ./src/js/services/inventory/index.ts ***!
+  \********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "deleteAsset": () => (/* binding */ deleteAsset)
 /* harmony export */ });
-/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
+/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
 
 // Removes an asset from the authenticated user's inventory.
 const deleteAsset = async (assetId) => {
@@ -50,17 +77,17 @@ globalThis.inventoryService = { deleteAsset };
 
 /***/ }),
 
-/***/ "./src/js/services/localizationService.ts":
-/*!************************************************!*\
-  !*** ./src/js/services/localizationService.ts ***!
-  \************************************************/
+/***/ "./src/js/services/localization/index.ts":
+/*!***********************************************!*\
+  !*** ./src/js/services/localization/index.ts ***!
+  \***********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getTranslationResource": () => (/* binding */ getTranslationResource)
 /* harmony export */ });
-/* harmony import */ var _messageService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./messageService */ "./src/js/services/messageService.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
 
 const englishLocale = 'en_us';
 const messageDestination = 'localizationService.getTranslationResources';
@@ -90,7 +117,7 @@ const getTranslationResources = async () => {
     if (translationResourceCache.length > 0) {
         return translationResourceCache;
     }
-    return (translationResourceCache = await (0,_messageService__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {}));
+    return (translationResourceCache = await (0,_message__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {}));
 };
 // Fetches an individual translation resource.
 const getTranslationResource = async (namespace, key) => {
@@ -102,7 +129,7 @@ const getTranslationResource = async (namespace, key) => {
     return resource?.value || '';
 };
 // Listener to ensure these always happen in the background, for strongest caching potential.
-(0,_messageService__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, async () => {
+(0,_message__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, async () => {
     if (translationResourceCache.length > 0) {
         return translationResourceCache;
     }
@@ -136,10 +163,10 @@ globalThis.localizationService = { getTranslationResource };
 
 /***/ }),
 
-/***/ "./src/js/services/messageService.ts":
-/*!*******************************************!*\
-  !*** ./src/js/services/messageService.ts ***!
-  \*******************************************/
+/***/ "./src/js/services/message/index.ts":
+/*!******************************************!*\
+  !*** ./src/js/services/message/index.ts ***!
+  \******************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -147,7 +174,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "addListener": () => (/* binding */ addListener),
 /* harmony export */   "sendMessage": () => (/* binding */ sendMessage)
 /* harmony export */ });
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../constants */ "./src/js/constants/index.ts");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../constants */ "./src/js/constants/index.ts");
 
 // All the listeners, set in the background page.
 const listeners = {};
@@ -235,9 +262,10 @@ const addListener = (destination, listener, options = {
         if (options.levelOfParallelism !== 1) {
             return processMessage(message);
         }
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             // https://stackoverflow.com/a/73482349/1663648
-            await navigator.locks.request(`messageService:${destination}`, async () => {
+            navigator.locks
+                .request(`messageService:${destination}`, async () => {
                 try {
                     const result = await processMessage(message);
                     resolve(result);
@@ -245,7 +273,8 @@ const addListener = (destination, listener, options = {
                 catch (e) {
                     reject(e);
                 }
-            });
+            })
+                .catch(reject);
         });
     };
 };
@@ -295,10 +324,139 @@ globalThis.messageService = { sendMessage, addListener };
 
 /***/ }),
 
-/***/ "./src/js/services/settingsService.ts":
-/*!********************************************!*\
-  !*** ./src/js/services/settingsService.ts ***!
-  \********************************************/
+/***/ "./src/js/services/presence/batchProcessor.ts":
+/*!****************************************************!*\
+  !*** ./src/js/services/presence/batchProcessor.ts ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/batch */ "./node_modules/@tix-factory/batch/dist/index.js");
+/* harmony import */ var _enums_presenceType__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../enums/presenceType */ "./src/js/enums/presenceType.ts");
+
+
+const getPresenceType = (presenceType) => {
+    switch (presenceType) {
+        case 1:
+            return _enums_presenceType__WEBPACK_IMPORTED_MODULE_1__["default"].Online;
+        case 2:
+            return _enums_presenceType__WEBPACK_IMPORTED_MODULE_1__["default"].Experience;
+        case 3:
+            return _enums_presenceType__WEBPACK_IMPORTED_MODULE_1__["default"].Studio;
+        default:
+            return _enums_presenceType__WEBPACK_IMPORTED_MODULE_1__["default"].Offline;
+    }
+};
+const getLocationName = (presenceType, name) => {
+    if (!name) {
+        return '';
+    }
+    if (presenceType === _enums_presenceType__WEBPACK_IMPORTED_MODULE_1__["default"].Studio) {
+        return name.replace(/^Studio\s+-\s*/, '');
+    }
+    return name;
+};
+class PresenceBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__.Batch {
+    constructor() {
+        super({
+            levelOfParallelism: 1,
+            maxSize: 100,
+            minimumDelay: 3 * 1000,
+            enqueueDeferDelay: 10,
+        });
+    }
+    async process(items) {
+        const response = await fetch('https://presence.roblox.com/v1/presence/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userIds: items.map((i) => i.value),
+            }),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to load user presence');
+        }
+        const result = await response.json();
+        items.forEach((item) => {
+            const presence = result.userPresences.find((p) => p.userId === item.value);
+            if (presence) {
+                const presenceType = getPresenceType(presence.userPresenceType);
+                if (presence.placeId &&
+                    (presenceType === _enums_presenceType__WEBPACK_IMPORTED_MODULE_1__["default"].Experience ||
+                        presenceType === _enums_presenceType__WEBPACK_IMPORTED_MODULE_1__["default"].Studio)) {
+                    item.resolve({
+                        type: presenceType,
+                        location: {
+                            id: presence.placeId,
+                            name: getLocationName(presenceType, presence.lastLocation),
+                            serverId: presence.gameId,
+                        },
+                    });
+                }
+                else {
+                    item.resolve({
+                        type: presenceType,
+                    });
+                }
+            }
+            else {
+                item.resolve({
+                    type: _enums_presenceType__WEBPACK_IMPORTED_MODULE_1__["default"].Offline,
+                });
+            }
+        });
+    }
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PresenceBatchProcessor);
+
+
+/***/ }),
+
+/***/ "./src/js/services/presence/index.ts":
+/*!*******************************************!*\
+  !*** ./src/js/services/presence/index.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getUserPresence": () => (/* binding */ getUserPresence)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _batchProcessor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./batchProcessor */ "./src/js/services/presence/batchProcessor.ts");
+
+
+
+const messageDestination = 'presenceService.getUserPresence';
+const presenceProcessor = new _batchProcessor__WEBPACK_IMPORTED_MODULE_2__["default"]();
+const presenceCache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"]('presenceService', 15 * 1000);
+// Fetches the presence for a user.
+const getUserPresence = (userId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { userId });
+};
+// Listen for messages of things trying to fetch presence.
+(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return presenceCache.getOrAdd(`${message.userId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    presenceProcessor.enqueue(message.userId));
+});
+globalThis.presenceService = { getUserPresence };
+
+
+
+/***/ }),
+
+/***/ "./src/js/services/settings/index.ts":
+/*!*******************************************!*\
+  !*** ./src/js/services/settings/index.ts ***!
+  \*******************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -307,13 +465,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getToggleSettingValue": () => (/* binding */ getToggleSettingValue),
 /* harmony export */   "setSettingValue": () => (/* binding */ setSettingValue)
 /* harmony export */ });
-/* harmony import */ var _messageService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./messageService */ "./src/js/services/messageService.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
 
 // Destination to be used with messaging.
 const messageDestinationPrefix = 'settingsService';
 // Fetches a locally stored setting value by its key.
 const getSettingValue = (key) => {
-    return (0,_messageService__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(`${messageDestinationPrefix}.getSettingValue`, {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(`${messageDestinationPrefix}.getSettingValue`, {
         key,
     });
 };
@@ -324,7 +482,7 @@ const getToggleSettingValue = async (key) => {
 };
 // Locally stores a setting value.
 const setSettingValue = (key, value) => {
-    return (0,_messageService__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(`${messageDestinationPrefix}.setSettingValue`, {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(`${messageDestinationPrefix}.setSettingValue`, {
         key,
         value,
     });
@@ -348,7 +506,7 @@ const getValueFromLocalStorage = (key) => {
         return undefined;
     }
 };
-(0,_messageService__WEBPACK_IMPORTED_MODULE_0__.addListener)(`${messageDestinationPrefix}.getSettingValue`, ({ key }) => {
+(0,_message__WEBPACK_IMPORTED_MODULE_0__.addListener)(`${messageDestinationPrefix}.getSettingValue`, ({ key }) => {
     return new Promise((resolve, reject) => {
         // chrome.storage APIs are callback-based until manifest V3.
         // Currently in migration phase, to migrate settings from localStorage -> chrome.storage.local
@@ -368,7 +526,7 @@ const getValueFromLocalStorage = (key) => {
         }
     });
 });
-(0,_messageService__WEBPACK_IMPORTED_MODULE_0__.addListener)(`${messageDestinationPrefix}.setSettingValue`, ({ key, value }) => {
+(0,_message__WEBPACK_IMPORTED_MODULE_0__.addListener)(`${messageDestinationPrefix}.setSettingValue`, ({ key, value }) => {
     return new Promise((resolve, reject) => {
         // chrome.storage APIs are callback-based until manifest V3.
         // Currently in migration phase, to migrate settings from localStorage -> chrome.storage.local
@@ -390,6 +548,65 @@ const getValueFromLocalStorage = (key) => {
 });
 globalThis.settingsService = { getSettingValue, getToggleSettingValue, setSettingValue };
 
+
+
+/***/ }),
+
+/***/ "./src/js/utils/expireableDictionary.ts":
+/*!**********************************************!*\
+  !*** ./src/js/utils/expireableDictionary.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// This class can be used to concurrently cache items, or fetch their values.
+class ExpirableDictionary {
+    lockKey;
+    expirationInMilliseconds;
+    // The items that are in the dictionary.
+    items = {};
+    constructor(
+    // A name for the dictionary, used for locking.
+    name, 
+    // How long the item will remain in the dictionary, in milliseconds.
+    expirationInMilliseconds) {
+        this.lockKey = `ExpirableDictionary:${name}`;
+        this.expirationInMilliseconds = expirationInMilliseconds;
+    }
+    // Tries to fetch an item by its key from the dictionary, or it will call the value factory to add it in.
+    getOrAdd(key, valueFactory) {
+        const item = this.items[key];
+        if (item !== undefined) {
+            return Promise.resolve(item);
+        }
+        return new Promise((resolve, reject) => {
+            navigator.locks
+                .request(`${this.lockKey}:${key}`, async () => {
+                // It's possible the item was added since we requested the lock, check again.
+                const item = this.items[key];
+                if (item !== undefined) {
+                    resolve(item);
+                    return;
+                }
+                try {
+                    const value = (this.items[key] = await valueFactory());
+                    setTimeout(() => {
+                        delete this.items[key];
+                    }, this.expirationInMilliseconds);
+                    resolve(value);
+                }
+                catch (e) {
+                    reject(e);
+                }
+            })
+                .catch(reject);
+        });
+    }
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ExpirableDictionary);
 
 
 /***/ }),
@@ -434,6 +651,384 @@ const xsrfFetch = async (url, requestDetails) => {
     return xsrfFetch(url, requestDetails);
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (xsrfFetch);
+
+
+/***/ }),
+
+/***/ "./node_modules/@tix-factory/batch/dist/batch/index.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/@tix-factory/batch/dist/batch/index.js ***!
+  \*************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _promise_queue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../promise-queue */ "./node_modules/@tix-factory/batch/dist/promise-queue/index.js");
+/* harmony import */ var _events_errorEvent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../events/errorEvent */ "./node_modules/@tix-factory/batch/dist/events/errorEvent.js");
+/* harmony import */ var _events_itemErrorEvent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../events/itemErrorEvent */ "./node_modules/@tix-factory/batch/dist/events/itemErrorEvent.js");
+
+
+
+// A class for batching and processing multiple single items into a single call.
+class Batch extends EventTarget {
+    queueMap = {};
+    queueArray = [];
+    promiseMap = {};
+    limiter;
+    concurrencyHandler;
+    config;
+    constructor(configuration) {
+        super();
+        this.config = configuration;
+        this.limiter = new _promise_queue__WEBPACK_IMPORTED_MODULE_0__["default"]({
+            levelOfParallelism: 1,
+            delayInMilliseconds: configuration.minimumDelay || 0,
+        });
+        this.concurrencyHandler = new _promise_queue__WEBPACK_IMPORTED_MODULE_0__["default"]({
+            levelOfParallelism: configuration.levelOfParallelism || Infinity,
+        });
+    }
+    // Enqueues an item into a batch, to be processed.
+    enqueue(item) {
+        return new Promise((resolve, reject) => {
+            const key = this.getKey(item);
+            const promiseMap = this.promiseMap;
+            const queueArray = this.queueArray;
+            const queueMap = this.queueMap;
+            const retryCount = this.config.retryCount || 0;
+            const getRetryDelay = this.getRetryDelay.bind(this);
+            const dispatchEvent = this.dispatchEvent.bind(this);
+            const check = this.check.bind(this);
+            // Step 1: Ensure we have a way to resolve/reject the promise for this item.
+            const mergedPromise = promiseMap[key] || [];
+            if (mergedPromise.length < 0) {
+                this.promiseMap[key] = mergedPromise;
+            }
+            mergedPromise.push({ resolve, reject });
+            // Step 2: Check if we have the batched item created.
+            if (!queueMap[key]) {
+                const remove = (item) => {
+                    // Mark the item as completed, so we know we either resolved or rejected it.
+                    item.completed = true;
+                    for (let i = 0; i < queueArray.length; i++) {
+                        if (queueArray[i].key === key) {
+                            queueArray.splice(i, 1);
+                            break;
+                        }
+                    }
+                    delete promiseMap[key];
+                    delete queueMap[key];
+                };
+                const batchItem = {
+                    key,
+                    value: item,
+                    attempt: 0,
+                    retryAfter: 0,
+                    completed: false,
+                    resolve(result) {
+                        // We're not accepting any new items for this resolution.
+                        remove(this);
+                        // Defer the resolution until after the thread resolves.
+                        setTimeout(() => {
+                            // Process anyone who applied.
+                            while (mergedPromise.length > 0) {
+                                const promise = mergedPromise.shift();
+                                promise?.resolve(result);
+                            }
+                        }, 0);
+                    },
+                    reject(error) {
+                        // Defer the resolution until after the thread resolves.
+                        const retryDelay = this.attempt <= retryCount ? getRetryDelay(this) : undefined;
+                        const retryAfter = retryDelay !== undefined
+                            ? performance.now() + retryDelay
+                            : undefined;
+                        // Emit an event to notify that the item failed to process.
+                        dispatchEvent(new _events_itemErrorEvent__WEBPACK_IMPORTED_MODULE_2__["default"](error, this, retryAfter));
+                        if (retryAfter !== undefined) {
+                            // The item can be retried, we haven't hit the maximum number of attempts yet.
+                            this.retryAfter = retryAfter;
+                            // Ensure the check runs after the retry delay.
+                            setTimeout(check, retryDelay);
+                        }
+                        else {
+                            // Remove the item, and reject anyone waiting on it.
+                            remove(this);
+                            // Defer the resolution until after the thread resolves.
+                            setTimeout(() => {
+                                // Process anyone who applied.
+                                while (mergedPromise.length > 0) {
+                                    const promise = mergedPromise.shift();
+                                    promise?.reject(error);
+                                }
+                            }, 0);
+                        }
+                    },
+                };
+                queueMap[key] = batchItem;
+                queueArray.push(batchItem);
+            }
+            // Attempt to process the queue on the next event loop.
+            setTimeout(check, this.config.enqueueDeferDelay);
+        });
+    }
+    // Batches together queued items, calls the process method.
+    // Will do nothing if the config requirements aren't met.
+    check() {
+        if (this.limiter.size > 0) {
+            // Already being checked.
+            return;
+        }
+        // We're using p-limit to ensure that multiple process calls can't be called at once.
+        this.limiter.enqueue(this._check.bind(this)).catch((err) => {
+            // This should be "impossible".. right?
+            this.dispatchEvent(new _events_errorEvent__WEBPACK_IMPORTED_MODULE_1__["default"](err));
+        });
+    }
+    // The actual implementation of the check method.
+    _check() {
+        const retry = this.check.bind(this);
+        // Get a batch of items to process.
+        const batch = this.getBatch();
+        // Nothing in the queue ready to be processed.
+        if (batch.length < 1) {
+            return Promise.resolve();
+        }
+        // Update the items that we're about to process, so they don't get double processed.
+        batch.forEach((item) => {
+            item.attempt += 1;
+            item.retryAfter = Infinity;
+        });
+        setTimeout(async () => {
+            try {
+                await this.concurrencyHandler.enqueue(this.process.bind(this, batch));
+            }
+            catch (err) {
+                this.dispatchEvent(new _events_errorEvent__WEBPACK_IMPORTED_MODULE_1__["default"](err));
+            }
+            finally {
+                batch.forEach((item) => {
+                    if (item.completed) {
+                        // Item completed its processing, nothing more to do.
+                        return;
+                    }
+                    else if (item.retryAfter > 0 && item.retryAfter !== Infinity) {
+                        // The item failed to process, but it is going to be retried.
+                        return;
+                    }
+                    else {
+                        // Item neither rejected, or completed its processing status.
+                        // This is a requirement, so we reject the item.
+                        item.reject(new Error('Item was not marked as resolved or rejected after batch processing completed.'));
+                    }
+                });
+                // Now that we've finished processing the batch, run the process again, just in case there's anything left.
+                setTimeout(retry, 0);
+            }
+        }, 0);
+        if (batch.length >= this.config.maxSize) {
+            // We have the maximum number of items in the batch, let's make sure we kick off the process call again.
+            setTimeout(retry, this.config.minimumDelay);
+        }
+        return Promise.resolve();
+    }
+    getBatch() {
+        const now = performance.now();
+        const batch = [];
+        for (let i = 0; i < this.queueArray.length; i++) {
+            const batchItem = this.queueArray[i];
+            if (batchItem.retryAfter > now) {
+                // Item is not ready to be retried, or it is currently being processed.
+                continue;
+            }
+            batch.push(batchItem);
+            if (batch.length >= this.config.maxSize) {
+                break;
+            }
+        }
+        return batch;
+    }
+    // Obtains a unique key to identify the item.
+    // This is used to deduplicate the batched items.
+    getKey(item) {
+        return item === undefined ? 'undefined' : JSON.stringify(item);
+    }
+    // Returns how long to wait before retrying the item.
+    getRetryDelay(item) {
+        return 0;
+    }
+    // Called when it is time to process a batch of items.
+    process(items) {
+        return Promise.reject(new Error('Inherit this class, and implement the processBatch method.'));
+    }
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Batch);
+
+
+/***/ }),
+
+/***/ "./node_modules/@tix-factory/batch/dist/events/errorEvent.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@tix-factory/batch/dist/events/errorEvent.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// An event class which can be used to emit an error.
+class ErrorEvent extends Event {
+    // The error associated with the event.
+    error;
+    // Constructs the event from the error.
+    constructor(error) {
+        super('error');
+        this.error = error;
+    }
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ErrorEvent);
+
+
+/***/ }),
+
+/***/ "./node_modules/@tix-factory/batch/dist/events/itemErrorEvent.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/@tix-factory/batch/dist/events/itemErrorEvent.js ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _errorEvent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./errorEvent */ "./node_modules/@tix-factory/batch/dist/events/errorEvent.js");
+
+// An event class which can be used to emit an error event for an item that failed to process.
+class ItemErrorEvent extends _errorEvent__WEBPACK_IMPORTED_MODULE_0__["default"] {
+    // The item that failed to process.
+    batchItem;
+    // The amount of time when the item will be retried.
+    retryAfter;
+    // Constructs the event from the error.
+    constructor(error, batchItem, retryAfter) {
+        super(error);
+        this.batchItem = batchItem;
+        this.retryAfter = retryAfter;
+    }
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ItemErrorEvent);
+
+
+/***/ }),
+
+/***/ "./node_modules/@tix-factory/batch/dist/index.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/@tix-factory/batch/dist/index.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Batch": () => (/* reexport safe */ _batch__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   "ErrorEvent": () => (/* reexport safe */ _events_errorEvent__WEBPACK_IMPORTED_MODULE_1__["default"]),
+/* harmony export */   "ItemErrorEvent": () => (/* reexport safe */ _events_itemErrorEvent__WEBPACK_IMPORTED_MODULE_2__["default"]),
+/* harmony export */   "PromiseQueue": () => (/* reexport safe */ _promise_queue__WEBPACK_IMPORTED_MODULE_3__["default"])
+/* harmony export */ });
+/* harmony import */ var _batch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./batch */ "./node_modules/@tix-factory/batch/dist/batch/index.js");
+/* harmony import */ var _events_errorEvent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./events/errorEvent */ "./node_modules/@tix-factory/batch/dist/events/errorEvent.js");
+/* harmony import */ var _events_itemErrorEvent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./events/itemErrorEvent */ "./node_modules/@tix-factory/batch/dist/events/itemErrorEvent.js");
+/* harmony import */ var _promise_queue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./promise-queue */ "./node_modules/@tix-factory/batch/dist/promise-queue/index.js");
+// Export all the things from this module.
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@tix-factory/batch/dist/promise-queue/index.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@tix-factory/batch/dist/promise-queue/index.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// A limiter for running promises in parallel.
+// Queue ensures order is maintained.
+class PromiseQueue {
+    // All the promises that have been enqueued, and are waiting to be processed.
+    queue = [];
+    // The PromiseQueue configuration.
+    config;
+    // How many promises are actively being processed.
+    activeCount = 0;
+    // The next time a promise can be processed.
+    nextProcessTime = 0;
+    // Constructs a promise queue, defining the number of promises that may run in parallel.
+    constructor(config) {
+        this.config = config;
+    }
+    // The number of promises waiting to be processed.
+    get size() {
+        return this.queue.length;
+    }
+    // Puts a function that will create the promise to run on the queue, and returns a promise
+    // that will return the result of the enqueued promise.
+    enqueue(createPromise) {
+        return new Promise((resolve, reject) => {
+            this.queue.push({
+                deferredPromise: { resolve, reject },
+                createPromise,
+            });
+            setTimeout(this.process.bind(this), 0);
+        });
+    }
+    async process() {
+        if (this.activeCount >= this.config.levelOfParallelism) {
+            // Already running max number of promises in parallel.
+            return;
+        }
+        const reprocess = this.process.bind(this);
+        const delayInMilliseconds = this.config.delayInMilliseconds;
+        if (delayInMilliseconds !== undefined && delayInMilliseconds > 0) {
+            const now = performance.now();
+            const remainingTime = this.nextProcessTime - now;
+            if (remainingTime > 0) {
+                // We're not allowed to process the next promise yet.
+                setTimeout(reprocess, remainingTime);
+                return;
+            }
+            this.nextProcessTime = now + delayInMilliseconds;
+        }
+        const promise = this.queue.shift();
+        if (!promise) {
+            // No promise to process.
+            return;
+        }
+        this.activeCount++;
+        try {
+            const result = await promise.createPromise();
+            promise.deferredPromise.resolve(result);
+        }
+        catch (err) {
+            promise.deferredPromise.reject(err);
+        }
+        finally {
+            // Ensure we subtract from how many promises are active
+            this.activeCount--;
+            // And then run the process function again, in case there are any promises left to run.
+            setTimeout(reprocess, 0);
+        }
+    }
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PromiseQueue);
 
 
 /***/ })
@@ -502,15 +1097,18 @@ var __webpack_exports__ = {};
   \****************************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "inventoryService": () => (/* reexport module object */ _services_inventoryService__WEBPACK_IMPORTED_MODULE_0__),
-/* harmony export */   "localizationService": () => (/* reexport module object */ _services_localizationService__WEBPACK_IMPORTED_MODULE_1__),
-/* harmony export */   "messageService": () => (/* reexport module object */ _services_messageService__WEBPACK_IMPORTED_MODULE_2__),
-/* harmony export */   "settingsService": () => (/* reexport module object */ _services_settingsService__WEBPACK_IMPORTED_MODULE_3__)
+/* harmony export */   "inventory": () => (/* reexport module object */ _services_inventory__WEBPACK_IMPORTED_MODULE_0__),
+/* harmony export */   "localization": () => (/* reexport module object */ _services_localization__WEBPACK_IMPORTED_MODULE_1__),
+/* harmony export */   "message": () => (/* reexport module object */ _services_message__WEBPACK_IMPORTED_MODULE_2__),
+/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_3__),
+/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_4__)
 /* harmony export */ });
-/* harmony import */ var _services_inventoryService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/inventoryService */ "./src/js/services/inventoryService.ts");
-/* harmony import */ var _services_localizationService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/localizationService */ "./src/js/services/localizationService.ts");
-/* harmony import */ var _services_messageService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/messageService */ "./src/js/services/messageService.ts");
-/* harmony import */ var _services_settingsService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/settingsService */ "./src/js/services/settingsService.ts");
+/* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/inventory */ "./src/js/services/inventory/index.ts");
+/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/localization */ "./src/js/services/localization/index.ts");
+/* harmony import */ var _services_message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
+
 
 
 

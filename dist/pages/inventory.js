@@ -34884,8 +34884,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 /* harmony import */ var _components_modal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../components/modal */ "./src/js/components/modal/index.tsx");
 /* harmony import */ var _components_system_feedback__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../components/system-feedback */ "./src/js/components/system-feedback/index.ts");
-/* harmony import */ var _services_inventoryService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../services/inventoryService */ "./src/js/services/inventoryService.ts");
-/* harmony import */ var _services_localizationService__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../services/localizationService */ "./src/js/services/localizationService.ts");
+/* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../services/inventory */ "./src/js/services/inventory/index.ts");
+/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../services/localization */ "./src/js/services/localization/index.ts");
 /* harmony import */ var _utils_linkify__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../utils/linkify */ "./src/js/utils/linkify.ts");
 
 
@@ -34894,12 +34894,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async (assetId, itemName) => {
-    const title = await (0,_services_localizationService__WEBPACK_IMPORTED_MODULE_4__.getTranslationResource)('Feature.Item', 'Label.DeleteItem');
-    const body = await (0,_services_localizationService__WEBPACK_IMPORTED_MODULE_4__.getTranslationResource)('Feature.Item', 'Label.DeleteFromInventoryConfirm');
-    const confirmText = await (0,_services_localizationService__WEBPACK_IMPORTED_MODULE_4__.getTranslationResource)('CreatorDashboard.Controls', 'Action.Delete');
-    const cancelText = await (0,_services_localizationService__WEBPACK_IMPORTED_MODULE_4__.getTranslationResource)('CreatorDashboard.Controls', 'Action.Cancel');
-    const successBannerText = await (0,_services_localizationService__WEBPACK_IMPORTED_MODULE_4__.getTranslationResource)('Feature.Item', 'Response.RemovedFromInventory');
-    const errorBannerText = await (0,_services_localizationService__WEBPACK_IMPORTED_MODULE_4__.getTranslationResource)('Feature.Item', 'Response.FailedToDeleteFromInventory');
+    const title = await (0,_services_localization__WEBPACK_IMPORTED_MODULE_4__.getTranslationResource)('Feature.Item', 'Label.DeleteItem');
+    const body = await (0,_services_localization__WEBPACK_IMPORTED_MODULE_4__.getTranslationResource)('Feature.Item', 'Label.DeleteFromInventoryConfirm');
+    const confirmText = await (0,_services_localization__WEBPACK_IMPORTED_MODULE_4__.getTranslationResource)('CreatorDashboard.Controls', 'Action.Delete');
+    const cancelText = await (0,_services_localization__WEBPACK_IMPORTED_MODULE_4__.getTranslationResource)('CreatorDashboard.Controls', 'Action.Cancel');
+    const successBannerText = await (0,_services_localization__WEBPACK_IMPORTED_MODULE_4__.getTranslationResource)('Feature.Item', 'Response.RemovedFromInventory');
+    const errorBannerText = await (0,_services_localization__WEBPACK_IMPORTED_MODULE_4__.getTranslationResource)('Feature.Item', 'Response.FailedToDeleteFromInventory');
     const confirmed = await (0,_components_modal__WEBPACK_IMPORTED_MODULE_1__.showConfirmationModal)({
         title,
         body: ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { className: "body-text text-description", children: [body, (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("br", {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", { href: (0,_utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getLibraryLink)(assetId, itemName).href, className: "text-link", children: itemName })] })),
@@ -34911,7 +34911,7 @@ __webpack_require__.r(__webpack_exports__);
         return false;
     }
     try {
-        await (0,_services_inventoryService__WEBPACK_IMPORTED_MODULE_3__.deleteAsset)(assetId);
+        await (0,_services_inventory__WEBPACK_IMPORTED_MODULE_3__.deleteAsset)(assetId);
         (0,_components_system_feedback__WEBPACK_IMPORTED_MODULE_2__.showSuccessBanner)(successBannerText, 5000);
         return true;
     }
@@ -34925,17 +34925,17 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/js/services/inventoryService.ts":
-/*!*********************************************!*\
-  !*** ./src/js/services/inventoryService.ts ***!
-  \*********************************************/
+/***/ "./src/js/services/inventory/index.ts":
+/*!********************************************!*\
+  !*** ./src/js/services/inventory/index.ts ***!
+  \********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "deleteAsset": () => (/* binding */ deleteAsset)
 /* harmony export */ });
-/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
+/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
 
 // Removes an asset from the authenticated user's inventory.
 const deleteAsset = async (assetId) => {
@@ -34955,17 +34955,17 @@ globalThis.inventoryService = { deleteAsset };
 
 /***/ }),
 
-/***/ "./src/js/services/localizationService.ts":
-/*!************************************************!*\
-  !*** ./src/js/services/localizationService.ts ***!
-  \************************************************/
+/***/ "./src/js/services/localization/index.ts":
+/*!***********************************************!*\
+  !*** ./src/js/services/localization/index.ts ***!
+  \***********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getTranslationResource": () => (/* binding */ getTranslationResource)
 /* harmony export */ });
-/* harmony import */ var _messageService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./messageService */ "./src/js/services/messageService.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
 
 const englishLocale = 'en_us';
 const messageDestination = 'localizationService.getTranslationResources';
@@ -34995,7 +34995,7 @@ const getTranslationResources = async () => {
     if (translationResourceCache.length > 0) {
         return translationResourceCache;
     }
-    return (translationResourceCache = await (0,_messageService__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {}));
+    return (translationResourceCache = await (0,_message__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {}));
 };
 // Fetches an individual translation resource.
 const getTranslationResource = async (namespace, key) => {
@@ -35007,7 +35007,7 @@ const getTranslationResource = async (namespace, key) => {
     return resource?.value || '';
 };
 // Listener to ensure these always happen in the background, for strongest caching potential.
-(0,_messageService__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, async () => {
+(0,_message__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, async () => {
     if (translationResourceCache.length > 0) {
         return translationResourceCache;
     }
@@ -35041,10 +35041,10 @@ globalThis.localizationService = { getTranslationResource };
 
 /***/ }),
 
-/***/ "./src/js/services/messageService.ts":
-/*!*******************************************!*\
-  !*** ./src/js/services/messageService.ts ***!
-  \*******************************************/
+/***/ "./src/js/services/message/index.ts":
+/*!******************************************!*\
+  !*** ./src/js/services/message/index.ts ***!
+  \******************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -35052,7 +35052,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "addListener": () => (/* binding */ addListener),
 /* harmony export */   "sendMessage": () => (/* binding */ sendMessage)
 /* harmony export */ });
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../constants */ "./src/js/constants/index.ts");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../constants */ "./src/js/constants/index.ts");
 
 // All the listeners, set in the background page.
 const listeners = {};
@@ -35140,9 +35140,10 @@ const addListener = (destination, listener, options = {
         if (options.levelOfParallelism !== 1) {
             return processMessage(message);
         }
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             // https://stackoverflow.com/a/73482349/1663648
-            await navigator.locks.request(`messageService:${destination}`, async () => {
+            navigator.locks
+                .request(`messageService:${destination}`, async () => {
                 try {
                     const result = await processMessage(message);
                     resolve(result);
@@ -35150,7 +35151,8 @@ const addListener = (destination, listener, options = {
                 catch (e) {
                     reject(e);
                 }
-            });
+            })
+                .catch(reject);
         });
     };
 };

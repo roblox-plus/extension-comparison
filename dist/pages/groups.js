@@ -43,7 +43,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "addTradeLinks": () => (/* binding */ addTradeLinks),
 /* harmony export */   "tradeGroupId": () => (/* binding */ tradeGroupId)
 /* harmony export */ });
-/* harmony import */ var _services_localizationService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../services/localizationService */ "./src/js/services/localizationService.ts");
+/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../services/localization */ "./src/js/services/localization/index.ts");
 /* harmony import */ var _utils_linkify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/linkify */ "./src/js/utils/linkify.ts");
 // Features for the group Trade.
 // https://www.roblox.com/groups/650266/Trade
@@ -68,7 +68,7 @@ const addTradeLinks = () => {
                 if (isNaN(posterUserId)) {
                     return;
                 }
-                const tradeText = await (0,_services_localizationService__WEBPACK_IMPORTED_MODULE_0__.getTranslationResource)('Feature.Profile', 'Action.Trade');
+                const tradeText = await (0,_services_localization__WEBPACK_IMPORTED_MODULE_0__.getTranslationResource)('Feature.Profile', 'Action.Trade');
                 const tradeLink = document.createElement('a');
                 tradeLink.setAttribute('href', `/users/${posterUserId}/trade`);
                 tradeLink.setAttribute('class', 'text-link');
@@ -87,17 +87,17 @@ const addTradeLinks = () => {
 
 /***/ }),
 
-/***/ "./src/js/services/localizationService.ts":
-/*!************************************************!*\
-  !*** ./src/js/services/localizationService.ts ***!
-  \************************************************/
+/***/ "./src/js/services/localization/index.ts":
+/*!***********************************************!*\
+  !*** ./src/js/services/localization/index.ts ***!
+  \***********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getTranslationResource": () => (/* binding */ getTranslationResource)
 /* harmony export */ });
-/* harmony import */ var _messageService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./messageService */ "./src/js/services/messageService.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
 
 const englishLocale = 'en_us';
 const messageDestination = 'localizationService.getTranslationResources';
@@ -127,7 +127,7 @@ const getTranslationResources = async () => {
     if (translationResourceCache.length > 0) {
         return translationResourceCache;
     }
-    return (translationResourceCache = await (0,_messageService__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {}));
+    return (translationResourceCache = await (0,_message__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {}));
 };
 // Fetches an individual translation resource.
 const getTranslationResource = async (namespace, key) => {
@@ -139,7 +139,7 @@ const getTranslationResource = async (namespace, key) => {
     return resource?.value || '';
 };
 // Listener to ensure these always happen in the background, for strongest caching potential.
-(0,_messageService__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, async () => {
+(0,_message__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, async () => {
     if (translationResourceCache.length > 0) {
         return translationResourceCache;
     }
@@ -173,10 +173,10 @@ globalThis.localizationService = { getTranslationResource };
 
 /***/ }),
 
-/***/ "./src/js/services/messageService.ts":
-/*!*******************************************!*\
-  !*** ./src/js/services/messageService.ts ***!
-  \*******************************************/
+/***/ "./src/js/services/message/index.ts":
+/*!******************************************!*\
+  !*** ./src/js/services/message/index.ts ***!
+  \******************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -184,7 +184,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "addListener": () => (/* binding */ addListener),
 /* harmony export */   "sendMessage": () => (/* binding */ sendMessage)
 /* harmony export */ });
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../constants */ "./src/js/constants/index.ts");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../constants */ "./src/js/constants/index.ts");
 
 // All the listeners, set in the background page.
 const listeners = {};
@@ -272,9 +272,10 @@ const addListener = (destination, listener, options = {
         if (options.levelOfParallelism !== 1) {
             return processMessage(message);
         }
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             // https://stackoverflow.com/a/73482349/1663648
-            await navigator.locks.request(`messageService:${destination}`, async () => {
+            navigator.locks
+                .request(`messageService:${destination}`, async () => {
                 try {
                     const result = await processMessage(message);
                     resolve(result);
@@ -282,7 +283,8 @@ const addListener = (destination, listener, options = {
                 catch (e) {
                     reject(e);
                 }
-            });
+            })
+                .catch(reject);
         });
     };
 };
