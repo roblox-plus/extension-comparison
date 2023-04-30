@@ -47,6 +47,118 @@ var PresenceType;
 
 /***/ }),
 
+/***/ "./src/js/services/badges/batchProcessor.ts":
+/*!**************************************************!*\
+  !*** ./src/js/services/badges/batchProcessor.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/batch */ "./node_modules/@tix-factory/batch/dist/index.js");
+
+class BadgeAwardBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__.Batch {
+    constructor() {
+        super({
+            levelOfParallelism: 1,
+            maxSize: 100,
+            minimumDelay: 1 * 1000,
+            enqueueDeferDelay: 10,
+        });
+    }
+    async process(items) {
+        const response = await fetch(`https://badges.roblox.com/v1/users/${items[0].value.userId}/badges/awarded-dates?badgeIds=${items
+            .map((i) => i.value.badgeId)
+            .join(',')}`);
+        if (!response.ok) {
+            throw new Error('Failed to load user presence');
+        }
+        const result = await response.json();
+        items.forEach((item) => {
+            const badgeAward = result.data.find((b) => b.badgeId === item.value.badgeId);
+            if (badgeAward?.awardedDate) {
+                item.resolve(new Date(badgeAward.awardedDate));
+            }
+            else {
+                item.resolve(undefined);
+            }
+        });
+    }
+    getBatch() {
+        const now = performance.now();
+        const batch = [];
+        for (let i = 0; i < this.queueArray.length; i++) {
+            const batchItem = this.queueArray[i];
+            if (batchItem.retryAfter > now) {
+                // retryAfter is set at Infinity while the item is being processed
+                // so we should always check it, even if we're not retrying items
+                continue;
+            }
+            if (batch.length < 1 ||
+                batch[0].value.userId === batchItem.value.userId) {
+                // We group all the requests for badge award dates together by user ID.
+                batch.push(batchItem);
+            }
+            if (batch.length >= this.config.maxSize) {
+                // We have all the items we need, break.
+                break;
+            }
+        }
+        return batch;
+    }
+    getKey(item) {
+        return `${item.userId}:${item.badgeId}`;
+    }
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (BadgeAwardBatchProcessor);
+
+
+/***/ }),
+
+/***/ "./src/js/services/badges/index.ts":
+/*!*****************************************!*\
+  !*** ./src/js/services/badges/index.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getBadgeAwardDate": () => (/* binding */ getBadgeAwardDate)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _batchProcessor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./batchProcessor */ "./src/js/services/badges/batchProcessor.ts");
+
+
+
+const messageDestination = 'badgesService.getBadgeAwardDate';
+const badgeAwardProcessor = new _batchProcessor__WEBPACK_IMPORTED_MODULE_2__["default"]();
+const badgeAwardCache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"]('badgesService', 60 * 1000);
+// Fetches the presence for a user.
+const getBadgeAwardDate = async (userId, badgeId) => {
+    const date = await (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, {
+        userId,
+        badgeId,
+    });
+    return date ? new Date(date) : undefined;
+};
+// Listen for messages of things trying to fetch presence.
+(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return badgeAwardCache.getOrAdd(badgeAwardProcessor.getKey(message), async () => {
+        // Queue up the fetch request, when not in the cache
+        const date = await badgeAwardProcessor.enqueue(message);
+        return date?.getTime();
+    });
+});
+globalThis.badgesService = { getBadgeAwardDate };
+
+
+
+/***/ }),
+
 /***/ "./src/js/services/inventory/index.ts":
 /*!********************************************!*\
   !*** ./src/js/services/inventory/index.ts ***!
@@ -674,10 +786,12 @@ __webpack_require__.r(__webpack_exports__);
 // A class for batching and processing multiple single items into a single call.
 class Batch extends EventTarget {
     queueMap = {};
-    queueArray = [];
     promiseMap = {};
     limiter;
     concurrencyHandler;
+    // All the batch items waiting to be processed.
+    queueArray = [];
+    // The configuration for this batch processor.
     config;
     constructor(configuration) {
         super();
@@ -982,12 +1096,12 @@ class PromiseQueue {
     // Puts a function that will create the promise to run on the queue, and returns a promise
     // that will return the result of the enqueued promise.
     enqueue(createPromise) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             this.queue.push({
                 deferredPromise: { resolve, reject },
                 createPromise,
             });
-            setTimeout(this.process.bind(this), 0);
+            await this.process();
         });
     }
     async process() {
@@ -1097,17 +1211,20 @@ var __webpack_exports__ = {};
   \****************************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "inventory": () => (/* reexport module object */ _services_inventory__WEBPACK_IMPORTED_MODULE_0__),
-/* harmony export */   "localization": () => (/* reexport module object */ _services_localization__WEBPACK_IMPORTED_MODULE_1__),
-/* harmony export */   "message": () => (/* reexport module object */ _services_message__WEBPACK_IMPORTED_MODULE_2__),
-/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_3__),
-/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_4__)
+/* harmony export */   "badges": () => (/* reexport module object */ _services_badges__WEBPACK_IMPORTED_MODULE_0__),
+/* harmony export */   "inventory": () => (/* reexport module object */ _services_inventory__WEBPACK_IMPORTED_MODULE_1__),
+/* harmony export */   "localization": () => (/* reexport module object */ _services_localization__WEBPACK_IMPORTED_MODULE_2__),
+/* harmony export */   "message": () => (/* reexport module object */ _services_message__WEBPACK_IMPORTED_MODULE_3__),
+/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_4__),
+/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_5__)
 /* harmony export */ });
-/* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/inventory */ "./src/js/services/inventory/index.ts");
-/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/localization */ "./src/js/services/localization/index.ts");
-/* harmony import */ var _services_message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/message */ "./src/js/services/message/index.ts");
-/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
-/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_badges__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/badges */ "./src/js/services/badges/index.ts");
+/* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/inventory */ "./src/js/services/inventory/index.ts");
+/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/localization */ "./src/js/services/localization/index.ts");
+/* harmony import */ var _services_message__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
+
 
 
 

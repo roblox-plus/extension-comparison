@@ -1,5 +1,5 @@
 {
-  "version": "2.4.85",
+  "version": "2.4.90",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Adds features and notifiers made by WebGL3D to the Roblox website",
@@ -62,7 +62,6 @@
         "/js/roblox/catalog.js",
         "/js/roblox/inventory.js",
         "/js/roblox/social.js",
-        "/js/roblox/gameBadges.js",
         "/js/roblox/games.js",
         "/js/roblox/content.js",
         "/js/roblox/audio.js",
@@ -231,11 +230,25 @@
       "run_at": "document_end"
     },
     {
+      "js": [
+        "./dist/pages/game-details.js"
+      ],
       "css": [
-        "dist/css/game-details.css"
+        "./dist/css/game-details.css"
       ],
       "matches": [
-        "*://*.roblox.com/games/*/*"
+        "https://www.roblox.com/games/*/*",
+        "https://web.roblox.com/games/*/*"
+      ],
+      "run_at": "document_end"
+    },
+    {
+      "js": [
+        "./dist/pages/badge-details.js"
+      ],
+      "matches": [
+        "https://www.roblox.com/badges/*/*",
+        "https://web.roblox.com/badges/*/*"
       ],
       "run_at": "document_end"
     },
