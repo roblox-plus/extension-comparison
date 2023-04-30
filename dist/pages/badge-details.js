@@ -64,7 +64,7 @@ class BadgeAwardBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODU
             .map((i) => i.value.badgeId)
             .join(',')}`);
         if (!response.ok) {
-            throw new Error('Failed to load user presence');
+            throw new Error('Failed to load badge award statuses');
         }
         const result = await response.json();
         items.forEach((item) => {
@@ -127,7 +127,7 @@ __webpack_require__.r(__webpack_exports__);
 const messageDestination = 'badgesService.getBadgeAwardDate';
 const badgeAwardProcessor = new _batchProcessor__WEBPACK_IMPORTED_MODULE_2__["default"]();
 const badgeAwardCache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"]('badgesService', 60 * 1000);
-// Fetches the presence for a user.
+// Fetches the date when a badge was awarded to the specified user.
 const getBadgeAwardDate = async (userId, badgeId) => {
     const date = await (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, {
         userId,
@@ -159,12 +159,16 @@ globalThis.badgesService = { getBadgeAwardDate };
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "addListener": () => (/* binding */ addListener),
-/* harmony export */   "sendMessage": () => (/* binding */ sendMessage)
+/* harmony export */   "getWorkerTab": () => (/* binding */ getWorkerTab),
+/* harmony export */   "sendMessage": () => (/* binding */ sendMessage),
+/* harmony export */   "sendMessageToTab": () => (/* binding */ sendMessageToTab)
 /* harmony export */ });
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../constants */ "./src/js/constants/index.ts");
 
 // All the listeners, set in the background page.
 const listeners = {};
+// All the tabs actively connected to the message service.
+const tabs = {};
 // An identifier that tells us which version of the messaging service we're using,
 // to ensure we don't try to process a message not intended for us.
 const version = 2.5;
@@ -217,6 +221,22 @@ const sendMessage = async (destination, message) => {
             });
         }
     });
+};
+// Fetches a tab that we can send a message to, for work processing.
+const getWorkerTab = () => {
+    const keys = Object.keys(tabs);
+    return keys.length > 0 ? tabs[keys[0]] : undefined;
+};
+// Sends a message to a tab.
+const sendMessageToTab = async (destination, message, tab) => {
+    const serializedMessage = JSON.stringify(message);
+    const outboundMessage = JSON.stringify({
+        version,
+        destination,
+        message: serializedMessage,
+    });
+    console.debug(`Sending message to '${destination}' in tab`, serializedMessage, tab);
+    tab.postMessage(outboundMessage);
 };
 // Listen for messages at a specific destination.
 const addListener = (destination, listener, options = {
@@ -301,11 +321,49 @@ if (_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
         // https://stackoverflow.com/a/20077854/1663648
         return true;
     });
+    chrome.runtime.onConnect.addListener((port) => {
+        const id = crypto.randomUUID();
+        console.debug('Tab connected', id, port);
+        tabs[id] = port;
+        port.onDisconnect.addListener(() => {
+            console.debug('Disconnecting tab', id, port);
+            delete tabs[id];
+        });
+    });
 }
 else {
     console.debug(`Not attaching listener for messages, because we're not in the background.`);
+    if (!window.messageServiceConnection) {
+        const port = (window.messageServiceConnection = chrome.runtime.connect(chrome.runtime.id, {
+            name: 'messageService',
+        }));
+        port.onMessage.addListener((rawMessage) => {
+            if (typeof rawMessage !== 'string') {
+                // Not for us.
+                return;
+            }
+            const fullMessage = JSON.parse(rawMessage);
+            if (fullMessage.version !== version ||
+                !fullMessage.destination ||
+                !fullMessage.message) {
+                // Not for us.
+                return;
+            }
+            const listener = listeners[fullMessage.destination];
+            if (!listener) {
+                // No listener in this tab for this message.
+                return;
+            }
+            // We don't really have a way to communicate the response back to the service worker.
+            // So we just... do nothing with it.
+            const message = JSON.parse(fullMessage.message);
+            listener(message).catch((err) => {
+                console.error('Unhandled error processing message in tab', fullMessage, err);
+            });
+        });
+    }
 }
-globalThis.messageService = { sendMessage, addListener };
+globalThis.messageService = { sendMessage, addListener, getWorkerTab, sendMessageToTab };
 
 
 
@@ -475,9 +533,7 @@ class ExpirableDictionary {
                 }
                 try {
                     const value = (this.items[key] = await valueFactory());
-                    setTimeout(() => {
-                        delete this.items[key];
-                    }, this.expirationInMilliseconds);
+                    setTimeout(() => this.evict(key), this.expirationInMilliseconds);
                     resolve(value);
                 }
                 catch (e) {
@@ -486,6 +542,9 @@ class ExpirableDictionary {
             })
                 .catch(reject);
         });
+    }
+    evict(key) {
+        delete this.items[key];
     }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ExpirableDictionary);

@@ -47,6 +47,336 @@ var PresenceType;
 
 /***/ }),
 
+/***/ "./src/js/enums/thumbnailState.ts":
+/*!****************************************!*\
+  !*** ./src/js/enums/thumbnailState.ts ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// Possible states for a thumbnail to be in.
+var ThumbnailState;
+(function (ThumbnailState) {
+    // The thumbnail had an unexpected error trying to load.
+    ThumbnailState["Error"] = "Error";
+    // The thumbnailed loaded successfully.
+    ThumbnailState["Completed"] = "Completed";
+    // The thumbnail is currently in review.
+    ThumbnailState["InReview"] = "InReview";
+    // The thumbnail is pending, and should be retried.
+    ThumbnailState["Pending"] = "Pending";
+    // The thumbnail is blocked.
+    ThumbnailState["Blocked"] = "Blocked";
+    // The thumbnail is temporarily unavailable.
+    ThumbnailState["TemporarilyUnavailable"] = "TemporarilyUnavailable";
+})(ThumbnailState || (ThumbnailState = {}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ThumbnailState);
+
+
+/***/ }),
+
+/***/ "./src/js/enums/thumbnailType.ts":
+/*!***************************************!*\
+  !*** ./src/js/enums/thumbnailType.ts ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// The types of thumbnails that can be requested.
+var ThumbnailType;
+(function (ThumbnailType) {
+    // An avatar head shot thumbnail.
+    ThumbnailType["AvatarHeadShot"] = "AvatarHeadShot";
+    // The thumbnail for an asset.
+    ThumbnailType["Asset"] = "Asset";
+})(ThumbnailType || (ThumbnailType = {}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ThumbnailType);
+
+
+/***/ }),
+
+/***/ "./src/js/service-worker/notifiers/friend-presence/index.ts":
+/*!******************************************************************!*\
+  !*** ./src/js/service-worker/notifiers/friend-presence/index.ts ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../enums/presenceType */ "./src/js/enums/presenceType.ts");
+/* harmony import */ var _services_friends__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/friends */ "./src/js/services/friends/index.ts");
+/* harmony import */ var _services_game_launch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/game-launch */ "./src/js/services/game-launch/index.ts");
+/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../services/localization */ "./src/js/services/localization/index.ts");
+/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../services/presence */ "./src/js/services/presence/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
+/* harmony import */ var _services_followings__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../services/followings */ "./src/js/services/followings/index.ts");
+/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../../services/users */ "./src/js/services/users/index.ts");
+/* harmony import */ var _utils_fetchDataUri__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../../utils/fetchDataUri */ "./src/js/utils/fetchDataUri.ts");
+/* harmony import */ var _utils_linkify__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../../utils/linkify */ "./src/js/utils/linkify.ts");
+
+
+
+
+
+
+
+
+
+
+
+// The prefix for the ID of the notification to display.
+const notificationIdPrefix = 'friend-notifier-';
+// A method to check if two presences match.
+const presenceMatches = (a, b) => {
+    if (a.type !== b.type) {
+        // Not the same presence type, definitely not a match.
+        return false;
+    }
+    if (a.location?.universeId !== b.location?.universeId) {
+        // Not the same experience, definitely not a match.
+        return false;
+    }
+    // The type, and location are the same. Must be the same presence.
+    return true;
+};
+const isEnabled = async () => {
+    const setting = await (0,_services_settings__WEBPACK_IMPORTED_MODULE_5__.getSettingValue)('friendNotifier');
+    return setting?.on === true;
+};
+const isPresenceTypeEnabled = async (presenceType) => {
+    const setting = await (0,_services_settings__WEBPACK_IMPORTED_MODULE_5__.getSettingValue)('friendNotifier');
+    switch (presenceType) {
+        case _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Online:
+            return setting?.online || false;
+        case _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Offline:
+            return setting?.offline || false;
+        case _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Experience:
+            // If the setting is somehow null, assume we want to know about this one by default.
+            if (setting?.game === false) {
+                return false;
+            }
+            return true;
+        case _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Studio:
+        default:
+            // We don't care about these presence types.
+            return false;
+    }
+};
+// Gets the icon URL to display on the notification.
+const getNotificationIconUrl = async (userId) => {
+    const thumbnail = await (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_6__.getAvatarHeadshotThumbnail)(userId);
+    if (!thumbnail.imageUrl) {
+        return '';
+    }
+    try {
+        return await (0,_utils_fetchDataUri__WEBPACK_IMPORTED_MODULE_9__["default"])(new URL(thumbnail.imageUrl));
+    }
+    catch (err) {
+        console.error('Failed to fetch icon URL from thumbnail', userId, thumbnail, err);
+        return '';
+    }
+};
+// Fetches the title for the notification to display to the user, based on current and previous known presence.
+const getNotificationTitle = (user, presence, previousState) => {
+    switch (presence.type) {
+        case _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Offline:
+            return `${user.displayName} went offline`;
+        case _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Online:
+            if (previousState.type !== _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Offline) {
+                // If they were already online, don't notify them of this again.
+                return '';
+            }
+            return `${user.displayName} is now online`;
+        case _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Experience:
+            if (!presence.location?.name) {
+                // They joined an experience, but we don't know what they're playing.
+                // Don't tell the human what we don't know.
+                return '';
+            }
+            return `${user.displayName} is now playing`;
+        case _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Studio:
+            if (!presence.location?.name) {
+                // They launched Roblox studio, but we don't know what they're creating.
+                // Don't tell the human what we don't know.
+                return '';
+            }
+            if (previousState.type !== _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Online) {
+                // If they went from in-experience -> in-studio, it's possible they just had Roblox studio open
+                // while playing a game, and then closed it.
+                // Occassionally I have also observed offline <-> Studio swapping back and forth..
+                // This creates noise, and we don't like noise.
+                return '';
+            }
+            return `${user.displayName} is now creating`;
+    }
+};
+// Gets the buttons that should be displayed on a notification, based on the presence.
+const getNotificationButtons = async (presence) => {
+    if (presence.type === _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Experience && presence.location?.placeId) {
+        const joinText = await (0,_services_localization__WEBPACK_IMPORTED_MODULE_3__.getTranslationResource)('Feature.PeopleList', 'Action.Join');
+        return [
+            {
+                title: joinText,
+            },
+        ];
+    }
+    return [];
+};
+// Handle what happens when a notification is clicked.
+chrome.notifications.onClicked.addListener((notificationId) => {
+    if (!notificationId.startsWith(notificationIdPrefix)) {
+        return;
+    }
+    chrome.tabs.create({
+        url: (0,_utils_linkify__WEBPACK_IMPORTED_MODULE_10__.getUserProfileLink)(Number(notificationId.substring(notificationIdPrefix.length))).href,
+        active: true,
+    });
+});
+chrome.notifications.onButtonClicked.addListener(async (notificationId) => {
+    if (!notificationId.startsWith(notificationIdPrefix)) {
+        return;
+    }
+    const userId = Number(notificationId.substring(notificationIdPrefix.length));
+    try {
+        await (0,_services_game_launch__WEBPACK_IMPORTED_MODULE_2__.followUser)(userId);
+    }
+    catch (err) {
+        console.error('Failed to launch the experience', err);
+    }
+});
+// Processes the presences, and send the notifications, when appropriate.
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async (previousStates) => {
+    // Check if the notifier is enabled.
+    const enabled = await isEnabled();
+    if (!enabled) {
+        // The feature is not enabled, clear the state, and do nothing.
+        return null;
+    }
+    // Check who is logged in right now.
+    const authenticatedUser = await (0,_services_users__WEBPACK_IMPORTED_MODULE_8__.getAuthenticatedUser)();
+    if (!authenticatedUser) {
+        // User is not logged in, no state to return.
+        return null;
+    }
+    // Fetch the friends
+    const friends = await (0,_services_friends__WEBPACK_IMPORTED_MODULE_1__.getUserFriends)(authenticatedUser.id);
+    // Check the presence for each of the friends
+    const currentState = {};
+    await Promise.all(friends.map(async (friend) => {
+        const presence = (currentState[friend.id] = await (0,_services_presence__WEBPACK_IMPORTED_MODULE_4__.getUserPresence)(friend.id));
+        const previousState = previousStates && previousStates[friend.id];
+        if (previousState && !presenceMatches(previousState, presence)) {
+            // The presence for this friend changed, do something!
+            const notificationId = notificationIdPrefix + friend.id;
+            const buttons = await getNotificationButtons(presence);
+            const title = getNotificationTitle(friend, presence, previousState);
+            if (!title) {
+                // We don't have a title for the notification, so don't show one.
+                chrome.notifications.clear(notificationId);
+                return;
+            }
+            const isEnabled = await isPresenceTypeEnabled(presence.type);
+            if (!isEnabled) {
+                // The authenticated user does not want to know about these types of presence changes.
+                chrome.notifications.clear(notificationId);
+                return;
+            }
+            const isFollowing = await (0,_services_followings__WEBPACK_IMPORTED_MODULE_7__.isAuthenticatedUserFollowing)(friend.id);
+            if (!isFollowing) {
+                // We're not following this friend, don't show notifications about them.
+                chrome.notifications.clear(notificationId);
+                return;
+            }
+            const iconUrl = await getNotificationIconUrl(friend.id);
+            if (!iconUrl) {
+                // We don't have an icon we can use, so we can't display a notification.
+                chrome.notifications.clear(notificationId);
+                return;
+            }
+            chrome.notifications.create(notificationId, {
+                type: 'basic',
+                iconUrl,
+                title,
+                message: presence.location?.name ?? '',
+                contextMessage: 'Roblox+ Friend Notifier',
+                isClickable: true,
+                buttons,
+            });
+        }
+    }));
+    return currentState;
+});
+
+
+/***/ }),
+
+/***/ "./src/js/service-worker/notifiers/index.ts":
+/*!**************************************************!*\
+  !*** ./src/js/service-worker/notifiers/index.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   "executeNotifier": () => (/* binding */ executeNotifier)
+/* harmony export */ });
+/* harmony import */ var _friend_presence__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./friend-presence */ "./src/js/service-worker/notifiers/friend-presence/index.ts");
+
+// Registry of all the notifiers
+const notifiers = {};
+notifiers['notifiers/friend-presence'] = _friend_presence__WEBPACK_IMPORTED_MODULE_0__["default"];
+// TODO: Update to use chrome.storage.session for manifest V3
+const notifierStates = {};
+// Execute a notifier by name.
+const executeNotifier = async (name) => {
+    const notifier = notifiers[name];
+    if (!notifier) {
+        return;
+    }
+    try {
+        // Fetch the state from the last time the notifier ran.
+        // ...
+        // Run the notifier.
+        const newState = await notifier(notifierStates[name]);
+        // Save the state for the next time the notifier runs.
+        if (newState) {
+            notifierStates[name] = newState;
+        }
+        else {
+            delete notifierStates[name];
+        }
+    }
+    catch (err) {
+        console.error(name, 'failed to run', err);
+    }
+};
+// Listener for the chrome.alarms API, to process the notification checks
+chrome.alarms.onAlarm.addListener(async ({ name }) => {
+    await executeNotifier(name);
+});
+for (let name in notifiers) {
+    chrome.alarms.create(name, {
+        periodInMinutes: 1,
+    });
+}
+globalThis.notifiers = notifiers;
+globalThis.executeNotifier = executeNotifier;
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (notifiers);
+
+
+/***/ }),
+
 /***/ "./src/js/services/badges/batchProcessor.ts":
 /*!**************************************************!*\
   !*** ./src/js/services/badges/batchProcessor.ts ***!
@@ -73,7 +403,7 @@ class BadgeAwardBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODU
             .map((i) => i.value.badgeId)
             .join(',')}`);
         if (!response.ok) {
-            throw new Error('Failed to load user presence');
+            throw new Error('Failed to load badge award statuses');
         }
         const result = await response.json();
         items.forEach((item) => {
@@ -136,7 +466,7 @@ __webpack_require__.r(__webpack_exports__);
 const messageDestination = 'badgesService.getBadgeAwardDate';
 const badgeAwardProcessor = new _batchProcessor__WEBPACK_IMPORTED_MODULE_2__["default"]();
 const badgeAwardCache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"]('badgesService', 60 * 1000);
-// Fetches the presence for a user.
+// Fetches the date when a badge was awarded to the specified user.
 const getBadgeAwardDate = async (userId, badgeId) => {
     const date = await (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, {
         userId,
@@ -154,6 +484,277 @@ const getBadgeAwardDate = async (userId, badgeId) => {
     });
 });
 globalThis.badgesService = { getBadgeAwardDate };
+
+
+
+/***/ }),
+
+/***/ "./src/js/services/followings/authenticatedUserFollowingProcessor.ts":
+/*!***************************************************************************!*\
+  !*** ./src/js/services/followings/authenticatedUserFollowingProcessor.ts ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/batch */ "./node_modules/@tix-factory/batch/dist/index.js");
+/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
+
+
+class AuthenticatedUserFollowingProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__.Batch {
+    constructor() {
+        super({
+            levelOfParallelism: 1,
+            maxSize: 100,
+            minimumDelay: 1 * 1000,
+            enqueueDeferDelay: 10,
+        });
+    }
+    async process(items) {
+        const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_1__["default"])(new URL('https://friends.roblox.com/v1/user/following-exists'), {
+            method: 'POST',
+            body: JSON.stringify({
+                targetUserIds: items.map((i) => i.value),
+            }),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to load authenticated user following statuses');
+        }
+        const result = await response.json();
+        items.forEach((item) => {
+            const following = result.followings.find((f) => f.userId === item.value);
+            item.resolve(following?.isFollowing === true);
+        });
+    }
+    getKey(userId) {
+        return `${userId}`;
+    }
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AuthenticatedUserFollowingProcessor);
+
+
+/***/ }),
+
+/***/ "./src/js/services/followings/index.ts":
+/*!*********************************************!*\
+  !*** ./src/js/services/followings/index.ts ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "isAuthenticatedUserFollowing": () => (/* reexport safe */ _isAuthenticatedUserFollowing__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _isAuthenticatedUserFollowing__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./isAuthenticatedUserFollowing */ "./src/js/services/followings/isAuthenticatedUserFollowing.ts");
+
+globalThis.followingsService = { isAuthenticatedUserFollowing: _isAuthenticatedUserFollowing__WEBPACK_IMPORTED_MODULE_0__["default"] };
+
+
+
+/***/ }),
+
+/***/ "./src/js/services/followings/isAuthenticatedUserFollowing.ts":
+/*!********************************************************************!*\
+  !*** ./src/js/services/followings/isAuthenticatedUserFollowing.ts ***!
+  \********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _authenticatedUserFollowingProcessor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./authenticatedUserFollowingProcessor */ "./src/js/services/followings/authenticatedUserFollowingProcessor.ts");
+
+
+
+const messageDestination = 'followingsService.isAuthenticatedUserFollowing';
+const batchProcessor = new _authenticatedUserFollowingProcessor__WEBPACK_IMPORTED_MODULE_2__["default"]();
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 60 * 1000);
+// Checks if the authenticated user is following another user.
+const isAuthenticatedUserFollowing = (userId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, {
+        userId,
+    });
+};
+// Listen for messages of things trying to fetch presence.
+(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.userId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    batchProcessor.enqueue(message.userId));
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (isAuthenticatedUserFollowing);
+
+
+/***/ }),
+
+/***/ "./src/js/services/friends/getUserFriends.ts":
+/*!***************************************************!*\
+  !*** ./src/js/services/friends/getUserFriends.ts ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+const messageDestination = 'friendsService.getUserFriends';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 60 * 1000);
+// Fetches the list of friends for the user.
+const getUserFriends = (userId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, {
+        userId,
+    });
+};
+// Loads the actual friend list for the user.
+const loadUserFriends = async (userId) => {
+    const response = await fetch(`https://friends.roblox.com/v1/users/${userId}/friends`);
+    if (!response.ok) {
+        throw new Error(`Failed to load friends for user (${userId})`);
+    }
+    const result = await response.json();
+    return result.data.map((r) => {
+        return {
+            id: r.id,
+            name: r.name,
+            displayName: r.displayName,
+        };
+    });
+};
+// Listen for messages of things trying to fetch presence.
+(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.userId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadUserFriends(message.userId));
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getUserFriends);
+
+
+/***/ }),
+
+/***/ "./src/js/services/friends/index.ts":
+/*!******************************************!*\
+  !*** ./src/js/services/friends/index.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getUserFriends": () => (/* reexport safe */ _getUserFriends__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _getUserFriends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getUserFriends */ "./src/js/services/friends/getUserFriends.ts");
+
+globalThis.friendsService = { getUserFriends: _getUserFriends__WEBPACK_IMPORTED_MODULE_0__["default"] };
+
+
+
+/***/ }),
+
+/***/ "./src/js/services/game-launch/buildProtocolUrl.ts":
+/*!*********************************************************!*\
+  !*** ./src/js/services/game-launch/buildProtocolUrl.ts ***!
+  \*********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../constants */ "./src/js/constants/index.ts");
+/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
+
+
+// The generated authentication ticket URL, to prevent other extensions from getting the special headers included.
+const authTicketUrl = new URL(`https://auth.roblox.com/v1/authentication-ticket?roblox-plus-security-token=${crypto.randomUUID()}`);
+// Fetches the authentication ticket, to launch the experience with.
+const getAuthenticationTicket = async () => {
+    const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_1__["default"])(authTicketUrl, {
+        method: 'POST',
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to fetch authentication ticket for game launch`);
+    }
+    return response.headers.get('rbx-authentication-ticket');
+};
+// Builds the place launcher URL, used to craft the protocol launcher URL.
+const buildPlaceLauncherUrl = (info) => {
+    const prefix = `https://assetgame.roblox.com/game/PlaceLauncher.ashx?request=`;
+    if (info.followUserId) {
+        return `${prefix}RequestFollowUser&userId=${info.followUserId}`;
+    }
+    throw new Error('Unable to determine place launcher URL');
+};
+// Builds the protocol launcher URL, to launch the experience with.
+const buildProtocolUrl = async (info) => {
+    const authenticationTicket = await getAuthenticationTicket();
+    const placeLauncherUrl = encodeURIComponent(buildPlaceLauncherUrl(info));
+    const currentTime = +new Date();
+    return `roblox-player:1+launchmode:play+launchTime:${currentTime}+placelauncherurl:${placeLauncherUrl}+gameinfo:${authenticationTicket}`;
+};
+if (_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
+    // Set the Referer header, so that we can access the authentication ticket, for the protocol launcher URL.
+    chrome.declarativeNetRequest.updateSessionRules({
+        removeRuleIds: [1],
+        addRules: [
+            {
+                id: 1,
+                condition: {
+                    urlFilter: authTicketUrl.href,
+                    requestMethods: [chrome.declarativeNetRequest.RequestMethod.POST],
+                    resourceTypes: [
+                        chrome.declarativeNetRequest.ResourceType.XMLHTTPREQUEST,
+                    ],
+                },
+                action: {
+                    type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+                    requestHeaders: [
+                        {
+                            header: 'Referer',
+                            operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+                            value: 'https://www.roblox.com/groups/2518656/Roblox-Plus?extension-game-launch=true',
+                        },
+                    ],
+                },
+            },
+        ],
+    });
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (buildProtocolUrl);
+
+
+/***/ }),
+
+/***/ "./src/js/services/game-launch/index.ts":
+/*!**********************************************!*\
+  !*** ./src/js/services/game-launch/index.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "followUser": () => (/* binding */ followUser)
+/* harmony export */ });
+/* harmony import */ var _utils_launchProtocolUrl__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/launchProtocolUrl */ "./src/js/utils/launchProtocolUrl.ts");
+/* harmony import */ var _buildProtocolUrl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./buildProtocolUrl */ "./src/js/services/game-launch/buildProtocolUrl.ts");
+
+
+// Launches into the experience that the specified user is playing.
+const followUser = async (userId) => {
+    const url = await (0,_buildProtocolUrl__WEBPACK_IMPORTED_MODULE_1__["default"])({
+        followUserId: userId,
+    });
+    await (0,_utils_launchProtocolUrl__WEBPACK_IMPORTED_MODULE_0__["default"])(url);
+};
+globalThis.gameLaunchService = { followUser };
 
 
 
@@ -365,12 +966,16 @@ globalThis.localizationService = { getTranslationResource };
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "addListener": () => (/* binding */ addListener),
-/* harmony export */   "sendMessage": () => (/* binding */ sendMessage)
+/* harmony export */   "getWorkerTab": () => (/* binding */ getWorkerTab),
+/* harmony export */   "sendMessage": () => (/* binding */ sendMessage),
+/* harmony export */   "sendMessageToTab": () => (/* binding */ sendMessageToTab)
 /* harmony export */ });
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../constants */ "./src/js/constants/index.ts");
 
 // All the listeners, set in the background page.
 const listeners = {};
+// All the tabs actively connected to the message service.
+const tabs = {};
 // An identifier that tells us which version of the messaging service we're using,
 // to ensure we don't try to process a message not intended for us.
 const version = 2.5;
@@ -423,6 +1028,22 @@ const sendMessage = async (destination, message) => {
             });
         }
     });
+};
+// Fetches a tab that we can send a message to, for work processing.
+const getWorkerTab = () => {
+    const keys = Object.keys(tabs);
+    return keys.length > 0 ? tabs[keys[0]] : undefined;
+};
+// Sends a message to a tab.
+const sendMessageToTab = async (destination, message, tab) => {
+    const serializedMessage = JSON.stringify(message);
+    const outboundMessage = JSON.stringify({
+        version,
+        destination,
+        message: serializedMessage,
+    });
+    console.debug(`Sending message to '${destination}' in tab`, serializedMessage, tab);
+    tab.postMessage(outboundMessage);
 };
 // Listen for messages at a specific destination.
 const addListener = (destination, listener, options = {
@@ -507,11 +1128,49 @@ if (_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
         // https://stackoverflow.com/a/20077854/1663648
         return true;
     });
+    chrome.runtime.onConnect.addListener((port) => {
+        const id = crypto.randomUUID();
+        console.debug('Tab connected', id, port);
+        tabs[id] = port;
+        port.onDisconnect.addListener(() => {
+            console.debug('Disconnecting tab', id, port);
+            delete tabs[id];
+        });
+    });
 }
 else {
     console.debug(`Not attaching listener for messages, because we're not in the background.`);
+    if (!window.messageServiceConnection) {
+        const port = (window.messageServiceConnection = chrome.runtime.connect(chrome.runtime.id, {
+            name: 'messageService',
+        }));
+        port.onMessage.addListener((rawMessage) => {
+            if (typeof rawMessage !== 'string') {
+                // Not for us.
+                return;
+            }
+            const fullMessage = JSON.parse(rawMessage);
+            if (fullMessage.version !== version ||
+                !fullMessage.destination ||
+                !fullMessage.message) {
+                // Not for us.
+                return;
+            }
+            const listener = listeners[fullMessage.destination];
+            if (!listener) {
+                // No listener in this tab for this message.
+                return;
+            }
+            // We don't really have a way to communicate the response back to the service worker.
+            // So we just... do nothing with it.
+            const message = JSON.parse(fullMessage.message);
+            listener(message).catch((err) => {
+                console.error('Unhandled error processing message in tab', fullMessage, err);
+            });
+        });
+    }
 }
-globalThis.messageService = { sendMessage, addListener };
+globalThis.messageService = { sendMessage, addListener, getWorkerTab, sendMessageToTab };
 
 
 
@@ -585,7 +1244,8 @@ class PresenceBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODULE
                     item.resolve({
                         type: presenceType,
                         location: {
-                            id: presence.placeId,
+                            placeId: presence.placeId || undefined,
+                            universeId: presence.universeId || undefined,
                             name: getLocationName(presenceType, presence.lastLocation),
                             serverId: presence.gameId,
                         },
@@ -745,6 +1405,207 @@ globalThis.settingsService = { getSettingValue, getToggleSettingValue, setSettin
 
 /***/ }),
 
+/***/ "./src/js/services/thumbnails/batchProcessor.ts":
+/*!******************************************************!*\
+  !*** ./src/js/services/thumbnails/batchProcessor.ts ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/batch */ "./node_modules/@tix-factory/batch/dist/index.js");
+/* harmony import */ var _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../enums/thumbnailState */ "./src/js/enums/thumbnailState.ts");
+
+
+class ThumbnailBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__.Batch {
+    constructor() {
+        super({
+            levelOfParallelism: 1,
+            maxSize: 100,
+            minimumDelay: 1 * 1000,
+            enqueueDeferDelay: 10,
+        });
+    }
+    async process(items) {
+        const response = await fetch('https://thumbnails.roblox.com/v1/batch', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(items.map(({ value }) => {
+                return {
+                    requestId: `${value.type}_${value.targetId}_${value.size}`,
+                    type: value.type,
+                    targetId: value.targetId,
+                    size: value.size,
+                };
+            })),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to load thumbnails');
+        }
+        const result = await response.json();
+        items.forEach((item) => {
+            const thumbnail = result.data.find((t) => t.requestId ===
+                `${item.value.type}_${item.value.targetId}_${item.value.size}`);
+            if (thumbnail) {
+                const thumbnailState = thumbnail.state;
+                item.resolve({
+                    state: thumbnailState,
+                    imageUrl: thumbnailState === _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_1__["default"].Completed
+                        ? thumbnail.imageUrl
+                        : '',
+                });
+            }
+            else {
+                item.resolve({
+                    state: _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_1__["default"].Error,
+                    imageUrl: '',
+                });
+            }
+        });
+    }
+}
+const thumbnailBatchProcessor = new ThumbnailBatchProcessor();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (thumbnailBatchProcessor);
+
+
+/***/ }),
+
+/***/ "./src/js/services/thumbnails/getAvatarHeadshotThumbnail.ts":
+/*!******************************************************************!*\
+  !*** ./src/js/services/thumbnails/getAvatarHeadshotThumbnail.ts ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../enums/thumbnailState */ "./src/js/enums/thumbnailState.ts");
+/* harmony import */ var _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../enums/thumbnailType */ "./src/js/enums/thumbnailType.ts");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _batchProcessor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./batchProcessor */ "./src/js/services/thumbnails/batchProcessor.ts");
+
+
+
+
+
+const messageDestination = 'thumbnailsService.getAvatarHeadshotThumbnail';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__["default"](messageDestination, 5 * 60 * 1000);
+// Fetches the list of friends for the user.
+const getAvatarHeadshotThumbnail = (userId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
+        userId,
+    });
+};
+// Listen for messages of things trying to fetch presence.
+(0,_message__WEBPACK_IMPORTED_MODULE_3__.addListener)(messageDestination, async (message) => {
+    // Check the cache
+    const thumbnail = await cache.getOrAdd(`${message.userId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    _batchProcessor__WEBPACK_IMPORTED_MODULE_4__["default"].enqueue({
+        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].AvatarHeadShot,
+        targetId: message.userId,
+        size: '420x420',
+    }));
+    if (thumbnail.state !== _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_0__["default"].Completed) {
+        setTimeout(() => {
+            // If the thumbnail isn't complete, evict it from the cache early.
+            cache.evict(`${message.userId}`);
+        }, 30 * 1000);
+    }
+    return thumbnail;
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getAvatarHeadshotThumbnail);
+
+
+/***/ }),
+
+/***/ "./src/js/services/thumbnails/index.ts":
+/*!*********************************************!*\
+  !*** ./src/js/services/thumbnails/index.ts ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getAvatarHeadshotThumbnail": () => (/* reexport safe */ _getAvatarHeadshotThumbnail__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _getAvatarHeadshotThumbnail__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getAvatarHeadshotThumbnail */ "./src/js/services/thumbnails/getAvatarHeadshotThumbnail.ts");
+
+globalThis.thumbnailsService = { getAvatarHeadshotThumbnail: _getAvatarHeadshotThumbnail__WEBPACK_IMPORTED_MODULE_0__["default"] };
+
+
+
+/***/ }),
+
+/***/ "./src/js/services/users/getAuthenticatedUser.ts":
+/*!*******************************************************!*\
+  !*** ./src/js/services/users/getAuthenticatedUser.ts ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+const messageDestination = 'usersService.getAuthenticatedUser';
+let authenticatedUser = undefined;
+// Fetches the currently authenticated user.
+const getAuthenticatedUser = () => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {});
+};
+// Loads the currently authenticated user.
+const loadAuthenticatedUser = async () => {
+    if (authenticatedUser !== undefined) {
+        return authenticatedUser;
+    }
+    const response = await fetch('https://users.roblox.com/v1/users/authenticated');
+    if (response.status === 401) {
+        return (authenticatedUser = null);
+    }
+    else if (!response.ok) {
+        throw new Error('Failed to load authenticated user');
+    }
+    const result = await response.json();
+    return {
+        id: result.id,
+        name: result.name,
+        displayName: result.displayName,
+    };
+};
+(0,_message__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, () => loadAuthenticatedUser(), {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getAuthenticatedUser);
+
+
+/***/ }),
+
+/***/ "./src/js/services/users/index.ts":
+/*!****************************************!*\
+  !*** ./src/js/services/users/index.ts ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getAuthenticatedUser": () => (/* reexport safe */ _getAuthenticatedUser__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _getAuthenticatedUser__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getAuthenticatedUser */ "./src/js/services/users/getAuthenticatedUser.ts");
+
+globalThis.usersService = { getAuthenticatedUser: _getAuthenticatedUser__WEBPACK_IMPORTED_MODULE_0__["default"] };
+
+
+
+/***/ }),
+
 /***/ "./src/js/utils/expireableDictionary.ts":
 /*!**********************************************!*\
   !*** ./src/js/utils/expireableDictionary.ts ***!
@@ -786,9 +1647,7 @@ class ExpirableDictionary {
                 }
                 try {
                     const value = (this.items[key] = await valueFactory());
-                    setTimeout(() => {
-                        delete this.items[key];
-                    }, this.expirationInMilliseconds);
+                    setTimeout(() => this.evict(key), this.expirationInMilliseconds);
                     resolve(value);
                 }
                 catch (e) {
@@ -798,8 +1657,203 @@ class ExpirableDictionary {
                 .catch(reject);
         });
     }
+    evict(key) {
+        delete this.items[key];
+    }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ExpirableDictionary);
+
+
+/***/ }),
+
+/***/ "./src/js/utils/fetchDataUri.ts":
+/*!**************************************!*\
+  !*** ./src/js/utils/fetchDataUri.ts ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+
+const cache = new _expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"]('fetchDataUri', 5 * 60 * 1000);
+// Converts a URL to a data URI of its loaded contents.
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((url) => {
+    return cache.getOrAdd(url.href, () => {
+        return new Promise((resolve, reject) => {
+            fetch(url.href)
+                .then((result) => {
+                const reader = new FileReader();
+                reader.onerror = (err) => {
+                    reject(err);
+                };
+                reader.onloadend = () => {
+                    if (typeof reader.result === 'string') {
+                        resolve(reader.result);
+                    }
+                    else {
+                        reject(new Error(`fetchDataUri: Unexpected result type (${typeof reader.result})`));
+                    }
+                };
+                result
+                    .blob()
+                    .then((blob) => {
+                    reader.readAsDataURL(blob);
+                })
+                    .catch(reject);
+            })
+                .catch(reject);
+        });
+    });
+});
+
+
+/***/ }),
+
+/***/ "./src/js/utils/launchProtocolUrl.ts":
+/*!*******************************************!*\
+  !*** ./src/js/utils/launchProtocolUrl.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../constants */ "./src/js/constants/index.ts");
+/* harmony import */ var _services_message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/message */ "./src/js/services/message/index.ts");
+
+
+const messageDestination = 'launchProtocolUrl';
+// Keep track of the tabs, so we can put the user back where they were.b
+let previousTab = undefined;
+let protocolLauncherTab = undefined;
+// Attempt to launch the protocol URL in the current tab.
+const tryDirectLaunch = (protocolUrl) => {
+    if (!_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage && location) {
+        location.href = protocolUrl;
+        return true;
+    }
+    return false;
+};
+// Launch the protocol URL from a service worker.
+const launchProtocolUrl = (protocolUrl) => {
+    if (tryDirectLaunch(protocolUrl)) {
+        // We were able to directly launch the protocol URL.
+        // Nothing more to do.
+        return Promise.resolve();
+    }
+    const workerTab = (0,_services_message__WEBPACK_IMPORTED_MODULE_1__.getWorkerTab)();
+    if (workerTab) {
+        // If we're in the background, and we have a tab that can process the protocol URL, use that instead.
+        // This will ensure that when we use the protocol launcher to launch Roblox, that they have the highest
+        // likihood of already having accepted the protocol launcher permission.
+        (0,_services_message__WEBPACK_IMPORTED_MODULE_1__.sendMessageToTab)(messageDestination, {
+            protocolUrl,
+        }, workerTab);
+        return Promise.resolve();
+    }
+    // TODO: Convert to promise signatures when moving to manifest V3.
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+    }, (currentTab) => {
+        previousTab = currentTab[0];
+        if (previousTab) {
+            // Try to open the protocol launcher tab right next to the current tab, so that when it
+            // closes, it will put the user back on the tab they are on now.
+            chrome.tabs.create({
+                url: protocolUrl,
+                index: previousTab.index + 1,
+                windowId: previousTab.windowId,
+            }, (tab) => {
+                protocolLauncherTab = tab;
+            });
+        }
+        else {
+            chrome.tabs.create({ url: protocolUrl });
+            // If we don't know where they were before, then don't try to keep track of anything.
+            previousTab = undefined;
+            protocolLauncherTab = undefined;
+        }
+    });
+    return Promise.resolve();
+};
+if (_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
+    chrome.tabs.onRemoved.addListener((tabId) => {
+        // Return the user to the tab they were on before, when we're done launching the protocol URL.
+        // chrome self-closes the protocol URL tab when opened.
+        if (tabId === protocolLauncherTab?.id && previousTab?.id) {
+            chrome.tabs.update(previousTab.id, {
+                active: true,
+            });
+        }
+        previousTab = undefined;
+        protocolLauncherTab = undefined;
+    });
+}
+(0,_services_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => launchProtocolUrl(message.protocolUrl));
+// Launches a protocol URL, using the most user-friendly method.
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async (protocolUrl) => {
+    if (tryDirectLaunch(protocolUrl)) {
+        // If we can directly launch the protocol URL, there's nothing left to do.
+        return;
+    }
+    // Otherwise, we have to send a message out and try some nonsense.
+    await (0,_services_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { protocolUrl });
+});
+
+
+/***/ }),
+
+/***/ "./src/js/utils/linkify.ts":
+/*!*********************************!*\
+  !*** ./src/js/utils/linkify.ts ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getCatalogLink": () => (/* binding */ getCatalogLink),
+/* harmony export */   "getIdFromUrl": () => (/* binding */ getIdFromUrl),
+/* harmony export */   "getLibraryLink": () => (/* binding */ getLibraryLink),
+/* harmony export */   "getPlaceLink": () => (/* binding */ getPlaceLink),
+/* harmony export */   "getUserProfileLink": () => (/* binding */ getUserProfileLink)
+/* harmony export */ });
+const getSEOLink = (id, name, path) => {
+    if (!name) {
+        name = 'redirect';
+    }
+    else {
+        name =
+            name
+                .replace(/'/g, '')
+                .replace(/\W+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '') || 'redirect';
+    }
+    return new URL(`https://www.roblox.com/${path}/${id}/${name}`);
+};
+const getCatalogLink = (assetId, assetName) => {
+    return getSEOLink(assetId, assetName, 'catalog');
+};
+const getLibraryLink = (assetId, assetName) => {
+    return getSEOLink(assetId, assetName, 'library');
+};
+const getPlaceLink = (placeId, placeName) => {
+    return getSEOLink(placeId, placeName, 'games');
+};
+const getUserProfileLink = (userId) => {
+    return getSEOLink(userId, 'profile', 'users');
+};
+const getIdFromUrl = (url) => {
+    const match = url.pathname.match(/^\/(badges|games|game-pass|groups|catalog|library|users)\/(\d+)\//i) || [];
+    // Returns NaN if the URL doesn't match.
+    return Number(match[2]);
+};
+
 
 
 /***/ }),
@@ -1312,25 +2366,42 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "badges": () => (/* reexport module object */ _services_badges__WEBPACK_IMPORTED_MODULE_0__),
-/* harmony export */   "inventory": () => (/* reexport module object */ _services_inventory__WEBPACK_IMPORTED_MODULE_1__),
-/* harmony export */   "localization": () => (/* reexport module object */ _services_localization__WEBPACK_IMPORTED_MODULE_2__),
-/* harmony export */   "message": () => (/* reexport module object */ _services_message__WEBPACK_IMPORTED_MODULE_3__),
-/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_4__),
-/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_5__)
+/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_11__.executeNotifier),
+/* harmony export */   "followings": () => (/* reexport module object */ _services_followings__WEBPACK_IMPORTED_MODULE_1__),
+/* harmony export */   "friends": () => (/* reexport module object */ _services_friends__WEBPACK_IMPORTED_MODULE_2__),
+/* harmony export */   "gameLaunch": () => (/* reexport module object */ _services_game_launch__WEBPACK_IMPORTED_MODULE_3__),
+/* harmony export */   "inventory": () => (/* reexport module object */ _services_inventory__WEBPACK_IMPORTED_MODULE_4__),
+/* harmony export */   "localization": () => (/* reexport module object */ _services_localization__WEBPACK_IMPORTED_MODULE_5__),
+/* harmony export */   "message": () => (/* reexport module object */ _services_message__WEBPACK_IMPORTED_MODULE_6__),
+/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_7__),
+/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_8__),
+/* harmony export */   "thumbnails": () => (/* reexport module object */ _services_thumbnails__WEBPACK_IMPORTED_MODULE_9__),
+/* harmony export */   "users": () => (/* reexport module object */ _services_users__WEBPACK_IMPORTED_MODULE_10__)
 /* harmony export */ });
 /* harmony import */ var _services_badges__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/badges */ "./src/js/services/badges/index.ts");
-/* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/inventory */ "./src/js/services/inventory/index.ts");
-/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/localization */ "./src/js/services/localization/index.ts");
-/* harmony import */ var _services_message__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/message */ "./src/js/services/message/index.ts");
-/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
-/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_followings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/followings */ "./src/js/services/followings/index.ts");
+/* harmony import */ var _services_friends__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/friends */ "./src/js/services/friends/index.ts");
+/* harmony import */ var _services_game_launch__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/game-launch */ "./src/js/services/game-launch/index.ts");
+/* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/inventory */ "./src/js/services/inventory/index.ts");
+/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/localization */ "./src/js/services/localization/index.ts");
+/* harmony import */ var _services_message__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
+/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../services/users */ "./src/js/services/users/index.ts");
+/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
 
 
 
 
 
 
-// Currently exclusively populated by build hook (see build directory).
+
+
+
+
+
+
 
 })();
 

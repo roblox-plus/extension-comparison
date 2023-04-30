@@ -280,10 +280,7 @@ class NotificationSettings extends SettingsTab {
       class: "rbx-divider"
     }), /*#__PURE__*/React.createElement("span", {
       class: "text-description"
-    }, "On/off switch for all the options for friends below."), /*#__PURE__*/React.createElement("a", {
-      class: "icon-Musical",
-      onClick: this.promptChangeNotifierSound.bind(this, "friend")
-    })), /*#__PURE__*/React.createElement("div", {
+    }, "On/off switch for all the options for friends below.")), /*#__PURE__*/React.createElement("div", {
       class: "section-content"
     }, /*#__PURE__*/React.createElement("span", {
       class: "text-lead"

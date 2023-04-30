@@ -68,11 +68,7 @@ class UserInfoWidgetUserCard extends React.Component {
     });
   }
   joinGame() {
-    Roblox.games.launch({
-      followUserId: this.state.user.id
-    }).then(() => {
-      // followed the user
-    }).catch(err => {
+    gameLaunchService.followUser(this.state.user.id).catch(err => {
       console.error(err);
     });
   }

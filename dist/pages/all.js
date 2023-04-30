@@ -59,6 +59,107 @@ var PresenceType;
 
 /***/ }),
 
+/***/ "./src/js/services/game-launch/buildProtocolUrl.ts":
+/*!*********************************************************!*\
+  !*** ./src/js/services/game-launch/buildProtocolUrl.ts ***!
+  \*********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../constants */ "./src/js/constants/index.ts");
+/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
+
+
+// The generated authentication ticket URL, to prevent other extensions from getting the special headers included.
+const authTicketUrl = new URL(`https://auth.roblox.com/v1/authentication-ticket?roblox-plus-security-token=${crypto.randomUUID()}`);
+// Fetches the authentication ticket, to launch the experience with.
+const getAuthenticationTicket = async () => {
+    const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_1__["default"])(authTicketUrl, {
+        method: 'POST',
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to fetch authentication ticket for game launch`);
+    }
+    return response.headers.get('rbx-authentication-ticket');
+};
+// Builds the place launcher URL, used to craft the protocol launcher URL.
+const buildPlaceLauncherUrl = (info) => {
+    const prefix = `https://assetgame.roblox.com/game/PlaceLauncher.ashx?request=`;
+    if (info.followUserId) {
+        return `${prefix}RequestFollowUser&userId=${info.followUserId}`;
+    }
+    throw new Error('Unable to determine place launcher URL');
+};
+// Builds the protocol launcher URL, to launch the experience with.
+const buildProtocolUrl = async (info) => {
+    const authenticationTicket = await getAuthenticationTicket();
+    const placeLauncherUrl = encodeURIComponent(buildPlaceLauncherUrl(info));
+    const currentTime = +new Date();
+    return `roblox-player:1+launchmode:play+launchTime:${currentTime}+placelauncherurl:${placeLauncherUrl}+gameinfo:${authenticationTicket}`;
+};
+if (_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
+    // Set the Referer header, so that we can access the authentication ticket, for the protocol launcher URL.
+    chrome.declarativeNetRequest.updateSessionRules({
+        removeRuleIds: [1],
+        addRules: [
+            {
+                id: 1,
+                condition: {
+                    urlFilter: authTicketUrl.href,
+                    requestMethods: [chrome.declarativeNetRequest.RequestMethod.POST],
+                    resourceTypes: [
+                        chrome.declarativeNetRequest.ResourceType.XMLHTTPREQUEST,
+                    ],
+                },
+                action: {
+                    type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+                    requestHeaders: [
+                        {
+                            header: 'Referer',
+                            operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+                            value: 'https://www.roblox.com/groups/2518656/Roblox-Plus?extension-game-launch=true',
+                        },
+                    ],
+                },
+            },
+        ],
+    });
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (buildProtocolUrl);
+
+
+/***/ }),
+
+/***/ "./src/js/services/game-launch/index.ts":
+/*!**********************************************!*\
+  !*** ./src/js/services/game-launch/index.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "followUser": () => (/* binding */ followUser)
+/* harmony export */ });
+/* harmony import */ var _utils_launchProtocolUrl__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/launchProtocolUrl */ "./src/js/utils/launchProtocolUrl.ts");
+/* harmony import */ var _buildProtocolUrl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./buildProtocolUrl */ "./src/js/services/game-launch/buildProtocolUrl.ts");
+
+
+// Launches into the experience that the specified user is playing.
+const followUser = async (userId) => {
+    const url = await (0,_buildProtocolUrl__WEBPACK_IMPORTED_MODULE_1__["default"])({
+        followUserId: userId,
+    });
+    await (0,_utils_launchProtocolUrl__WEBPACK_IMPORTED_MODULE_0__["default"])(url);
+};
+globalThis.gameLaunchService = { followUser };
+
+
+
+/***/ }),
+
 /***/ "./src/js/services/message/index.ts":
 /*!******************************************!*\
   !*** ./src/js/services/message/index.ts ***!
@@ -68,12 +169,16 @@ var PresenceType;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "addListener": () => (/* binding */ addListener),
-/* harmony export */   "sendMessage": () => (/* binding */ sendMessage)
+/* harmony export */   "getWorkerTab": () => (/* binding */ getWorkerTab),
+/* harmony export */   "sendMessage": () => (/* binding */ sendMessage),
+/* harmony export */   "sendMessageToTab": () => (/* binding */ sendMessageToTab)
 /* harmony export */ });
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../constants */ "./src/js/constants/index.ts");
 
 // All the listeners, set in the background page.
 const listeners = {};
+// All the tabs actively connected to the message service.
+const tabs = {};
 // An identifier that tells us which version of the messaging service we're using,
 // to ensure we don't try to process a message not intended for us.
 const version = 2.5;
@@ -126,6 +231,22 @@ const sendMessage = async (destination, message) => {
             });
         }
     });
+};
+// Fetches a tab that we can send a message to, for work processing.
+const getWorkerTab = () => {
+    const keys = Object.keys(tabs);
+    return keys.length > 0 ? tabs[keys[0]] : undefined;
+};
+// Sends a message to a tab.
+const sendMessageToTab = async (destination, message, tab) => {
+    const serializedMessage = JSON.stringify(message);
+    const outboundMessage = JSON.stringify({
+        version,
+        destination,
+        message: serializedMessage,
+    });
+    console.debug(`Sending message to '${destination}' in tab`, serializedMessage, tab);
+    tab.postMessage(outboundMessage);
 };
 // Listen for messages at a specific destination.
 const addListener = (destination, listener, options = {
@@ -210,11 +331,49 @@ if (_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
         // https://stackoverflow.com/a/20077854/1663648
         return true;
     });
+    chrome.runtime.onConnect.addListener((port) => {
+        const id = crypto.randomUUID();
+        console.debug('Tab connected', id, port);
+        tabs[id] = port;
+        port.onDisconnect.addListener(() => {
+            console.debug('Disconnecting tab', id, port);
+            delete tabs[id];
+        });
+    });
 }
 else {
     console.debug(`Not attaching listener for messages, because we're not in the background.`);
+    if (!window.messageServiceConnection) {
+        const port = (window.messageServiceConnection = chrome.runtime.connect(chrome.runtime.id, {
+            name: 'messageService',
+        }));
+        port.onMessage.addListener((rawMessage) => {
+            if (typeof rawMessage !== 'string') {
+                // Not for us.
+                return;
+            }
+            const fullMessage = JSON.parse(rawMessage);
+            if (fullMessage.version !== version ||
+                !fullMessage.destination ||
+                !fullMessage.message) {
+                // Not for us.
+                return;
+            }
+            const listener = listeners[fullMessage.destination];
+            if (!listener) {
+                // No listener in this tab for this message.
+                return;
+            }
+            // We don't really have a way to communicate the response back to the service worker.
+            // So we just... do nothing with it.
+            const message = JSON.parse(fullMessage.message);
+            listener(message).catch((err) => {
+                console.error('Unhandled error processing message in tab', fullMessage, err);
+            });
+        });
+    }
 }
-globalThis.messageService = { sendMessage, addListener };
+globalThis.messageService = { sendMessage, addListener, getWorkerTab, sendMessageToTab };
 
 
 
@@ -288,7 +447,8 @@ class PresenceBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODULE
                     item.resolve({
                         type: presenceType,
                         location: {
-                            id: presence.placeId,
+                            placeId: presence.placeId || undefined,
+                            universeId: presence.universeId || undefined,
                             name: getLocationName(presenceType, presence.lastLocation),
                             serverId: presence.gameId,
                         },
@@ -489,9 +649,7 @@ class ExpirableDictionary {
                 }
                 try {
                     const value = (this.items[key] = await valueFactory());
-                    setTimeout(() => {
-                        delete this.items[key];
-                    }, this.expirationInMilliseconds);
+                    setTimeout(() => this.evict(key), this.expirationInMilliseconds);
                     resolve(value);
                 }
                 catch (e) {
@@ -501,8 +659,151 @@ class ExpirableDictionary {
                 .catch(reject);
         });
     }
+    evict(key) {
+        delete this.items[key];
+    }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ExpirableDictionary);
+
+
+/***/ }),
+
+/***/ "./src/js/utils/launchProtocolUrl.ts":
+/*!*******************************************!*\
+  !*** ./src/js/utils/launchProtocolUrl.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../constants */ "./src/js/constants/index.ts");
+/* harmony import */ var _services_message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/message */ "./src/js/services/message/index.ts");
+
+
+const messageDestination = 'launchProtocolUrl';
+// Keep track of the tabs, so we can put the user back where they were.b
+let previousTab = undefined;
+let protocolLauncherTab = undefined;
+// Attempt to launch the protocol URL in the current tab.
+const tryDirectLaunch = (protocolUrl) => {
+    if (!_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage && location) {
+        location.href = protocolUrl;
+        return true;
+    }
+    return false;
+};
+// Launch the protocol URL from a service worker.
+const launchProtocolUrl = (protocolUrl) => {
+    if (tryDirectLaunch(protocolUrl)) {
+        // We were able to directly launch the protocol URL.
+        // Nothing more to do.
+        return Promise.resolve();
+    }
+    const workerTab = (0,_services_message__WEBPACK_IMPORTED_MODULE_1__.getWorkerTab)();
+    if (workerTab) {
+        // If we're in the background, and we have a tab that can process the protocol URL, use that instead.
+        // This will ensure that when we use the protocol launcher to launch Roblox, that they have the highest
+        // likihood of already having accepted the protocol launcher permission.
+        (0,_services_message__WEBPACK_IMPORTED_MODULE_1__.sendMessageToTab)(messageDestination, {
+            protocolUrl,
+        }, workerTab);
+        return Promise.resolve();
+    }
+    // TODO: Convert to promise signatures when moving to manifest V3.
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+    }, (currentTab) => {
+        previousTab = currentTab[0];
+        if (previousTab) {
+            // Try to open the protocol launcher tab right next to the current tab, so that when it
+            // closes, it will put the user back on the tab they are on now.
+            chrome.tabs.create({
+                url: protocolUrl,
+                index: previousTab.index + 1,
+                windowId: previousTab.windowId,
+            }, (tab) => {
+                protocolLauncherTab = tab;
+            });
+        }
+        else {
+            chrome.tabs.create({ url: protocolUrl });
+            // If we don't know where they were before, then don't try to keep track of anything.
+            previousTab = undefined;
+            protocolLauncherTab = undefined;
+        }
+    });
+    return Promise.resolve();
+};
+if (_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
+    chrome.tabs.onRemoved.addListener((tabId) => {
+        // Return the user to the tab they were on before, when we're done launching the protocol URL.
+        // chrome self-closes the protocol URL tab when opened.
+        if (tabId === protocolLauncherTab?.id && previousTab?.id) {
+            chrome.tabs.update(previousTab.id, {
+                active: true,
+            });
+        }
+        previousTab = undefined;
+        protocolLauncherTab = undefined;
+    });
+}
+(0,_services_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => launchProtocolUrl(message.protocolUrl));
+// Launches a protocol URL, using the most user-friendly method.
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async (protocolUrl) => {
+    if (tryDirectLaunch(protocolUrl)) {
+        // If we can directly launch the protocol URL, there's nothing left to do.
+        return;
+    }
+    // Otherwise, we have to send a message out and try some nonsense.
+    await (0,_services_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { protocolUrl });
+});
+
+
+/***/ }),
+
+/***/ "./src/js/utils/xsrfFetch.ts":
+/*!***********************************!*\
+  !*** ./src/js/utils/xsrfFetch.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+const headerName = 'X-CSRF-Token';
+let xsrfToken = '';
+// A fetch request which will attach an X-CSRF-Token in all outbound requests.
+const xsrfFetch = async (url, requestDetails) => {
+    if (url.hostname.endsWith('.roblox.com')) {
+        if (!requestDetails) {
+            requestDetails = {};
+        }
+        requestDetails.credentials = 'include';
+        if (!requestDetails.headers) {
+            requestDetails.headers = new Headers();
+        }
+        if (requestDetails.headers instanceof Headers) {
+            if (xsrfToken) {
+                requestDetails.headers.set(headerName, xsrfToken);
+            }
+            if (requestDetails.body && !requestDetails.headers.has('Content-Type')) {
+                requestDetails.headers.set('Content-Type', 'application/json');
+            }
+        }
+    }
+    const response = await fetch(url, requestDetails);
+    const token = response.headers.get(headerName);
+    if (response.ok || !token) {
+        return response;
+    }
+    xsrfToken = token;
+    return xsrfFetch(url, requestDetails);
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (xsrfFetch);
 
 
 /***/ }),
@@ -967,12 +1268,14 @@ var __webpack_exports__ = {};
   \***********************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "followUser": () => (/* reexport safe */ _services_game_launch__WEBPACK_IMPORTED_MODULE_4__.followUser),
 /* harmony export */   "getUserPresence": () => (/* reexport safe */ _services_presence__WEBPACK_IMPORTED_MODULE_3__.getUserPresence)
 /* harmony export */ });
 /* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../services/settings */ "./src/js/services/settings/index.ts");
 /* harmony import */ var twemoji__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! twemoji */ "./node_modules/twemoji/dist/twemoji.esm.js");
 /* harmony import */ var _css_pages_all_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../css/pages/all.scss */ "./src/css/pages/all.scss");
 /* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../services/presence */ "./src/js/services/presence/index.ts");
+/* harmony import */ var _services_game_launch__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../services/game-launch */ "./src/js/services/game-launch/index.ts");
 
 
 
@@ -991,6 +1294,7 @@ __webpack_require__.r(__webpack_exports__);
     console.warn('Failed to load twemoji setting preference', err);
 });
 // Exports for compatibility, while existing JavaScript doesn't use imports.
+
 
 
 })();
