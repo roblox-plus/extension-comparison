@@ -34933,9 +34933,12 @@ __webpack_require__.r(__webpack_exports__);
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "deleteAsset": () => (/* binding */ deleteAsset)
+/* harmony export */   "deleteAsset": () => (/* binding */ deleteAsset),
+/* harmony export */   "getLimitedInventory": () => (/* reexport safe */ _limitedInventory__WEBPACK_IMPORTED_MODULE_1__["default"])
 /* harmony export */ });
 /* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
+/* harmony import */ var _limitedInventory__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./limitedInventory */ "./src/js/services/inventory/limitedInventory.ts");
+
 
 // Removes an asset from the authenticated user's inventory.
 const deleteAsset = async (assetId) => {
@@ -34949,8 +34952,86 @@ const deleteAsset = async (assetId) => {
         throw new Error(`Failed to remove asset (${assetId})`);
     }
 };
-globalThis.inventoryService = { deleteAsset };
+globalThis.inventoryService = { deleteAsset, getLimitedInventory: _limitedInventory__WEBPACK_IMPORTED_MODULE_1__["default"] };
 
+
+
+/***/ }),
+
+/***/ "./src/js/services/inventory/limitedInventory.ts":
+/*!*******************************************************!*\
+  !*** ./src/js/services/inventory/limitedInventory.ts ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/wait */ "./src/js/utils/wait.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+
+const messageDestination = 'inventoryService.getLimitedInventory';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 5 * 60 * 1000);
+// Fetches the limited inventory for the specified user.
+const getLimitedInventory = (userId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        userId,
+    });
+};
+// Actually loads the inventory.
+const loadLimitedInventory = async (userId) => {
+    const foundUserAssetIds = new Set();
+    const limitedAssets = [];
+    let nextPageCursor = '';
+    do {
+        const response = await fetch(`https://inventory.roblox.com/v1/users/${userId}/assets/collectibles?limit=100&cursor=${nextPageCursor}`);
+        if (response.status === 429) {
+            // Throttled. Wait a few seconds, and try again.
+            await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(5000);
+            continue;
+        }
+        else if (response.status === 403) {
+            throw new Error('Inventory hidden');
+        }
+        else if (!response.ok) {
+            throw new Error('Inventory failed to load');
+        }
+        const result = await response.json();
+        nextPageCursor = result.nextPageCursor;
+        result.data.forEach((item) => {
+            const userAssetId = Number(item.userAssetId);
+            if (foundUserAssetIds.has(userAssetId)) {
+                return;
+            }
+            foundUserAssetIds.add(userAssetId);
+            limitedAssets.push({
+                userAssetId,
+                id: item.assetId,
+                name: item.name,
+                recentAveragePrice: item.recentAveragePrice
+                    ? Number(item.recentAveragePrice)
+                    : NaN,
+                serialNumber: item.serialNumber ? Number(item.serialNumber) : NaN,
+                stock: item.assetStock === 0 ? 0 : item.assetStock || undefined,
+            });
+        });
+    } while (nextPageCursor);
+    return limitedAssets;
+};
+// Listen for background messages
+(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.userId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadLimitedInventory(message.userId));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getLimitedInventory);
 
 
 /***/ }),
@@ -35226,6 +35307,65 @@ const authenticatedUser = userData
 
 /***/ }),
 
+/***/ "./src/js/utils/expireableDictionary.ts":
+/*!**********************************************!*\
+  !*** ./src/js/utils/expireableDictionary.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// This class can be used to concurrently cache items, or fetch their values.
+class ExpirableDictionary {
+    lockKey;
+    expirationInMilliseconds;
+    // The items that are in the dictionary.
+    items = {};
+    constructor(
+    // A name for the dictionary, used for locking.
+    name, 
+    // How long the item will remain in the dictionary, in milliseconds.
+    expirationInMilliseconds) {
+        this.lockKey = `ExpirableDictionary:${name}`;
+        this.expirationInMilliseconds = expirationInMilliseconds;
+    }
+    // Tries to fetch an item by its key from the dictionary, or it will call the value factory to add it in.
+    getOrAdd(key, valueFactory) {
+        const item = this.items[key];
+        if (item !== undefined) {
+            return Promise.resolve(item);
+        }
+        return new Promise((resolve, reject) => {
+            navigator.locks
+                .request(`${this.lockKey}:${key}`, async () => {
+                // It's possible the item was added since we requested the lock, check again.
+                const item = this.items[key];
+                if (item !== undefined) {
+                    resolve(item);
+                    return;
+                }
+                try {
+                    const value = (this.items[key] = await valueFactory());
+                    setTimeout(() => {
+                        delete this.items[key];
+                    }, this.expirationInMilliseconds);
+                    resolve(value);
+                }
+                catch (e) {
+                    reject(e);
+                }
+            })
+                .catch(reject);
+        });
+    }
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ExpirableDictionary);
+
+
+/***/ }),
+
 /***/ "./src/js/utils/linkify.ts":
 /*!*********************************!*\
   !*** ./src/js/utils/linkify.ts ***!
@@ -35272,6 +35412,25 @@ const getIdFromUrl = (url) => {
     return Number(match[2]);
 };
 
+
+
+/***/ }),
+
+/***/ "./src/js/utils/wait.ts":
+/*!******************************!*\
+  !*** ./src/js/utils/wait.ts ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((time) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(resolve, time);
+    });
+});
 
 
 /***/ }),

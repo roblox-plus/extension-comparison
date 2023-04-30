@@ -1,5 +1,5 @@
 {
-  "version": "2.4.90",
+  "version": "2.4.91",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Adds features and notifiers made by WebGL3D to the Roblox website",
@@ -92,7 +92,6 @@
     },
     {
       "js": [
-        "/js/jquery/content.js",
         "/js/output/react/features/notification-stream/notification-stream-widget.js",
         "/js/jquery/notificationStream.js",
         "/js/jquery/Profile.js",
@@ -282,6 +281,16 @@
       ],
       "matches": [
         "*://*.roblox.com/transactions*"
+      ],
+      "run_at": "document_end"
+    },
+    {
+      "js": [
+        "./dist/pages/profile.js"
+      ],
+      "matches": [
+        "https://www.roblox.com/users/*/profile*",
+        "https://web.roblox.com/users/*/profile*"
       ],
       "run_at": "document_end"
     }
