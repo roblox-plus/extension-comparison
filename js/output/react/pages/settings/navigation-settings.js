@@ -100,13 +100,6 @@ class NavigationSettings extends SettingsTab {
       class: "rbx-divider"
     }), /*#__PURE__*/React.createElement("span", {
       class: "text-lead"
-    }, "Side navigation bar always open."), /*#__PURE__*/React.createElement(PillToggle, {
-      getValue: this.getPillValue.bind(this, "navigation.sideOpen"),
-      onToggle: this.setPillValue.bind(this, "navigation.sideOpen")
-    }), /*#__PURE__*/React.createElement("div", {
-      class: "rbx-divider"
-    }), /*#__PURE__*/React.createElement("span", {
-      class: "text-lead"
     }, "DevEx rates on Robux."), /*#__PURE__*/React.createElement(PillToggle, {
       getValue: this.getPillValue.bind(this, "navigation.showDevexRate"),
       onToggle: this.setPillValue.bind(this, "navigation.showDevexRate")

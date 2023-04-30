@@ -474,7 +474,7 @@ const getBadgeAwardDate = async (userId, badgeId) => {
     });
     return date ? new Date(date) : undefined;
 };
-// Listen for messages of things trying to fetch presence.
+// Listen for messages sent to the service worker.
 (0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
     // Check the cache
     return badgeAwardCache.getOrAdd(badgeAwardProcessor.getKey(message), async () => {
@@ -484,6 +484,83 @@ const getBadgeAwardDate = async (userId, badgeId) => {
     });
 });
 globalThis.badgesService = { getBadgeAwardDate };
+
+
+
+/***/ }),
+
+/***/ "./src/js/services/currency/getRobuxBalance.ts":
+/*!*****************************************************!*\
+  !*** ./src/js/services/currency/getRobuxBalance.ts ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/wait */ "./src/js/utils/wait.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+
+const messageDestination = 'currencyService.getRobuxBalance';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const failureDelay = 5 * 1000;
+// Fetches the Robux balance of the currently authenticated user.
+const getRobuxBalance = (userId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, { userId });
+};
+// Loads the Robux balance of the currently authenticated user.
+const loadRobuxBalance = async (userId) => {
+    const response = await fetch(`https://economy.roblox.com/v1/users/${userId}/currency`);
+    // If we fail to send the request, delay the response to ensure we don't spam the API.
+    if (response.status === 401) {
+        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        throw 'User is unauthenticated';
+    }
+    else if (!response.ok) {
+        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        throw 'Failed to load Robux balance';
+    }
+    const result = await response.json();
+    try {
+        // HACK: Continue recording Robux history to not impact current functionality.
+        window.RPlus.robuxHistory?.recordUserRobux(userId, result.robux);
+    }
+    catch (err) {
+        console.warn('Failed to record robuxHistory');
+    }
+    return result.robux;
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.userId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadRobuxBalance(message.userId));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getRobuxBalance);
+
+
+/***/ }),
+
+/***/ "./src/js/services/currency/index.ts":
+/*!*******************************************!*\
+  !*** ./src/js/services/currency/index.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getRobuxBalance": () => (/* reexport safe */ _getRobuxBalance__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _getRobuxBalance__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getRobuxBalance */ "./src/js/services/currency/getRobuxBalance.ts");
+
+globalThis.currencyService = { getRobuxBalance: _getRobuxBalance__WEBPACK_IMPORTED_MODULE_0__["default"] };
 
 
 
@@ -580,7 +657,7 @@ const isAuthenticatedUserFollowing = (userId) => {
         userId,
     });
 };
-// Listen for messages of things trying to fetch presence.
+// Listen for messages sent to the service worker.
 (0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(`${message.userId}`, () => 
@@ -588,6 +665,59 @@ const isAuthenticatedUserFollowing = (userId) => {
     batchProcessor.enqueue(message.userId));
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (isAuthenticatedUserFollowing);
+
+
+/***/ }),
+
+/***/ "./src/js/services/friends/getFriendRequestCount.ts":
+/*!**********************************************************!*\
+  !*** ./src/js/services/friends/getFriendRequestCount.ts ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/wait */ "./src/js/utils/wait.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+
+const messageDestination = 'friendsService.getFriendRequestCount';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const failureDelay = 5 * 1000;
+// Fetches the inbound friend request count for the currently authenticated user.
+const getFriendRequestCount = (userId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, { userId });
+};
+// Loads the inbound friend request count for the currently authenticated user.
+const loadFriendRequestCount = async (userId) => {
+    // User ID is used as a cache buster.
+    const response = await fetch(`https://friends.roblox.com/v1/user/friend-requests/count`);
+    // If we fail to send the request, delay the response to ensure we don't spam the API.
+    if (response.status === 401) {
+        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        throw 'User is unauthenticated';
+    }
+    else if (!response.ok) {
+        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        throw 'Failed to load friend request count';
+    }
+    const result = await response.json();
+    return result.count;
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.userId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadFriendRequestCount(message.userId));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getFriendRequestCount);
 
 
 /***/ }),
@@ -629,12 +759,14 @@ const loadUserFriends = async (userId) => {
         };
     });
 };
-// Listen for messages of things trying to fetch presence.
+// Listen for messages sent to the service worker.
 (0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(`${message.userId}`, () => 
     // Queue up the fetch request, when not in the cache
     loadUserFriends(message.userId));
+}, {
+    levelOfParallelism: 1,
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getUserFriends);
 
@@ -649,11 +781,14 @@ const loadUserFriends = async (userId) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getFriendRequestCount": () => (/* reexport safe */ _getFriendRequestCount__WEBPACK_IMPORTED_MODULE_1__["default"]),
 /* harmony export */   "getUserFriends": () => (/* reexport safe */ _getUserFriends__WEBPACK_IMPORTED_MODULE_0__["default"])
 /* harmony export */ });
 /* harmony import */ var _getUserFriends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getUserFriends */ "./src/js/services/friends/getUserFriends.ts");
+/* harmony import */ var _getFriendRequestCount__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getFriendRequestCount */ "./src/js/services/friends/getFriendRequestCount.ts");
 
-globalThis.friendsService = { getUserFriends: _getUserFriends__WEBPACK_IMPORTED_MODULE_0__["default"] };
+
+globalThis.friendsService = { getUserFriends: _getUserFriends__WEBPACK_IMPORTED_MODULE_0__["default"], getFriendRequestCount: _getFriendRequestCount__WEBPACK_IMPORTED_MODULE_1__["default"] };
 
 
 
@@ -1293,7 +1428,7 @@ const presenceCache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0
 const getUserPresence = (userId) => {
     return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { userId });
 };
-// Listen for messages of things trying to fetch presence.
+// Listen for messages sent to the service worker.
 (0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
     // Check the cache
     return presenceCache.getOrAdd(`${message.userId}`, () => 
@@ -1301,6 +1436,77 @@ const getUserPresence = (userId) => {
     presenceProcessor.enqueue(message.userId));
 });
 globalThis.presenceService = { getUserPresence };
+
+
+
+/***/ }),
+
+/***/ "./src/js/services/private-messages/getUnreadMessageCount.ts":
+/*!*******************************************************************!*\
+  !*** ./src/js/services/private-messages/getUnreadMessageCount.ts ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/wait */ "./src/js/utils/wait.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+
+const messageDestination = 'privateMessagesService.getUnreadMessageCount';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const failureDelay = 5 * 1000;
+// Fetches the unread private message count for the currently authenticated user.
+const getUnreadMessageCount = (userId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, { userId });
+};
+// Loads the unread private message count for the authenticated user.
+const loadUnreadMessageCount = async (userId) => {
+    // User ID is used as a cache buster.
+    const response = await fetch(`https://privatemessages.roblox.com/v1/messages/unread/count`);
+    // If we fail to send the request, delay the response to ensure we don't spam the API.
+    if (response.status === 401) {
+        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        throw 'User is unauthenticated';
+    }
+    else if (!response.ok) {
+        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        throw 'Failed to load unread private message count';
+    }
+    const result = await response.json();
+    return result.count;
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.userId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadUnreadMessageCount(message.userId));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getUnreadMessageCount);
+
+
+/***/ }),
+
+/***/ "./src/js/services/private-messages/index.ts":
+/*!***************************************************!*\
+  !*** ./src/js/services/private-messages/index.ts ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getUnreadMessageCount": () => (/* reexport safe */ _getUnreadMessageCount__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _getUnreadMessageCount__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getUnreadMessageCount */ "./src/js/services/private-messages/getUnreadMessageCount.ts");
+
+globalThis.privateMessagesService = { getUnreadMessageCount: _getUnreadMessageCount__WEBPACK_IMPORTED_MODULE_0__["default"] };
 
 
 
@@ -1502,7 +1708,7 @@ const getAvatarHeadshotThumbnail = (userId) => {
         userId,
     });
 };
-// Listen for messages of things trying to fetch presence.
+// Listen for messages sent to the service worker.
 (0,_message__WEBPACK_IMPORTED_MODULE_3__.addListener)(messageDestination, async (message) => {
     // Check the cache
     const thumbnail = await cache.getOrAdd(`${message.userId}`, () => 
@@ -1543,6 +1749,79 @@ globalThis.thumbnailsService = { getAvatarHeadshotThumbnail: _getAvatarHeadshotT
 
 /***/ }),
 
+/***/ "./src/js/services/trades/getTradeCount.ts":
+/*!*************************************************!*\
+  !*** ./src/js/services/trades/getTradeCount.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/wait */ "./src/js/utils/wait.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+
+const messageDestination = 'tradesService.getTradeCount';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const failureDelay = 5 * 1000;
+// Fetches the unread private message count for the currently authenticated user.
+const getTradeCount = (tradeStatusType) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        tradeStatusType,
+    });
+};
+// Loads the unread private message count for the authenticated user.
+const loadTradeCount = async (tradeStatusType) => {
+    // User ID is used as a cache buster.
+    const response = await fetch(`https://trades.roblox.com/v1/trades/${tradeStatusType}/count`);
+    // If we fail to send the request, delay the response to ensure we don't spam the API.
+    if (response.status === 401) {
+        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        throw 'User is unauthenticated';
+    }
+    else if (!response.ok) {
+        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        throw `Failed to load ${tradeStatusType} trade count`;
+    }
+    const result = await response.json();
+    return result.count;
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.tradeStatusType}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadTradeCount(message.tradeStatusType));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getTradeCount);
+
+
+/***/ }),
+
+/***/ "./src/js/services/trades/index.ts":
+/*!*****************************************!*\
+  !*** ./src/js/services/trades/index.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getTradeCount": () => (/* reexport safe */ _getTradeCount__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _getTradeCount__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getTradeCount */ "./src/js/services/trades/getTradeCount.ts");
+
+globalThis.tradesService = { getTradeCount: _getTradeCount__WEBPACK_IMPORTED_MODULE_0__["default"] };
+
+
+
+/***/ }),
+
 /***/ "./src/js/services/users/getAuthenticatedUser.ts":
 /*!*******************************************************!*\
   !*** ./src/js/services/users/getAuthenticatedUser.ts ***!
@@ -1556,6 +1835,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
 
 const messageDestination = 'usersService.getAuthenticatedUser';
+const cacheDuration = 60 * 1000;
 let authenticatedUser = undefined;
 // Fetches the currently authenticated user.
 const getAuthenticatedUser = () => {
@@ -1566,19 +1846,26 @@ const loadAuthenticatedUser = async () => {
     if (authenticatedUser !== undefined) {
         return authenticatedUser;
     }
-    const response = await fetch('https://users.roblox.com/v1/users/authenticated');
-    if (response.status === 401) {
-        return (authenticatedUser = null);
+    try {
+        const response = await fetch('https://users.roblox.com/v1/users/authenticated');
+        if (response.status === 401) {
+            return (authenticatedUser = null);
+        }
+        else if (!response.ok) {
+            throw new Error('Failed to load authenticated user');
+        }
+        const result = await response.json();
+        return (authenticatedUser = {
+            id: result.id,
+            name: result.name,
+            displayName: result.displayName,
+        });
     }
-    else if (!response.ok) {
-        throw new Error('Failed to load authenticated user');
+    finally {
+        setTimeout(() => {
+            authenticatedUser = undefined;
+        }, cacheDuration);
     }
-    const result = await response.json();
-    return {
-        id: result.id,
-        name: result.name,
-        displayName: result.displayName,
-    };
 };
 (0,_message__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, () => loadAuthenticatedUser(), {
     levelOfParallelism: 1,
@@ -2366,30 +2653,39 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "badges": () => (/* reexport module object */ _services_badges__WEBPACK_IMPORTED_MODULE_0__),
-/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_11__.executeNotifier),
-/* harmony export */   "followings": () => (/* reexport module object */ _services_followings__WEBPACK_IMPORTED_MODULE_1__),
-/* harmony export */   "friends": () => (/* reexport module object */ _services_friends__WEBPACK_IMPORTED_MODULE_2__),
-/* harmony export */   "gameLaunch": () => (/* reexport module object */ _services_game_launch__WEBPACK_IMPORTED_MODULE_3__),
-/* harmony export */   "inventory": () => (/* reexport module object */ _services_inventory__WEBPACK_IMPORTED_MODULE_4__),
-/* harmony export */   "localization": () => (/* reexport module object */ _services_localization__WEBPACK_IMPORTED_MODULE_5__),
-/* harmony export */   "message": () => (/* reexport module object */ _services_message__WEBPACK_IMPORTED_MODULE_6__),
-/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_7__),
-/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_8__),
-/* harmony export */   "thumbnails": () => (/* reexport module object */ _services_thumbnails__WEBPACK_IMPORTED_MODULE_9__),
-/* harmony export */   "users": () => (/* reexport module object */ _services_users__WEBPACK_IMPORTED_MODULE_10__)
+/* harmony export */   "currency": () => (/* reexport module object */ _services_currency__WEBPACK_IMPORTED_MODULE_1__),
+/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_14__.executeNotifier),
+/* harmony export */   "followings": () => (/* reexport module object */ _services_followings__WEBPACK_IMPORTED_MODULE_2__),
+/* harmony export */   "friends": () => (/* reexport module object */ _services_friends__WEBPACK_IMPORTED_MODULE_3__),
+/* harmony export */   "gameLaunch": () => (/* reexport module object */ _services_game_launch__WEBPACK_IMPORTED_MODULE_4__),
+/* harmony export */   "inventory": () => (/* reexport module object */ _services_inventory__WEBPACK_IMPORTED_MODULE_5__),
+/* harmony export */   "localization": () => (/* reexport module object */ _services_localization__WEBPACK_IMPORTED_MODULE_6__),
+/* harmony export */   "message": () => (/* reexport module object */ _services_message__WEBPACK_IMPORTED_MODULE_7__),
+/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_8__),
+/* harmony export */   "privateMessages": () => (/* reexport module object */ _services_private_messages__WEBPACK_IMPORTED_MODULE_9__),
+/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_10__),
+/* harmony export */   "thumbnails": () => (/* reexport module object */ _services_thumbnails__WEBPACK_IMPORTED_MODULE_11__),
+/* harmony export */   "trades": () => (/* reexport module object */ _services_trades__WEBPACK_IMPORTED_MODULE_12__),
+/* harmony export */   "users": () => (/* reexport module object */ _services_users__WEBPACK_IMPORTED_MODULE_13__)
 /* harmony export */ });
 /* harmony import */ var _services_badges__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/badges */ "./src/js/services/badges/index.ts");
-/* harmony import */ var _services_followings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/followings */ "./src/js/services/followings/index.ts");
-/* harmony import */ var _services_friends__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/friends */ "./src/js/services/friends/index.ts");
-/* harmony import */ var _services_game_launch__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/game-launch */ "./src/js/services/game-launch/index.ts");
-/* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/inventory */ "./src/js/services/inventory/index.ts");
-/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/localization */ "./src/js/services/localization/index.ts");
-/* harmony import */ var _services_message__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/message */ "./src/js/services/message/index.ts");
-/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
-/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
-/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
-/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../services/users */ "./src/js/services/users/index.ts");
-/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
+/* harmony import */ var _services_currency__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/currency */ "./src/js/services/currency/index.ts");
+/* harmony import */ var _services_followings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/followings */ "./src/js/services/followings/index.ts");
+/* harmony import */ var _services_friends__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/friends */ "./src/js/services/friends/index.ts");
+/* harmony import */ var _services_game_launch__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/game-launch */ "./src/js/services/game-launch/index.ts");
+/* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/inventory */ "./src/js/services/inventory/index.ts");
+/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/localization */ "./src/js/services/localization/index.ts");
+/* harmony import */ var _services_message__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../services/message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
+/* harmony import */ var _services_private_messages__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../services/private-messages */ "./src/js/services/private-messages/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
+/* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../services/trades */ "./src/js/services/trades/index.ts");
+/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../services/users */ "./src/js/services/users/index.ts");
+/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
+
+
+
 
 
 

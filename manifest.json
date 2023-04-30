@@ -1,5 +1,5 @@
 {
-  "version": "2.4.99",
+  "version": "2.4.104",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Adds features and notifiers made by WebGL3D to the Roblox website",
@@ -61,7 +61,6 @@
         "/js/roblox/presence.js",
         "/js/roblox/catalog.js",
         "/js/roblox/inventory.js",
-        "/js/roblox/social.js",
         "/js/roblox/games.js",
         "/js/roblox/content.js",
         "/js/roblox/audio.js",
@@ -69,15 +68,13 @@
         "/js/roblox/groups.js",
         "/js/roblox/economy.js",
         "/js/roblox/economyTransactions.js",
-        "/js/roblox/privateMessages.js",
         "/js/roblox/ui.js",
         "/js/archive/preroblox.js",
         "/js/rplus/RobloxPlus.js",
         "/js/rplus/settings.js",
         "/js/rplus/premium.js",
         "/js/rplus/bucketedSales.js",
-        "/js/rplus/robuxHistory.js",
-        "/js/jquery/navigation.js"
+        "/js/rplus/robuxHistory.js"
       ],
       "css": [
         "/css/icons.css",

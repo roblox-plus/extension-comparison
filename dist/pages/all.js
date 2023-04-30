@@ -59,6 +59,645 @@ var PresenceType;
 
 /***/ }),
 
+/***/ "./src/js/pages/all/navigation/bubble.ts":
+/*!***********************************************!*\
+  !*** ./src/js/pages/all/navigation/bubble.ts ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getBubbleValue": () => (/* binding */ getBubbleValue),
+/* harmony export */   "setBubbleValue": () => (/* binding */ setBubbleValue)
+/* harmony export */ });
+/* harmony import */ var _utils_abbreviateNumber__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../utils/abbreviateNumber */ "./src/js/utils/abbreviateNumber.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./src/js/pages/all/navigation/utils.ts");
+
+
+// Gets or creates a bubble in the side navigation bar.
+const getOrCreateBubble = (navigationBarItem, allowCreate) => {
+    const selector = `#${navigationBarItem} .notification-blue`;
+    let bubble = document.querySelector(selector);
+    if (bubble) {
+        // it's possible that Roblox could have created a bubble after we did
+        // validate that, and if they did, prefer theirs.
+        const allBubbles = document.querySelectorAll(selector);
+        if (allBubbles.length > 1) {
+            const ourBubble = document.querySelector(`#${navigationBarItem} div[rplus] .notification-blue`);
+            if (ourBubble) {
+                ourBubble.parentElement?.remove();
+            }
+            bubble = document.querySelector(selector);
+        }
+        if (bubble) {
+            return bubble;
+        }
+    }
+    if (allowCreate) {
+        const navigationItem = document.getElementById(navigationBarItem);
+        if (!navigationItem) {
+            return undefined;
+        }
+        let container = navigationItem?.querySelector('.dynamic-width-item.align-right');
+        if (!container) {
+            container = document.createElement('div');
+            container.setAttribute('class', 'dynamic-width-item align-right');
+            container.setAttribute('rplus', `${+new Date()}`);
+            navigationItem?.appendChild(container);
+        }
+        bubble = document.createElement('span');
+        bubble.setAttribute('class', 'notification-blue notification hidden');
+        bubble.setAttribute('title', '0');
+        bubble.setAttribute('count', '0');
+        bubble.innerHTML = '0';
+        container.appendChild(bubble);
+        return bubble;
+    }
+    return undefined;
+};
+// Gets the value from a navigation bar bubble.
+const getBubbleValue = (navigationBarItem) => {
+    const bubble = getOrCreateBubble(navigationBarItem, false);
+    if (!bubble) {
+        return 0;
+    }
+    return (0,_utils__WEBPACK_IMPORTED_MODULE_1__.parseNumber)(bubble.getAttribute('title'));
+};
+// Attempts to set the value in a navigation bar bubble.
+const setBubbleValue = async (navigationBarItem, value) => {
+    const bubble = getOrCreateBubble(navigationBarItem, true);
+    if (!bubble) {
+        // It's possible the navigation bar item doesn't exist yet.
+        return;
+    }
+    const abbreviatedAt = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.getAbbreviateAtValue)();
+    if ((0,_utils__WEBPACK_IMPORTED_MODULE_1__.setText)(bubble, (0,_utils_abbreviateNumber__WEBPACK_IMPORTED_MODULE_0__["default"])(value, abbreviatedAt))) {
+        bubble.setAttribute('title', value.toLocaleString());
+        bubble.classList.toggle('hidden', value <= 0);
+    }
+};
+
+
+
+/***/ }),
+
+/***/ "./src/js/pages/all/navigation/index.ts":
+/*!**********************************************!*\
+  !*** ./src/js/pages/all/navigation/index.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../constants */ "./src/js/constants/index.ts");
+/* harmony import */ var _services_friends__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/friends */ "./src/js/services/friends/index.ts");
+/* harmony import */ var _services_private_messages__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/private-messages */ "./src/js/services/private-messages/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../services/trades */ "./src/js/services/trades/index.ts");
+/* harmony import */ var _utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../utils/authenticatedUser */ "./src/js/utils/authenticatedUser.ts");
+/* harmony import */ var _bubble__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./bubble */ "./src/js/pages/all/navigation/bubble.ts");
+/* harmony import */ var _links__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./links */ "./src/js/pages/all/navigation/links.ts");
+/* harmony import */ var _robux__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./robux */ "./src/js/pages/all/navigation/robux.ts");
+
+
+
+
+
+
+
+
+
+// Check if we should be refreshing the counter values.
+const refreshEnabled = async () => {
+    try {
+        return await (0,_services_settings__WEBPACK_IMPORTED_MODULE_3__.getToggleSettingValue)('navcounter');
+    }
+    catch (err) {
+        console.warn('Failed to check if live navigation counters are enabled', err);
+        return false;
+    }
+};
+// Fetches the count of friend requests
+const getFriendRequestBubbleCount = async (refresh) => {
+    const authenticatedUser = (0,_utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_5__.parseAuthenticatedUser)();
+    if (refresh && authenticatedUser) {
+        return await (0,_services_friends__WEBPACK_IMPORTED_MODULE_1__.getFriendRequestCount)(authenticatedUser.id);
+    }
+    return (0,_bubble__WEBPACK_IMPORTED_MODULE_6__.getBubbleValue)('nav-friends');
+};
+// Fetches the count of unread private messages
+const getPrivateMessageBubbleCount = async (refresh) => {
+    const authenticatedUser = (0,_utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_5__.parseAuthenticatedUser)();
+    if (refresh && authenticatedUser) {
+        return await (0,_services_private_messages__WEBPACK_IMPORTED_MODULE_2__.getUnreadMessageCount)(authenticatedUser.id);
+    }
+    return (0,_bubble__WEBPACK_IMPORTED_MODULE_6__.getBubbleValue)('nav-message');
+};
+// Fetches the count of inbound trades
+const getTradeBubbleCount = async (refresh) => {
+    const authenticatedUser = (0,_utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_5__.parseAuthenticatedUser)();
+    if (refresh && authenticatedUser) {
+        return await (0,_services_trades__WEBPACK_IMPORTED_MODULE_4__.getTradeCount)('inbound');
+    }
+    return (0,_bubble__WEBPACK_IMPORTED_MODULE_6__.getBubbleValue)('nav-trade');
+};
+// Update the navigation bar, periodically.
+setInterval(async () => {
+    const shouldRefresh = await refreshEnabled();
+    // Update the Robux count.
+    const robux = await (0,_robux__WEBPACK_IMPORTED_MODULE_8__.getRobux)(shouldRefresh);
+    (0,_robux__WEBPACK_IMPORTED_MODULE_8__.setRobux)(robux);
+    // Update the friend request count.
+    const friendRequests = await getFriendRequestBubbleCount(shouldRefresh);
+    (0,_bubble__WEBPACK_IMPORTED_MODULE_6__.setBubbleValue)('nav-friends', friendRequests);
+    // Update the private message count.
+    const unreadPrivateMessages = await getPrivateMessageBubbleCount(shouldRefresh);
+    (0,_bubble__WEBPACK_IMPORTED_MODULE_6__.setBubbleValue)('nav-message', unreadPrivateMessages);
+    // Update the trade count.
+    const trades = await getTradeBubbleCount(shouldRefresh);
+    (0,_bubble__WEBPACK_IMPORTED_MODULE_6__.setBubbleValue)('nav-trade', trades);
+    // Update navigation links.
+    const links = await (0,_links__WEBPACK_IMPORTED_MODULE_7__.getLinkOverrides)();
+    if (links.length === 2) {
+        // First element in the array is the third link in the navigation bar.
+        // Which is also the link that is second to last.
+        if (links[0].override) {
+            (0,_links__WEBPACK_IMPORTED_MODULE_7__.updateNavigationLink)(-2, links[0].text, links[0].href);
+        }
+        // Second element in the array is the fourth link in the navigation bar.
+        // Which is also the link that is also the last link in the navigation bar.
+        if (links[1].override) {
+            (0,_links__WEBPACK_IMPORTED_MODULE_7__.updateNavigationLink)(-1, links[1].text, links[1].href);
+        }
+    }
+    // Control panel link.
+    let controlPanelLink = document.querySelector('a#nav-rplus');
+    if (!controlPanelLink && _constants__WEBPACK_IMPORTED_MODULE_0__.manifest.homepage_url) {
+        const upgradeButton = document.querySelector('li.rbx-upgrade-now');
+        if (!upgradeButton) {
+            // Couldn't find the element we use to prepend before... :coffin:
+            return;
+        }
+        const container = document.createElement('li');
+        // The link itself
+        controlPanelLink = document.createElement('a');
+        controlPanelLink.setAttribute('id', 'nav-rplus');
+        controlPanelLink.setAttribute('href', _constants__WEBPACK_IMPORTED_MODULE_0__.manifest.homepage_url);
+        controlPanelLink.setAttribute('class', 'dynamic-overflow-container text-nav');
+        container.appendChild(controlPanelLink);
+        // The icon
+        const controlPanelIcon = document.createElement('span');
+        controlPanelIcon.setAttribute('class', 'rplus-icon');
+        const controlPanelIconContainer = document.createElement('div');
+        controlPanelIconContainer.appendChild(controlPanelIcon);
+        controlPanelLink.appendChild(controlPanelIconContainer);
+        // The text
+        const controlPanelText = document.createElement('span');
+        controlPanelText.setAttribute('class', 'font-header-2 dynamic-ellipsis-item');
+        controlPanelText.innerText = 'Control Panel';
+        controlPanelLink.appendChild(controlPanelText);
+        // The finale
+        upgradeButton.before(container);
+    }
+}, 500);
+window.navigationBar = {
+    getRobux: _robux__WEBPACK_IMPORTED_MODULE_8__.getRobux,
+    setRobux: _robux__WEBPACK_IMPORTED_MODULE_8__.setRobux,
+    getBubbleValue: _bubble__WEBPACK_IMPORTED_MODULE_6__.getBubbleValue,
+    setBubbleValue: _bubble__WEBPACK_IMPORTED_MODULE_6__.setBubbleValue,
+    updateNavigationLink: _links__WEBPACK_IMPORTED_MODULE_7__.updateNavigationLink,
+};
+
+
+/***/ }),
+
+/***/ "./src/js/pages/all/navigation/links.ts":
+/*!**********************************************!*\
+  !*** ./src/js/pages/all/navigation/links.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getLinkOverrides": () => (/* binding */ getLinkOverrides),
+/* harmony export */   "updateNavigationLink": () => (/* binding */ updateNavigationLink)
+/* harmony export */ });
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./src/js/pages/all/navigation/utils.ts");
+
+
+const getLinkOverrides = async () => {
+    try {
+        const setting = await (0,_services_settings__WEBPACK_IMPORTED_MODULE_0__.getSettingValue)('navigation');
+        if (setting.buttons) {
+            return setting.buttons.map((button) => {
+                if ((button.href === '/develop' && button.text === 'Create') ||
+                    (button.href.startsWith('/robux') && button.text === 'Robux')) {
+                    // default value, do not override
+                    return {
+                        href: '',
+                        text: '',
+                        override: false,
+                    };
+                }
+                // Value has been set explicitly, use that.
+                return {
+                    href: button.href,
+                    text: button.text,
+                    override: true,
+                };
+            });
+        }
+    }
+    catch (err) {
+        console.warn('Failed to fetch navigation link overrides', err);
+    }
+    return [];
+};
+// Updates a navigation link item by its index.
+const updateNavigationLink = (index, text, href) => {
+    document
+        .querySelectorAll('#header ul.rbx-navbar')
+        .forEach((navigationBar) => {
+        const navigationLinks = Array.from(navigationBar.querySelectorAll('li>a.nav-menu-title:first-child'));
+        const link = navigationLinks[index >= 0 ? index : navigationLinks.length + index];
+        if (link) {
+            (0,_utils__WEBPACK_IMPORTED_MODULE_1__.setText)(link, text);
+            link.setAttribute('href', href);
+        }
+    });
+};
+
+
+
+/***/ }),
+
+/***/ "./src/js/pages/all/navigation/robux.ts":
+/*!**********************************************!*\
+  !*** ./src/js/pages/all/navigation/robux.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getRobux": () => (/* binding */ getRobux),
+/* harmony export */   "setRobux": () => (/* binding */ setRobux)
+/* harmony export */ });
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils */ "./src/js/pages/all/navigation/utils.ts");
+/* harmony import */ var _utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../utils/authenticatedUser */ "./src/js/utils/authenticatedUser.ts");
+/* harmony import */ var _services_currency__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/currency */ "./src/js/services/currency/index.ts");
+/* harmony import */ var _utils_abbreviateNumber__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../utils/abbreviateNumber */ "./src/js/utils/abbreviateNumber.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
+
+
+
+
+
+const devexRate = 0.0035;
+// Checks whether or not the DevEx rate is visible.
+const devexRateEnabled = async () => {
+    try {
+        const setting = await (0,_services_settings__WEBPACK_IMPORTED_MODULE_4__.getSettingValue)('navigation');
+        return setting?.showDevexRate === true;
+    }
+    catch (err) {
+        console.warn('Failed to check if DevEx rate is visible.', err);
+        return false;
+    }
+};
+// Gets the element containing the DevEx rate for the current Robux.
+const getDevExRateElement = (robuxValueElement) => {
+    let devexContainer = document.getElementById('rplus-devex-rate');
+    if (!devexContainer) {
+        // We don't have a container, create it.
+        devexContainer = document.createElement('li');
+        devexContainer.setAttribute('id', 'rplus-devex-rate');
+        robuxValueElement.parentElement?.after(devexContainer);
+    }
+    let devexElement = devexContainer.querySelector('a');
+    if (!devexElement) {
+        devexElement = document.createElement('a');
+        devexElement.setAttribute('href', 'https://create.roblox.com/devex');
+        devexElement.classList.add('rbx-menu-item');
+        devexContainer.append(devexElement);
+    }
+    return devexElement;
+};
+// Fetches the Robux from the navigation bar, if possible.
+// Otherwise, fetches the Robux from the API.
+const getRobux = async (mustLoad) => {
+    const authenticatedUser = (0,_utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_1__.parseAuthenticatedUser)();
+    if (!authenticatedUser) {
+        return 0;
+    }
+    const countElement = document.getElementById('navbar-robux');
+    if (!mustLoad) {
+        // Adding a count attribute on the element to cache the value.
+        const count = Number(countElement?.getAttribute('count') || NaN);
+        if (!isNaN(count)) {
+            return count;
+        }
+        const element = document.getElementById('nav-robux-balance');
+        if (element) {
+            const textCount = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.parseNumber)(element?.innerText);
+            countElement?.setAttribute('count', `${textCount}`);
+            return textCount;
+        }
+    }
+    const loadedCount = await (0,_services_currency__WEBPACK_IMPORTED_MODULE_2__.getRobuxBalance)(authenticatedUser.id);
+    countElement?.setAttribute('count', `${loadedCount}`);
+    return loadedCount;
+};
+// Updates the Robux count in the navigation bar.
+const setRobux = async (value) => {
+    const authenticatedUser = (0,_utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_1__.parseAuthenticatedUser)();
+    if (!authenticatedUser) {
+        // Can't update the Robux count yet because there is no authenticated user.
+        // Page probably isn't loaded, or we're logged out.
+        return;
+    }
+    const countElement = document.getElementById('navbar-robux');
+    countElement?.setAttribute('count', `${value}`);
+    try {
+        const abbreviatedAt = await (0,_utils__WEBPACK_IMPORTED_MODULE_0__.getAbbreviateAtValue)();
+        const abbreviatedElement = document.getElementById('nav-robux-amount');
+        if (abbreviatedElement) {
+            (0,_utils__WEBPACK_IMPORTED_MODULE_0__.setText)(abbreviatedElement, (0,_utils_abbreviateNumber__WEBPACK_IMPORTED_MODULE_3__["default"])(value, abbreviatedAt));
+        }
+        const fullValueElement = document.getElementById('nav-robux-balance');
+        if (fullValueElement) {
+            (0,_utils__WEBPACK_IMPORTED_MODULE_0__.setText)(fullValueElement, `${value.toLocaleString()} Robux`);
+            if (await devexRateEnabled()) {
+                const devexBalance = value * devexRate;
+                const devexElement = getDevExRateElement(fullValueElement);
+                const formattedValue = Number(devexBalance.toFixed(2))
+                    .toLocaleString()
+                    .replace(/\.(\d)$/, `.$10`);
+                (0,_utils__WEBPACK_IMPORTED_MODULE_0__.setText)(devexElement, `$${formattedValue} USD`);
+            }
+        }
+    }
+    catch (err) {
+        console.warn('Failed to update Robux in navigation bar', err);
+    }
+};
+
+
+
+/***/ }),
+
+/***/ "./src/js/pages/all/navigation/utils.ts":
+/*!**********************************************!*\
+  !*** ./src/js/pages/all/navigation/utils.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getAbbreviateAtValue": () => (/* binding */ getAbbreviateAtValue),
+/* harmony export */   "parseNumber": () => (/* binding */ parseNumber),
+/* harmony export */   "setText": () => (/* binding */ setText)
+/* harmony export */ });
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _utils_abbreviateNumber__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../utils/abbreviateNumber */ "./src/js/utils/abbreviateNumber.ts");
+
+
+// Parses a whole number out of a string, which could be locale-formatted.
+const parseNumber = (input) => {
+    const match = input?.match(/\d+/g) || [];
+    if (match.length < 1) {
+        return NaN;
+    }
+    return Number(match.join(''));
+};
+// Sets the text on an element, or ignores it.
+const setText = (element, text) => {
+    if (element.innerText === text) {
+        return false;
+    }
+    element.innerText = text;
+    return true;
+};
+// Fetches the value where we should start abbreviating navigation counters.
+const getAbbreviateAtValue = async () => {
+    let abbreviation = null;
+    try {
+        const setting = await (0,_services_settings__WEBPACK_IMPORTED_MODULE_0__.getSettingValue)('navigation');
+        if (setting?.counterCommas) {
+            abbreviation = Number(setting.counterCommas);
+        }
+    }
+    catch (err) {
+        console.warn('Failed to determine abbreviation value', err);
+    }
+    return abbreviation || _utils_abbreviateNumber__WEBPACK_IMPORTED_MODULE_1__.abbreviations[0].value;
+};
+
+
+
+/***/ }),
+
+/***/ "./src/js/services/currency/getRobuxBalance.ts":
+/*!*****************************************************!*\
+  !*** ./src/js/services/currency/getRobuxBalance.ts ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/wait */ "./src/js/utils/wait.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+
+const messageDestination = 'currencyService.getRobuxBalance';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const failureDelay = 5 * 1000;
+// Fetches the Robux balance of the currently authenticated user.
+const getRobuxBalance = (userId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, { userId });
+};
+// Loads the Robux balance of the currently authenticated user.
+const loadRobuxBalance = async (userId) => {
+    const response = await fetch(`https://economy.roblox.com/v1/users/${userId}/currency`);
+    // If we fail to send the request, delay the response to ensure we don't spam the API.
+    if (response.status === 401) {
+        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        throw 'User is unauthenticated';
+    }
+    else if (!response.ok) {
+        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        throw 'Failed to load Robux balance';
+    }
+    const result = await response.json();
+    try {
+        // HACK: Continue recording Robux history to not impact current functionality.
+        window.RPlus.robuxHistory?.recordUserRobux(userId, result.robux);
+    }
+    catch (err) {
+        console.warn('Failed to record robuxHistory');
+    }
+    return result.robux;
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.userId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadRobuxBalance(message.userId));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getRobuxBalance);
+
+
+/***/ }),
+
+/***/ "./src/js/services/currency/index.ts":
+/*!*******************************************!*\
+  !*** ./src/js/services/currency/index.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getRobuxBalance": () => (/* reexport safe */ _getRobuxBalance__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _getRobuxBalance__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getRobuxBalance */ "./src/js/services/currency/getRobuxBalance.ts");
+
+globalThis.currencyService = { getRobuxBalance: _getRobuxBalance__WEBPACK_IMPORTED_MODULE_0__["default"] };
+
+
+
+/***/ }),
+
+/***/ "./src/js/services/friends/getFriendRequestCount.ts":
+/*!**********************************************************!*\
+  !*** ./src/js/services/friends/getFriendRequestCount.ts ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/wait */ "./src/js/utils/wait.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+
+const messageDestination = 'friendsService.getFriendRequestCount';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const failureDelay = 5 * 1000;
+// Fetches the inbound friend request count for the currently authenticated user.
+const getFriendRequestCount = (userId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, { userId });
+};
+// Loads the inbound friend request count for the currently authenticated user.
+const loadFriendRequestCount = async (userId) => {
+    // User ID is used as a cache buster.
+    const response = await fetch(`https://friends.roblox.com/v1/user/friend-requests/count`);
+    // If we fail to send the request, delay the response to ensure we don't spam the API.
+    if (response.status === 401) {
+        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        throw 'User is unauthenticated';
+    }
+    else if (!response.ok) {
+        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        throw 'Failed to load friend request count';
+    }
+    const result = await response.json();
+    return result.count;
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.userId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadFriendRequestCount(message.userId));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getFriendRequestCount);
+
+
+/***/ }),
+
+/***/ "./src/js/services/friends/getUserFriends.ts":
+/*!***************************************************!*\
+  !*** ./src/js/services/friends/getUserFriends.ts ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+const messageDestination = 'friendsService.getUserFriends';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 60 * 1000);
+// Fetches the list of friends for the user.
+const getUserFriends = (userId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, {
+        userId,
+    });
+};
+// Loads the actual friend list for the user.
+const loadUserFriends = async (userId) => {
+    const response = await fetch(`https://friends.roblox.com/v1/users/${userId}/friends`);
+    if (!response.ok) {
+        throw new Error(`Failed to load friends for user (${userId})`);
+    }
+    const result = await response.json();
+    return result.data.map((r) => {
+        return {
+            id: r.id,
+            name: r.name,
+            displayName: r.displayName,
+        };
+    });
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.userId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadUserFriends(message.userId));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getUserFriends);
+
+
+/***/ }),
+
+/***/ "./src/js/services/friends/index.ts":
+/*!******************************************!*\
+  !*** ./src/js/services/friends/index.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getFriendRequestCount": () => (/* reexport safe */ _getFriendRequestCount__WEBPACK_IMPORTED_MODULE_1__["default"]),
+/* harmony export */   "getUserFriends": () => (/* reexport safe */ _getUserFriends__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _getUserFriends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getUserFriends */ "./src/js/services/friends/getUserFriends.ts");
+/* harmony import */ var _getFriendRequestCount__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getFriendRequestCount */ "./src/js/services/friends/getFriendRequestCount.ts");
+
+
+globalThis.friendsService = { getUserFriends: _getUserFriends__WEBPACK_IMPORTED_MODULE_0__["default"], getFriendRequestCount: _getFriendRequestCount__WEBPACK_IMPORTED_MODULE_1__["default"] };
+
+
+
+/***/ }),
+
 /***/ "./src/js/services/game-launch/buildProtocolUrl.ts":
 /*!*********************************************************!*\
   !*** ./src/js/services/game-launch/buildProtocolUrl.ts ***!
@@ -496,7 +1135,7 @@ const presenceCache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0
 const getUserPresence = (userId) => {
     return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { userId });
 };
-// Listen for messages of things trying to fetch presence.
+// Listen for messages sent to the service worker.
 (0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
     // Check the cache
     return presenceCache.getOrAdd(`${message.userId}`, () => 
@@ -504,6 +1143,77 @@ const getUserPresence = (userId) => {
     presenceProcessor.enqueue(message.userId));
 });
 globalThis.presenceService = { getUserPresence };
+
+
+
+/***/ }),
+
+/***/ "./src/js/services/private-messages/getUnreadMessageCount.ts":
+/*!*******************************************************************!*\
+  !*** ./src/js/services/private-messages/getUnreadMessageCount.ts ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/wait */ "./src/js/utils/wait.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+
+const messageDestination = 'privateMessagesService.getUnreadMessageCount';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const failureDelay = 5 * 1000;
+// Fetches the unread private message count for the currently authenticated user.
+const getUnreadMessageCount = (userId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, { userId });
+};
+// Loads the unread private message count for the authenticated user.
+const loadUnreadMessageCount = async (userId) => {
+    // User ID is used as a cache buster.
+    const response = await fetch(`https://privatemessages.roblox.com/v1/messages/unread/count`);
+    // If we fail to send the request, delay the response to ensure we don't spam the API.
+    if (response.status === 401) {
+        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        throw 'User is unauthenticated';
+    }
+    else if (!response.ok) {
+        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        throw 'Failed to load unread private message count';
+    }
+    const result = await response.json();
+    return result.count;
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.userId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadUnreadMessageCount(message.userId));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getUnreadMessageCount);
+
+
+/***/ }),
+
+/***/ "./src/js/services/private-messages/index.ts":
+/*!***************************************************!*\
+  !*** ./src/js/services/private-messages/index.ts ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getUnreadMessageCount": () => (/* reexport safe */ _getUnreadMessageCount__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _getUnreadMessageCount__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getUnreadMessageCount */ "./src/js/services/private-messages/getUnreadMessageCount.ts");
+
+globalThis.privateMessagesService = { getUnreadMessageCount: _getUnreadMessageCount__WEBPACK_IMPORTED_MODULE_0__["default"] };
 
 
 
@@ -603,6 +1313,159 @@ const getValueFromLocalStorage = (key) => {
     });
 });
 globalThis.settingsService = { getSettingValue, getToggleSettingValue, setSettingValue };
+
+
+
+/***/ }),
+
+/***/ "./src/js/services/trades/getTradeCount.ts":
+/*!*************************************************!*\
+  !*** ./src/js/services/trades/getTradeCount.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/wait */ "./src/js/utils/wait.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+
+const messageDestination = 'tradesService.getTradeCount';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const failureDelay = 5 * 1000;
+// Fetches the unread private message count for the currently authenticated user.
+const getTradeCount = (tradeStatusType) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        tradeStatusType,
+    });
+};
+// Loads the unread private message count for the authenticated user.
+const loadTradeCount = async (tradeStatusType) => {
+    // User ID is used as a cache buster.
+    const response = await fetch(`https://trades.roblox.com/v1/trades/${tradeStatusType}/count`);
+    // If we fail to send the request, delay the response to ensure we don't spam the API.
+    if (response.status === 401) {
+        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        throw 'User is unauthenticated';
+    }
+    else if (!response.ok) {
+        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        throw `Failed to load ${tradeStatusType} trade count`;
+    }
+    const result = await response.json();
+    return result.count;
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.tradeStatusType}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadTradeCount(message.tradeStatusType));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getTradeCount);
+
+
+/***/ }),
+
+/***/ "./src/js/services/trades/index.ts":
+/*!*****************************************!*\
+  !*** ./src/js/services/trades/index.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getTradeCount": () => (/* reexport safe */ _getTradeCount__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _getTradeCount__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getTradeCount */ "./src/js/services/trades/getTradeCount.ts");
+
+globalThis.tradesService = { getTradeCount: _getTradeCount__WEBPACK_IMPORTED_MODULE_0__["default"] };
+
+
+
+/***/ }),
+
+/***/ "./src/js/utils/abbreviateNumber.ts":
+/*!******************************************!*\
+  !*** ./src/js/utils/abbreviateNumber.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "abbreviations": () => (/* binding */ abbreviations),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// All the values to abbreviate a number at.
+const abbreviations = [
+    {
+        value: 1000,
+        abbreviation: 'K',
+    },
+    {
+        value: 1000000,
+        abbreviation: 'M',
+    },
+    {
+        value: 1000000000,
+        abbreviation: 'B',
+    },
+    {
+        value: 1000000000000,
+        abbreviation: 'T',
+    },
+];
+
+// Abbreviates a number, for human readability, after it surpasses a given value (or after 1,000 if not provided).
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((value, abbreviateAt) => {
+    if (!abbreviateAt) {
+        abbreviateAt = abbreviations[0].value;
+    }
+    if (value >= abbreviateAt) {
+        for (let i = abbreviations.length - 1; i >= 0; i--) {
+            if (value >= abbreviations[i].value) {
+                return `${Math.floor(value / abbreviations[i].value).toLocaleString()}${abbreviations[i].abbreviation}+`;
+            }
+        }
+    }
+    return value.toLocaleString();
+});
+
+
+/***/ }),
+
+/***/ "./src/js/utils/authenticatedUser.ts":
+/*!*******************************************!*\
+  !*** ./src/js/utils/authenticatedUser.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   "parseAuthenticatedUser": () => (/* binding */ parseAuthenticatedUser)
+/* harmony export */ });
+// Fetches the user who is currently authenticated on the loaded web page.
+const parseAuthenticatedUser = () => {
+    const userData = globalThis.document && document.querySelector(`meta[name='user-data']`);
+    // The user who is currently authenticated on the loaded web page.
+    return userData
+        ? {
+            id: Number(userData.getAttribute('data-userid')),
+            name: userData.getAttribute('data-name') || '',
+            displayName: userData.getAttribute('data-displayname') || '',
+        }
+        : null;
+};
+const authenticatedUser = parseAuthenticatedUser();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (authenticatedUser);
+// TODO: Deprecate after manifest V3 conversion.
 
 
 
@@ -759,6 +1622,25 @@ if (_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
     }
     // Otherwise, we have to send a message out and try some nonsense.
     await (0,_services_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { protocolUrl });
+});
+
+
+/***/ }),
+
+/***/ "./src/js/utils/wait.ts":
+/*!******************************!*\
+  !*** ./src/js/utils/wait.ts ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((time) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(resolve, time);
+    });
 });
 
 
@@ -1268,26 +2150,28 @@ var __webpack_exports__ = {};
   \***********************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "followUser": () => (/* reexport safe */ _services_game_launch__WEBPACK_IMPORTED_MODULE_4__.followUser),
-/* harmony export */   "getUserPresence": () => (/* reexport safe */ _services_presence__WEBPACK_IMPORTED_MODULE_3__.getUserPresence)
+/* harmony export */   "followUser": () => (/* reexport safe */ _services_game_launch__WEBPACK_IMPORTED_MODULE_5__.followUser),
+/* harmony export */   "getUserPresence": () => (/* reexport safe */ _services_presence__WEBPACK_IMPORTED_MODULE_4__.getUserPresence)
 /* harmony export */ });
-/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../services/settings */ "./src/js/services/settings/index.ts");
-/* harmony import */ var twemoji__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! twemoji */ "./node_modules/twemoji/dist/twemoji.esm.js");
-/* harmony import */ var _css_pages_all_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../css/pages/all.scss */ "./src/css/pages/all.scss");
-/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../services/presence */ "./src/js/services/presence/index.ts");
-/* harmony import */ var _services_game_launch__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../services/game-launch */ "./src/js/services/game-launch/index.ts");
+/* harmony import */ var _navigation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./navigation */ "./src/js/pages/all/navigation/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var twemoji__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! twemoji */ "./node_modules/twemoji/dist/twemoji.esm.js");
+/* harmony import */ var _css_pages_all_scss__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../css/pages/all.scss */ "./src/css/pages/all.scss");
+/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../services/presence */ "./src/js/services/presence/index.ts");
+/* harmony import */ var _services_game_launch__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../services/game-launch */ "./src/js/services/game-launch/index.ts");
+
 
 
 
 // twemojis
-(0,_services_settings__WEBPACK_IMPORTED_MODULE_0__.getToggleSettingValue)('twemoji')
+(0,_services_settings__WEBPACK_IMPORTED_MODULE_1__.getToggleSettingValue)('twemoji')
     .then((enabled) => {
     if (!enabled) {
         return;
     }
-    setInterval(() => twemoji__WEBPACK_IMPORTED_MODULE_1__["default"].parse(document.body), 500);
+    setInterval(() => twemoji__WEBPACK_IMPORTED_MODULE_2__["default"].parse(document.body), 500);
     if (document.body) {
-        twemoji__WEBPACK_IMPORTED_MODULE_1__["default"].parse(document.body);
+        twemoji__WEBPACK_IMPORTED_MODULE_2__["default"].parse(document.body);
     }
 })
     .catch((err) => {

@@ -187,7 +187,7 @@ const getBadgeAwardDate = async (userId, badgeId) => {
     });
     return date ? new Date(date) : undefined;
 };
-// Listen for messages of things trying to fetch presence.
+// Listen for messages sent to the service worker.
 (0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
     // Check the cache
     return badgeAwardCache.getOrAdd(badgeAwardProcessor.getKey(message), async () => {
@@ -528,18 +528,25 @@ globalThis.settingsService = { getSettingValue, getToggleSettingValue, setSettin
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   "parseAuthenticatedUser": () => (/* binding */ parseAuthenticatedUser)
 /* harmony export */ });
-const userData = globalThis.document && document.querySelector(`meta[name='user-data']`);
-// The user who is currently authenticated on the loaded web page.
-const authenticatedUser = userData
-    ? {
-        id: Number(userData.getAttribute('data-userid')),
-        name: userData.getAttribute('data-name') || '',
-        displayName: userData.getAttribute('data-displayname') || '',
-    }
-    : null;
+// Fetches the user who is currently authenticated on the loaded web page.
+const parseAuthenticatedUser = () => {
+    const userData = globalThis.document && document.querySelector(`meta[name='user-data']`);
+    // The user who is currently authenticated on the loaded web page.
+    return userData
+        ? {
+            id: Number(userData.getAttribute('data-userid')),
+            name: userData.getAttribute('data-name') || '',
+            displayName: userData.getAttribute('data-displayname') || '',
+        }
+        : null;
+};
+const authenticatedUser = parseAuthenticatedUser();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (authenticatedUser);
+// TODO: Deprecate after manifest V3 conversion.
+
 
 
 /***/ }),
