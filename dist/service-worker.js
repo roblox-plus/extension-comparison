@@ -1311,6 +1311,221 @@ globalThis.messageService = { sendMessage, addListener, getWorkerTab, sendMessag
 
 /***/ }),
 
+/***/ "./src/js/services/premium-payouts/getPremiumPayoutsSummary.ts":
+/*!*********************************************************************!*\
+  !*** ./src/js/services/premium-payouts/getPremiumPayoutsSummary.ts ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+const messageDestination = 'premiumPayoutsService.getPremiumPayoutsSummary';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 60 * 1000);
+const serializeDate = (date) => {
+    return `${date.getFullYear()}-${`${date.getMonth() + 1}`.padStart(2, '0')}-${`${date.getDate()}`.padStart(2, '0')}`;
+};
+// Fetches the Robux balance of the currently authenticated user.
+const getPremiumPayoutsSummary = (universeId, startDate, endDate) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, {
+        universeId,
+        startDate: serializeDate(startDate),
+        endDate: serializeDate(endDate),
+    });
+};
+// Loads the Robux balance of the currently authenticated user.
+const loadPremiumPayoutsSummary = async (universeId, startDate, endDate) => {
+    const response = await fetch(`https://engagementpayouts.roblox.com/v1/universe-payout-history?universeId=${universeId}&startDate=${startDate}&endDate=${endDate}`);
+    if (!response.ok) {
+        throw 'Failed to load premium payouts';
+    }
+    const result = await response.json();
+    const payouts = [];
+    for (let date in result) {
+        const payout = result[date];
+        if (payout.eligibilityType !== 'Eligible') {
+            continue;
+        }
+        payouts.push({
+            date,
+            engagementScore: payout.engagementScore,
+            payoutInRobux: payout.payoutInRobux,
+            payoutType: payout.payoutType,
+        });
+    }
+    return payouts;
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.universeId}_${message.startDate}_${message.endDate}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadPremiumPayoutsSummary(message.universeId, message.startDate, message.endDate));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getPremiumPayoutsSummary);
+
+
+/***/ }),
+
+/***/ "./src/js/services/premium-payouts/index.ts":
+/*!**************************************************!*\
+  !*** ./src/js/services/premium-payouts/index.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getPremiumPayoutsSummary": () => (/* reexport safe */ _getPremiumPayoutsSummary__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _getPremiumPayoutsSummary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getPremiumPayoutsSummary */ "./src/js/services/premium-payouts/getPremiumPayoutsSummary.ts");
+
+globalThis.premiumPayoutsService = { getPremiumPayoutsSummary: _getPremiumPayoutsSummary__WEBPACK_IMPORTED_MODULE_0__["default"] };
+
+
+
+/***/ }),
+
+/***/ "./src/js/services/premium/getPremiumExpirationDate.ts":
+/*!*************************************************************!*\
+  !*** ./src/js/services/premium/getPremiumExpirationDate.ts ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+const messageDestination = 'premiumService.getPremiumExpirationDate';
+const definitelyPremium = {};
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 60 * 1000);
+// Check whether or not a user has a Roblox+ Premium subscription.
+const getPremiumExpirationDate = async (userId) => {
+    const expiration = await (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, {
+        userId,
+    });
+    if (!expiration) {
+        return expiration;
+    }
+    return new Date(expiration);
+};
+const getPrivateServerExpiration = async (id) => {
+    const response = await fetch(`https://games.roblox.com/v1/vip-servers/${id}`);
+    if (!response.ok) {
+        console.warn('Failed to load private server details', id, response);
+        return null;
+    }
+    const result = await response.json();
+    if (result.subscription?.expired === false) {
+        // If it's not expired, return the expiration date.
+        return result.subscription.expirationDate;
+    }
+    return null;
+};
+// Check if the user has a private server with the Roblox+ hub.
+const checkPrivateServerExpirations = async (userId) => {
+    try {
+        const response = await fetch(`https://games.roblox.com/v1/games/258257446/private-servers`);
+        if (!response.ok) {
+            console.warn('Failed to load private servers', userId, response);
+            return null;
+        }
+        const result = await response.json();
+        for (let i = 0; i < result.data.length; i++) {
+            const privateServer = result.data[i];
+            if (privateServer.owner?.id !== userId) {
+                continue;
+            }
+            try {
+                const expirationDate = await getPrivateServerExpiration(privateServer.vipServerId);
+                if (expirationDate) {
+                    // We found a private server we paid for, we're done!
+                    return expirationDate;
+                }
+            }
+            catch (err) {
+                console.warn('Failed to check if private server was active', privateServer, err);
+            }
+        }
+        return null;
+    }
+    catch (err) {
+        console.warn('Failed to check private servers', userId, err);
+        return null;
+    }
+};
+// Fetch whether or not a user has a Roblox+ Premium subscription.
+const loadPremiumMembership = async (userId) => {
+    if (definitelyPremium[userId]) {
+        return definitelyPremium[userId];
+    }
+    const expirationDate = await checkPrivateServerExpirations(userId);
+    if (expirationDate) {
+        return (definitelyPremium[userId] = expirationDate);
+    }
+    const response = await fetch(`https://api.roblox.plus/v1/rpluspremium/${userId}`);
+    if (!response.ok) {
+        throw new Error(`Failed to check premium membership for user (${userId})`);
+    }
+    const result = await response.json();
+    if (result.data) {
+        return (definitelyPremium[userId] = result.data.expiration);
+    }
+    return '';
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.userId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadPremiumMembership(message.userId));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getPremiumExpirationDate);
+
+
+/***/ }),
+
+/***/ "./src/js/services/premium/index.ts":
+/*!******************************************!*\
+  !*** ./src/js/services/premium/index.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getPremiumExpirationDate": () => (/* reexport safe */ _getPremiumExpirationDate__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   "isPremiumUser": () => (/* binding */ isPremiumUser)
+/* harmony export */ });
+/* harmony import */ var _getPremiumExpirationDate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getPremiumExpirationDate */ "./src/js/services/premium/getPremiumExpirationDate.ts");
+
+const isPremiumUser = async (userId) => {
+    const expiration = await (0,_getPremiumExpirationDate__WEBPACK_IMPORTED_MODULE_0__["default"])(userId);
+    if (expiration || expiration === null) {
+        // We have an expiration date, or it's a lifetime subscription.
+        // They are definitely premium.
+        return true;
+    }
+    // No expiration date, no premium.
+    return false;
+};
+globalThis.premiumService = { isPremiumUser, getPremiumExpirationDate: _getPremiumExpirationDate__WEBPACK_IMPORTED_MODULE_0__["default"] };
+
+
+
+/***/ }),
+
 /***/ "./src/js/services/presence/batchProcessor.ts":
 /*!****************************************************!*\
   !*** ./src/js/services/presence/batchProcessor.ts ***!
@@ -2654,19 +2869,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "badges": () => (/* reexport module object */ _services_badges__WEBPACK_IMPORTED_MODULE_0__),
 /* harmony export */   "currency": () => (/* reexport module object */ _services_currency__WEBPACK_IMPORTED_MODULE_1__),
-/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_14__.executeNotifier),
+/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_16__.executeNotifier),
 /* harmony export */   "followings": () => (/* reexport module object */ _services_followings__WEBPACK_IMPORTED_MODULE_2__),
 /* harmony export */   "friends": () => (/* reexport module object */ _services_friends__WEBPACK_IMPORTED_MODULE_3__),
 /* harmony export */   "gameLaunch": () => (/* reexport module object */ _services_game_launch__WEBPACK_IMPORTED_MODULE_4__),
 /* harmony export */   "inventory": () => (/* reexport module object */ _services_inventory__WEBPACK_IMPORTED_MODULE_5__),
 /* harmony export */   "localization": () => (/* reexport module object */ _services_localization__WEBPACK_IMPORTED_MODULE_6__),
 /* harmony export */   "message": () => (/* reexport module object */ _services_message__WEBPACK_IMPORTED_MODULE_7__),
-/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_8__),
-/* harmony export */   "privateMessages": () => (/* reexport module object */ _services_private_messages__WEBPACK_IMPORTED_MODULE_9__),
-/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_10__),
-/* harmony export */   "thumbnails": () => (/* reexport module object */ _services_thumbnails__WEBPACK_IMPORTED_MODULE_11__),
-/* harmony export */   "trades": () => (/* reexport module object */ _services_trades__WEBPACK_IMPORTED_MODULE_12__),
-/* harmony export */   "users": () => (/* reexport module object */ _services_users__WEBPACK_IMPORTED_MODULE_13__)
+/* harmony export */   "premium": () => (/* reexport module object */ _services_premium__WEBPACK_IMPORTED_MODULE_8__),
+/* harmony export */   "premiumPayouts": () => (/* reexport module object */ _services_premium_payouts__WEBPACK_IMPORTED_MODULE_9__),
+/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_10__),
+/* harmony export */   "privateMessages": () => (/* reexport module object */ _services_private_messages__WEBPACK_IMPORTED_MODULE_11__),
+/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_12__),
+/* harmony export */   "thumbnails": () => (/* reexport module object */ _services_thumbnails__WEBPACK_IMPORTED_MODULE_13__),
+/* harmony export */   "trades": () => (/* reexport module object */ _services_trades__WEBPACK_IMPORTED_MODULE_14__),
+/* harmony export */   "users": () => (/* reexport module object */ _services_users__WEBPACK_IMPORTED_MODULE_15__)
 /* harmony export */ });
 /* harmony import */ var _services_badges__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/badges */ "./src/js/services/badges/index.ts");
 /* harmony import */ var _services_currency__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/currency */ "./src/js/services/currency/index.ts");
@@ -2676,13 +2893,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/inventory */ "./src/js/services/inventory/index.ts");
 /* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/localization */ "./src/js/services/localization/index.ts");
 /* harmony import */ var _services_message__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../services/message */ "./src/js/services/message/index.ts");
-/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
-/* harmony import */ var _services_private_messages__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../services/private-messages */ "./src/js/services/private-messages/index.ts");
-/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
-/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
-/* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../services/trades */ "./src/js/services/trades/index.ts");
-/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../services/users */ "./src/js/services/users/index.ts");
-/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
+/* harmony import */ var _services_premium__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../services/premium */ "./src/js/services/premium/index.ts");
+/* harmony import */ var _services_premium_payouts__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../services/premium-payouts */ "./src/js/services/premium-payouts/index.ts");
+/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
+/* harmony import */ var _services_private_messages__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../services/private-messages */ "./src/js/services/private-messages/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
+/* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../services/trades */ "./src/js/services/trades/index.ts");
+/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../services/users */ "./src/js/services/users/index.ts");
+/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
+
+
 
 
 

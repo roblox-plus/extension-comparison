@@ -1,5 +1,5 @@
 {
-  "version": "2.4.104",
+  "version": "2.4.105",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Adds features and notifiers made by WebGL3D to the Roblox website",
@@ -24,7 +24,8 @@
         "dist/css/all.css"
       ],
       "matches": [
-        "*://*.roblox.com/*"
+        "https://www.roblox.com/*",
+        "https://web.roblox.com/*"
       ],
       "all_frames": true,
       "run_at": "document_start"
@@ -83,7 +84,8 @@
         "/css/roblox/icons.css"
       ],
       "matches": [
-        "*://*.roblox.com/*"
+        "https://www.roblox.com/*",
+        "https://web.roblox.com/*"
       ],
       "run_at": "document_start"
     },
@@ -95,12 +97,11 @@
         "/js/jquery/Game.js",
         "/js/jquery/Item.js",
         "/js/jquery/Messages.js",
-        "/js/jquery/DeveloperStats.js",
         "/js/jquery/loadPages.js"
       ],
       "matches": [
-        "*://www.roblox.com/*",
-        "*://web.roblox.com/*"
+        "https://www.roblox.com/*",
+        "https://web.roblox.com/*"
       ],
       "run_at": "document_end"
     },
@@ -114,8 +115,8 @@
         "/js/jquery/quickInfoBox.js"
       ],
       "matches": [
-        "*://www.roblox.com/*",
-        "*://web.roblox.com/*"
+        "https://www.roblox.com/*",
+        "https://web.roblox.com/*"
       ],
       "run_at": "document_end"
     },
@@ -127,7 +128,8 @@
         "/js/output/react/components/thumbnail-presence.js"
       ],
       "matches": [
-        "*://*.roblox.com/*"
+        "https://www.roblox.com/*",
+        "https://web.roblox.com/*"
       ],
       "run_at": "document_start"
     },
@@ -180,7 +182,8 @@
         "dist/css/account-settings.css"
       ],
       "matches": [
-        "*://*.roblox.com/my/account*"
+        "https://www.roblox.com/my/account*",
+        "https://web.roblox.com/my/account*"
       ],
       "run_at": "document_end"
     },
@@ -206,9 +209,12 @@
         "dist/css/item-configuration.css"
       ],
       "matches": [
-        "*://*.roblox.com/catalog/configure*",
-        "*://*.roblox.com/library/configure*",
-        "*://*.roblox.com/game-pass/configure*"
+        "https://www.roblox.com/catalog/configure*",
+        "https://web.roblox.com/catalog/configure*",
+        "https://www.roblox.com/library/configure*",
+        "https://web.roblox.com/library/configure*",
+        "https://www.roblox.com/game-pass/configure*",
+        "https://web.roblox.com/game-pass/configure*"
       ],
       "run_at": "document_end"
     },
@@ -221,7 +227,8 @@
         "dist/css/group-configuration.css"
       ],
       "matches": [
-        "*://*.roblox.com/groups/configure*"
+        "https://www.roblox.com/groups/configure*",
+        "https://web.roblox.com/groups/configure*"
       ],
       "run_at": "document_end"
     },
@@ -258,17 +265,10 @@
         "dist/css/item-details.css"
       ],
       "matches": [
-        "*://*.roblox.com/catalog/*/*",
-        "*://*.roblox.com/library/*/*"
-      ],
-      "run_at": "document_start"
-    },
-    {
-      "js": [
-        "/js/output/react/pages/developer-stats/premium-payouts-summary.js"
-      ],
-      "matches": [
-        "*://*.roblox.com/places/*/*"
+        "https://www.roblox.com/catalog/*/*",
+        "https://web.roblox.com/catalog/*/*",
+        "https://www.roblox.com/library/*/*",
+        "https://web.roblox.com/library/*/*"
       ],
       "run_at": "document_start"
     },
@@ -277,7 +277,8 @@
         "/js/output/react/pages/money/robux-history-chart.js"
       ],
       "matches": [
-        "*://*.roblox.com/transactions*"
+        "https://www.roblox.com/transactions*",
+        "https://web.roblox.com/transactions*"
       ],
       "run_at": "document_end"
     },
@@ -288,6 +289,15 @@
       "matches": [
         "https://www.roblox.com/users/*/profile*",
         "https://web.roblox.com/users/*/profile*"
+      ],
+      "run_at": "document_end"
+    },
+    {
+      "js": [
+        "./dist/pages/creator-dashboard.js"
+      ],
+      "matches": [
+        "https://create.roblox.com/*"
       ],
       "run_at": "document_end"
     }
@@ -309,9 +319,9 @@
     "tts",
     "notifications",
     "storage",
-    "*://*.roblox.com/*",
-    "*://*.rbxcdn.com/*",
-    "*://*.roblox.plus/*"
+    "https://*.roblox.com/*",
+    "https://*.rbxcdn.com/*",
+    "https://*.roblox.plus/*"
   ],
   "web_accessible_resources": [
     "*.css",
@@ -321,9 +331,9 @@
     "*.js",
     "jquery.min.map",
     "/images/icons/icon_32x32.png",
-    "*://*.roblox.com/*",
-    "*://*.rbxcdn.com/*",
-    "*://*.roblox.plus/*"
+    "https://*.roblox.com/*",
+    "https://*.rbxcdn.com/*",
+    "https://*.roblox.plus/*"
   ],
   "manifest_version": 2,
   "incognito": "split"
