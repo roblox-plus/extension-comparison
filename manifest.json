@@ -1,5 +1,5 @@
 {
-  "version": "2.4.105",
+  "version": "2.4.107",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Adds features and notifiers made by WebGL3D to the Roblox website",
@@ -94,7 +94,6 @@
         "/js/output/react/features/notification-stream/notification-stream-widget.js",
         "/js/jquery/notificationStream.js",
         "/js/jquery/Profile.js",
-        "/js/jquery/Game.js",
         "/js/jquery/Item.js",
         "/js/jquery/Messages.js",
         "/js/jquery/loadPages.js"

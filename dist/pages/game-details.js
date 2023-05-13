@@ -90,6 +90,79 @@ const addBadgeAwardedDates = async () => {
 
 /***/ }),
 
+/***/ "./src/js/pages/game-details/details.ts":
+/*!**********************************************!*\
+  !*** ./src/js/pages/game-details/details.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "placeId": () => (/* binding */ placeId)
+/* harmony export */ });
+const container = document.getElementById('game-detail-page');
+const placeId = Number(container?.dataset.placeId);
+
+
+
+/***/ }),
+
+/***/ "./src/js/pages/game-details/premium-notice.ts":
+/*!*****************************************************!*\
+  !*** ./src/js/pages/game-details/premium-notice.ts ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _details__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./details */ "./src/js/pages/game-details/details.ts");
+
+if (_details__WEBPACK_IMPORTED_MODULE_0__.placeId === 258257446) {
+    const privateServerBanner = document.querySelector('.create-server-banner-text');
+    if (privateServerBanner instanceof HTMLElement) {
+        privateServerBanner.innerText =
+            'Purchasing a private server for this place will unlock additional features for this extension. Support not guaranteed, just enjoy the features while they work.';
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/js/pages/game-details/vote-percentage.ts":
+/*!******************************************************!*\
+  !*** ./src/js/pages/game-details/vote-percentage.ts ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+const updateVoteTitle = (upvoteSpan, downvoteSpan) => {
+    const upvoteCount = Number(upvoteSpan?.getAttribute('title'));
+    const downvoteCount = Number(downvoteSpan?.getAttribute('title'));
+    if (isNaN(upvoteCount) ||
+        isNaN(downvoteCount) ||
+        upvoteCount + downvoteCount < 1) {
+        return;
+    }
+    upvoteSpan?.setAttribute('title', upvoteCount.toLocaleString());
+    downvoteSpan?.setAttribute('title', downvoteCount.toLocaleString());
+    const percentage = downvoteCount < 1
+        ? 100
+        : (100 / (upvoteCount + downvoteCount)) * upvoteCount;
+    if (upvoteSpan?.parentElement?.parentElement) {
+        const percentageSpan = document.createElement('span');
+        percentageSpan.classList.add('count-middle');
+        percentageSpan.setAttribute('title', `${percentage === 100 ? 100 : percentage.toFixed(3)}% of players recommend this game`);
+        percentageSpan.innerText = `${Math.floor(percentage)}%`;
+        upvoteSpan.closest('.vote-summary')?.prepend(percentageSpan);
+    }
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (updateVoteTitle);
+
+
+/***/ }),
+
 /***/ "./src/js/services/badges/batchProcessor.ts":
 /*!**************************************************!*\
   !*** ./src/js/services/badges/batchProcessor.ts ***!
@@ -1055,10 +1128,20 @@ var __webpack_exports__ = {};
   \********************************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _badgeAwardDates__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./badgeAwardDates */ "./src/js/pages/game-details/badgeAwardDates.ts");
-/* harmony import */ var _css_pages_game_details_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../css/pages/game-details.scss */ "./src/css/pages/game-details.scss");
+/* harmony import */ var _vote_percentage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./vote-percentage */ "./src/js/pages/game-details/vote-percentage.ts");
+/* harmony import */ var _premium_notice__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./premium-notice */ "./src/js/pages/game-details/premium-notice.ts");
+/* harmony import */ var _css_pages_game_details_scss__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../css/pages/game-details.scss */ "./src/css/pages/game-details.scss");
+
+
 
 
 setInterval(async () => {
+    try {
+        (0,_vote_percentage__WEBPACK_IMPORTED_MODULE_1__["default"])(document.querySelector('#vote-up-text'), document.querySelector('#vote-down-text'));
+    }
+    catch (e) {
+        console.error(e);
+    }
     try {
         await (0,_badgeAwardDates__WEBPACK_IMPORTED_MODULE_0__.addBadgeAwardedDates)();
     }

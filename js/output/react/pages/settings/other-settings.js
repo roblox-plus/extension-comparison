@@ -26,18 +26,6 @@ class OtherSettings extends SettingsTab {
       class: "section-content"
     }, /*#__PURE__*/React.createElement("span", {
       class: "text-lead"
-    }, "Track of joined servers."), /*#__PURE__*/React.createElement(PillToggle, {
-      getValue: this.getPillValue.bind(this, "gameServerTracker.on"),
-      onToggle: this.setPillValue.bind(this, "gameServerTracker.on"),
-      disabled: !this.state.isPremium
-    }), /*#__PURE__*/React.createElement("div", {
-      class: "rbx-divider"
-    }), /*#__PURE__*/React.createElement("span", {
-      class: "text-description"
-    }, "Keeps track of which game servers you've joined and which ones you haven't. This feature is for Roblox+ Premium users only.")), /*#__PURE__*/React.createElement("div", {
-      class: "section-content"
-    }, /*#__PURE__*/React.createElement("span", {
-      class: "text-lead"
     }, "Badge Achievement Dates"), /*#__PURE__*/React.createElement(PillToggle, {
       getValue: this.getPillValue.bind(this, "badgeAchievementDatesEnabled"),
       onToggle: this.setPillValue.bind(this, "badgeAchievementDatesEnabled")

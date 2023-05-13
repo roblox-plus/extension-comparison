@@ -1,18 +1,15 @@
 /*!*****************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/resolve-url-loader/index.js!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./src/css/pages/game-details.scss ***!
   \*****************************************************************************************************************************************************************************************************************************/
-#game-detail-page[data-place-id='2117000638'] #game-details-play-button-container:hover button {
-  background: linear-gradient(124deg, #99027f, #009bbd, #6aab1f, #005c9f, #b4200e);
-  background-size: 1800% 1800%;
-  animation: rainbow 4s ease infinite; }
+.vote-summary .upvote {
+  width: 28px; }
 
-@keyframes rainbow {
-  0% {
-    background-position: 0% 82%; }
-  50% {
-    background-position: 100% 19%; }
-  100% {
-    background-position: 0% 82%; } }
+.vote-summary .count-middle {
+  text-align: center;
+  width: 100%;
+  position: absolute;
+  top: -20px;
+  left: 0; }
 
 game-badges-list .badge-image {
   border-radius: 100%;

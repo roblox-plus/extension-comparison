@@ -377,6 +377,108 @@ globalThis.executeNotifier = executeNotifier;
 
 /***/ }),
 
+/***/ "./src/js/services/assets/get-asset-contents-url.ts":
+/*!**********************************************************!*\
+  !*** ./src/js/services/assets/get-asset-contents-url.ts ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/batch */ "./node_modules/@tix-factory/batch/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../constants */ "./src/js/constants/index.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+
+
+
+const messageDestination = 'assetsService.getAssetContentsUrl';
+class AssetContentsBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__.Batch {
+    constructor() {
+        super({
+            levelOfParallelism: 1,
+            maxSize: 100,
+            minimumDelay: 1000,
+            enqueueDeferDelay: 10,
+        });
+    }
+    async process(items) {
+        const requestHeaders = new Headers();
+        requestHeaders.append('Roblox-Place-Id', '258257446');
+        requestHeaders.append('Roblox-Browser-Asset-Request', _constants__WEBPACK_IMPORTED_MODULE_3__.manifest.name);
+        const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_2__["default"])(new URL(`https://assetdelivery.roblox.com/v2/assets/batch`), {
+            method: 'POST',
+            headers: requestHeaders,
+            body: JSON.stringify(items.map((batchItem) => {
+                return {
+                    assetId: batchItem.value,
+                    requestId: batchItem.key,
+                };
+            })),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to load asset contents URL');
+        }
+        const result = await response.json();
+        items.forEach((item) => {
+            const asset = result.data.find((a) => a.RequestId === item.key);
+            const location = asset?.Locations[0];
+            if (location?.location) {
+                item.resolve(location.location);
+            }
+            else {
+                item.resolve('');
+            }
+        });
+    }
+    getKey(item) {
+        return item.toString();
+    }
+}
+const assetContentsProcessor = new AssetContentsBatchProcessor();
+const assetContentsCache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 10 * 60 * 1000);
+// Fetches the date when a badge was awarded to the specified user.
+const getAssetContentsUrl = (assetId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_4__.sendMessage)(messageDestination, {
+        assetId,
+    });
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_4__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return assetContentsCache.getOrAdd(assetContentsProcessor.getKey(message.assetId), () => {
+        // Queue up the fetch request, when not in the cache
+        return assetContentsProcessor.enqueue(message.assetId);
+    });
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getAssetContentsUrl);
+
+
+/***/ }),
+
+/***/ "./src/js/services/assets/index.ts":
+/*!*****************************************!*\
+  !*** ./src/js/services/assets/index.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getAssetContentsUrl": () => (/* reexport safe */ _get_asset_contents_url__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _get_asset_contents_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./get-asset-contents-url */ "./src/js/services/assets/get-asset-contents-url.ts");
+
+globalThis.assetsService = { getAssetContentsUrl: _get_asset_contents_url__WEBPACK_IMPORTED_MODULE_0__["default"] };
+
+
+
+/***/ }),
+
 /***/ "./src/js/services/badges/batchProcessor.ts":
 /*!**************************************************!*\
   !*** ./src/js/services/badges/batchProcessor.ts ***!
@@ -2867,41 +2969,44 @@ var __webpack_exports__ = {};
   \****************************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "badges": () => (/* reexport module object */ _services_badges__WEBPACK_IMPORTED_MODULE_0__),
-/* harmony export */   "currency": () => (/* reexport module object */ _services_currency__WEBPACK_IMPORTED_MODULE_1__),
-/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_16__.executeNotifier),
-/* harmony export */   "followings": () => (/* reexport module object */ _services_followings__WEBPACK_IMPORTED_MODULE_2__),
-/* harmony export */   "friends": () => (/* reexport module object */ _services_friends__WEBPACK_IMPORTED_MODULE_3__),
-/* harmony export */   "gameLaunch": () => (/* reexport module object */ _services_game_launch__WEBPACK_IMPORTED_MODULE_4__),
-/* harmony export */   "inventory": () => (/* reexport module object */ _services_inventory__WEBPACK_IMPORTED_MODULE_5__),
-/* harmony export */   "localization": () => (/* reexport module object */ _services_localization__WEBPACK_IMPORTED_MODULE_6__),
-/* harmony export */   "message": () => (/* reexport module object */ _services_message__WEBPACK_IMPORTED_MODULE_7__),
-/* harmony export */   "premium": () => (/* reexport module object */ _services_premium__WEBPACK_IMPORTED_MODULE_8__),
-/* harmony export */   "premiumPayouts": () => (/* reexport module object */ _services_premium_payouts__WEBPACK_IMPORTED_MODULE_9__),
-/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_10__),
-/* harmony export */   "privateMessages": () => (/* reexport module object */ _services_private_messages__WEBPACK_IMPORTED_MODULE_11__),
-/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_12__),
-/* harmony export */   "thumbnails": () => (/* reexport module object */ _services_thumbnails__WEBPACK_IMPORTED_MODULE_13__),
-/* harmony export */   "trades": () => (/* reexport module object */ _services_trades__WEBPACK_IMPORTED_MODULE_14__),
-/* harmony export */   "users": () => (/* reexport module object */ _services_users__WEBPACK_IMPORTED_MODULE_15__)
+/* harmony export */   "assets": () => (/* reexport module object */ _services_assets__WEBPACK_IMPORTED_MODULE_0__),
+/* harmony export */   "badges": () => (/* reexport module object */ _services_badges__WEBPACK_IMPORTED_MODULE_1__),
+/* harmony export */   "currency": () => (/* reexport module object */ _services_currency__WEBPACK_IMPORTED_MODULE_2__),
+/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_17__.executeNotifier),
+/* harmony export */   "followings": () => (/* reexport module object */ _services_followings__WEBPACK_IMPORTED_MODULE_3__),
+/* harmony export */   "friends": () => (/* reexport module object */ _services_friends__WEBPACK_IMPORTED_MODULE_4__),
+/* harmony export */   "gameLaunch": () => (/* reexport module object */ _services_game_launch__WEBPACK_IMPORTED_MODULE_5__),
+/* harmony export */   "inventory": () => (/* reexport module object */ _services_inventory__WEBPACK_IMPORTED_MODULE_6__),
+/* harmony export */   "localization": () => (/* reexport module object */ _services_localization__WEBPACK_IMPORTED_MODULE_7__),
+/* harmony export */   "message": () => (/* reexport module object */ _services_message__WEBPACK_IMPORTED_MODULE_8__),
+/* harmony export */   "premium": () => (/* reexport module object */ _services_premium__WEBPACK_IMPORTED_MODULE_9__),
+/* harmony export */   "premiumPayouts": () => (/* reexport module object */ _services_premium_payouts__WEBPACK_IMPORTED_MODULE_10__),
+/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_11__),
+/* harmony export */   "privateMessages": () => (/* reexport module object */ _services_private_messages__WEBPACK_IMPORTED_MODULE_12__),
+/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_13__),
+/* harmony export */   "thumbnails": () => (/* reexport module object */ _services_thumbnails__WEBPACK_IMPORTED_MODULE_14__),
+/* harmony export */   "trades": () => (/* reexport module object */ _services_trades__WEBPACK_IMPORTED_MODULE_15__),
+/* harmony export */   "users": () => (/* reexport module object */ _services_users__WEBPACK_IMPORTED_MODULE_16__)
 /* harmony export */ });
-/* harmony import */ var _services_badges__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/badges */ "./src/js/services/badges/index.ts");
-/* harmony import */ var _services_currency__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/currency */ "./src/js/services/currency/index.ts");
-/* harmony import */ var _services_followings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/followings */ "./src/js/services/followings/index.ts");
-/* harmony import */ var _services_friends__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/friends */ "./src/js/services/friends/index.ts");
-/* harmony import */ var _services_game_launch__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/game-launch */ "./src/js/services/game-launch/index.ts");
-/* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/inventory */ "./src/js/services/inventory/index.ts");
-/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/localization */ "./src/js/services/localization/index.ts");
-/* harmony import */ var _services_message__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../services/message */ "./src/js/services/message/index.ts");
-/* harmony import */ var _services_premium__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../services/premium */ "./src/js/services/premium/index.ts");
-/* harmony import */ var _services_premium_payouts__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../services/premium-payouts */ "./src/js/services/premium-payouts/index.ts");
-/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
-/* harmony import */ var _services_private_messages__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../services/private-messages */ "./src/js/services/private-messages/index.ts");
-/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
-/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
-/* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../services/trades */ "./src/js/services/trades/index.ts");
-/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../services/users */ "./src/js/services/users/index.ts");
-/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
+/* harmony import */ var _services_assets__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/assets */ "./src/js/services/assets/index.ts");
+/* harmony import */ var _services_badges__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/badges */ "./src/js/services/badges/index.ts");
+/* harmony import */ var _services_currency__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/currency */ "./src/js/services/currency/index.ts");
+/* harmony import */ var _services_followings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/followings */ "./src/js/services/followings/index.ts");
+/* harmony import */ var _services_friends__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/friends */ "./src/js/services/friends/index.ts");
+/* harmony import */ var _services_game_launch__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/game-launch */ "./src/js/services/game-launch/index.ts");
+/* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/inventory */ "./src/js/services/inventory/index.ts");
+/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../services/localization */ "./src/js/services/localization/index.ts");
+/* harmony import */ var _services_message__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../services/message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _services_premium__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../services/premium */ "./src/js/services/premium/index.ts");
+/* harmony import */ var _services_premium_payouts__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../services/premium-payouts */ "./src/js/services/premium-payouts/index.ts");
+/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
+/* harmony import */ var _services_private_messages__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../services/private-messages */ "./src/js/services/private-messages/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
+/* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../services/trades */ "./src/js/services/trades/index.ts");
+/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../services/users */ "./src/js/services/users/index.ts");
+/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
+
 
 
 
