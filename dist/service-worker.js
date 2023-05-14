@@ -20,6 +20,98 @@ const isBackgroundPage = chrome.runtime.getURL(manifest.background?.page || '') 
 
 /***/ }),
 
+/***/ "./src/js/enums/assetType.ts":
+/*!***********************************!*\
+  !*** ./src/js/enums/assetType.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var AssetType;
+(function (AssetType) {
+    AssetType[AssetType["Image"] = 1] = "Image";
+    AssetType[AssetType["TShirt"] = 2] = "TShirt";
+    AssetType[AssetType["Audio"] = 3] = "Audio";
+    AssetType[AssetType["Mesh"] = 4] = "Mesh";
+    AssetType[AssetType["Lua"] = 5] = "Lua";
+    AssetType[AssetType["Html"] = 6] = "Html";
+    AssetType[AssetType["Text"] = 7] = "Text";
+    AssetType[AssetType["Hat"] = 8] = "Hat";
+    AssetType[AssetType["Place"] = 9] = "Place";
+    AssetType[AssetType["Model"] = 10] = "Model";
+    AssetType[AssetType["Shirt"] = 11] = "Shirt";
+    AssetType[AssetType["Pants"] = 12] = "Pants";
+    AssetType[AssetType["Decal"] = 13] = "Decal";
+    AssetType[AssetType["Avatar"] = 16] = "Avatar";
+    AssetType[AssetType["Head"] = 17] = "Head";
+    AssetType[AssetType["Face"] = 18] = "Face";
+    AssetType[AssetType["Gear"] = 19] = "Gear";
+    AssetType[AssetType["Badge"] = 21] = "Badge";
+    AssetType[AssetType["GroupEmblem"] = 22] = "GroupEmblem";
+    AssetType[AssetType["Animation"] = 24] = "Animation";
+    AssetType[AssetType["Arms"] = 25] = "Arms";
+    AssetType[AssetType["Legs"] = 26] = "Legs";
+    AssetType[AssetType["Torso"] = 27] = "Torso";
+    AssetType[AssetType["RightArm"] = 28] = "RightArm";
+    AssetType[AssetType["LeftArm"] = 29] = "LeftArm";
+    AssetType[AssetType["LeftLeg"] = 30] = "LeftLeg";
+    AssetType[AssetType["RightLeg"] = 31] = "RightLeg";
+    AssetType[AssetType["Package"] = 32] = "Package";
+    AssetType[AssetType["YouTubeVideo"] = 33] = "YouTubeVideo";
+    AssetType[AssetType["GamePass"] = 34] = "GamePass";
+    AssetType[AssetType["App"] = 35] = "App";
+    AssetType[AssetType["Code"] = 37] = "Code";
+    AssetType[AssetType["Plugin"] = 38] = "Plugin";
+    AssetType[AssetType["SolidModel"] = 39] = "SolidModel";
+    AssetType[AssetType["MeshPart"] = 40] = "MeshPart";
+    AssetType[AssetType["HairAccessory"] = 41] = "HairAccessory";
+    AssetType[AssetType["FaceAccessory"] = 42] = "FaceAccessory";
+    AssetType[AssetType["NeckAccessory"] = 43] = "NeckAccessory";
+    AssetType[AssetType["ShoulderAccessory"] = 44] = "ShoulderAccessory";
+    AssetType[AssetType["FrontAccessory"] = 45] = "FrontAccessory";
+    AssetType[AssetType["BackAccessory"] = 46] = "BackAccessory";
+    AssetType[AssetType["WaistAccessory"] = 47] = "WaistAccessory";
+    AssetType[AssetType["ClimbAnimation"] = 48] = "ClimbAnimation";
+    AssetType[AssetType["DeathAnimation"] = 49] = "DeathAnimation";
+    AssetType[AssetType["FallAnimation"] = 50] = "FallAnimation";
+    AssetType[AssetType["IdleAnimation"] = 51] = "IdleAnimation";
+    AssetType[AssetType["JumpAnimation"] = 52] = "JumpAnimation";
+    AssetType[AssetType["RunAnimation"] = 53] = "RunAnimation";
+    AssetType[AssetType["SwimAnimation"] = 54] = "SwimAnimation";
+    AssetType[AssetType["WalkAnimation"] = 55] = "WalkAnimation";
+    AssetType[AssetType["PoseAnimation"] = 56] = "PoseAnimation";
+    AssetType[AssetType["EarAccessory"] = 57] = "EarAccessory";
+    AssetType[AssetType["EyeAccessory"] = 58] = "EyeAccessory";
+    AssetType[AssetType["LocalizationTableManifest"] = 59] = "LocalizationTableManifest";
+    AssetType[AssetType["LocalizationTableTranslation"] = 60] = "LocalizationTableTranslation";
+    AssetType[AssetType["Emote"] = 61] = "Emote";
+    AssetType[AssetType["Video"] = 62] = "Video";
+    AssetType[AssetType["TexturePack"] = 63] = "TexturePack";
+    AssetType[AssetType["TShirtAccessory"] = 64] = "TShirtAccessory";
+    AssetType[AssetType["ShirtAccessory"] = 65] = "ShirtAccessory";
+    AssetType[AssetType["PantsAccessory"] = 66] = "PantsAccessory";
+    AssetType[AssetType["JacketAccessory"] = 67] = "JacketAccessory";
+    AssetType[AssetType["SweaterAccessory"] = 68] = "SweaterAccessory";
+    AssetType[AssetType["ShortsAccessory"] = 69] = "ShortsAccessory";
+    AssetType[AssetType["LeftShoeAccessory"] = 70] = "LeftShoeAccessory";
+    AssetType[AssetType["RightShoeAccessory"] = 71] = "RightShoeAccessory";
+    AssetType[AssetType["DressSkirtAccessory"] = 72] = "DressSkirtAccessory";
+    AssetType[AssetType["FontFamily"] = 73] = "FontFamily";
+    AssetType[AssetType["FontFace"] = 74] = "FontFace";
+    AssetType[AssetType["MeshHiddenSurfaceRemoval"] = 75] = "MeshHiddenSurfaceRemoval";
+    AssetType[AssetType["EyebrowAccessory"] = 76] = "EyebrowAccessory";
+    AssetType[AssetType["EyelashAccessory"] = 77] = "EyelashAccessory";
+    AssetType[AssetType["MoodAnimation"] = 78] = "MoodAnimation";
+    AssetType[AssetType["DynamicHead"] = 79] = "DynamicHead";
+})(AssetType || (AssetType = {}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AssetType);
+
+
+/***/ }),
+
 /***/ "./src/js/enums/presenceType.ts":
 /*!**************************************!*\
   !*** ./src/js/enums/presenceType.ts ***!
@@ -426,8 +518,8 @@ class AssetContentsBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_M
         }
         const result = await response.json();
         items.forEach((item) => {
-            const asset = result.data.find((a) => a.RequestId === item.key);
-            const location = asset?.Locations[0];
+            const asset = result.find((a) => a.requestId === item.key);
+            const location = asset?.locations[0];
             if (location?.location) {
                 item.resolve(location.location);
             }
@@ -443,10 +535,11 @@ class AssetContentsBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_M
 const assetContentsProcessor = new AssetContentsBatchProcessor();
 const assetContentsCache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 10 * 60 * 1000);
 // Fetches the date when a badge was awarded to the specified user.
-const getAssetContentsUrl = (assetId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_4__.sendMessage)(messageDestination, {
+const getAssetContentsUrl = async (assetId) => {
+    const url = await (0,_message__WEBPACK_IMPORTED_MODULE_4__.sendMessage)(messageDestination, {
         assetId,
     });
+    return url ? new URL(url) : undefined;
 };
 // Listen for messages sent to the service worker.
 (0,_message__WEBPACK_IMPORTED_MODULE_4__.addListener)(messageDestination, (message) => {
@@ -461,6 +554,47 @@ const getAssetContentsUrl = (assetId) => {
 
 /***/ }),
 
+/***/ "./src/js/services/assets/get-asset-sales-count.ts":
+/*!*********************************************************!*\
+  !*** ./src/js/services/assets/get-asset-sales-count.ts ***!
+  \*********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+const messageDestination = 'assetsService.getAssetSalesCount';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const getAssetSalesCount = async (assetId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { assetId });
+};
+const loadAssetSalesCount = async (assetId) => {
+    const response = await fetch(`https://economy.roblox.com/v2/assets/${assetId}/details`);
+    if (!response.ok) {
+        throw new Error('Failed to load asset product info');
+    }
+    const result = await response.json();
+    return result.Sales || NaN;
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.assetId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadAssetSalesCount(message.assetId));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getAssetSalesCount);
+
+
+/***/ }),
+
 /***/ "./src/js/services/assets/index.ts":
 /*!*****************************************!*\
   !*** ./src/js/services/assets/index.ts ***!
@@ -469,11 +603,133 @@ const getAssetContentsUrl = (assetId) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getAssetContentsUrl": () => (/* reexport safe */ _get_asset_contents_url__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */   "getAssetContentsUrl": () => (/* reexport safe */ _get_asset_contents_url__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   "getAssetSalesCount": () => (/* reexport safe */ _get_asset_sales_count__WEBPACK_IMPORTED_MODULE_1__["default"])
 /* harmony export */ });
 /* harmony import */ var _get_asset_contents_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./get-asset-contents-url */ "./src/js/services/assets/get-asset-contents-url.ts");
+/* harmony import */ var _get_asset_sales_count__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./get-asset-sales-count */ "./src/js/services/assets/get-asset-sales-count.ts");
 
-globalThis.assetsService = { getAssetContentsUrl: _get_asset_contents_url__WEBPACK_IMPORTED_MODULE_0__["default"] };
+
+globalThis.assetsService = { getAssetContentsUrl: _get_asset_contents_url__WEBPACK_IMPORTED_MODULE_0__["default"], getAssetSalesCount: _get_asset_sales_count__WEBPACK_IMPORTED_MODULE_1__["default"] };
+
+
+
+/***/ }),
+
+/***/ "./src/js/services/avatar/get-avatar-asset-rules.ts":
+/*!**********************************************************!*\
+  !*** ./src/js/services/avatar/get-avatar-asset-rules.ts ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+const messageDestination = 'avatarService.getAvatarRules';
+let avatarAssetRules = [];
+const getAvatarAssetRules = async () => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {});
+};
+const loadAvatarAssetRules = async () => {
+    const response = await fetch(`https://avatar.roblox.com/v1/avatar-rules`);
+    if (!response.ok) {
+        throw new Error(`Failed to load avatar rules (${response.status})`);
+    }
+    const result = await response.json();
+    return result.wearableAssetTypes.map((rule) => {
+        return {
+            maxNumber: rule.maxNumber,
+            assetType: rule.id,
+        };
+    });
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, async () => {
+    if (avatarAssetRules.length > 0) {
+        return avatarAssetRules;
+    }
+    avatarAssetRules = await loadAvatarAssetRules();
+    return avatarAssetRules;
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getAvatarAssetRules);
+
+
+/***/ }),
+
+/***/ "./src/js/services/avatar/index.ts":
+/*!*****************************************!*\
+  !*** ./src/js/services/avatar/index.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getAvatarAssetRules": () => (/* reexport safe */ _get_avatar_asset_rules__WEBPACK_IMPORTED_MODULE_2__["default"]),
+/* harmony export */   "getAvatarAssets": () => (/* binding */ getAvatarAssets),
+/* harmony export */   "removeItem": () => (/* binding */ removeItem),
+/* harmony export */   "wearItem": () => (/* binding */ wearItem)
+/* harmony export */ });
+/* harmony import */ var _enums_assetType__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../enums/assetType */ "./src/js/enums/assetType.ts");
+/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
+/* harmony import */ var _get_avatar_asset_rules__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./get-avatar-asset-rules */ "./src/js/services/avatar/get-avatar-asset-rules.ts");
+
+
+
+const getAvatarAssets = async (userId) => {
+    const response = await fetch(`https://avatar.roblox.com/v1/users/${userId}/avatar`);
+    if (!response.ok) {
+        throw new Error(`Failed to load avatar (${response.status})`);
+    }
+    const result = await response.json();
+    const assets = result.assets.map((asset) => {
+        return {
+            id: asset.id,
+            name: asset.name,
+            assetType: asset.assetType.id,
+        };
+    });
+    result.emotes.forEach((emote) => {
+        assets.push({
+            id: emote.assetId,
+            name: emote.assetName,
+            assetType: _enums_assetType__WEBPACK_IMPORTED_MODULE_0__["default"].Emote,
+        });
+    });
+    return assets;
+};
+const wearItem = async (assetId, authenticatedUserId) => {
+    // Use set-wearing-assets instead of wear because it will allow more than the limit
+    const currentAssets = await getAvatarAssets(authenticatedUserId);
+    const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_1__["default"])(new URL(`https://avatar.roblox.com/v1/avatar/set-wearing-assets`), {
+        method: 'POST',
+        body: JSON.stringify({
+            assetIds: [assetId].concat(currentAssets
+                .filter((a) => a.assetType !== _enums_assetType__WEBPACK_IMPORTED_MODULE_0__["default"].Emote)
+                .map((a) => a.id)),
+        }),
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to wear asset (${assetId})`);
+    }
+    const result = await response.json();
+    if (result.invalidAssetIds.length > 0) {
+        throw new Error(`Failed to wear assets (${result.invalidAssetIds.join(', ')})`);
+    }
+};
+const removeItem = async (assetId) => {
+    const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_1__["default"])(new URL(`https://avatar.roblox.com/v1/avatar/assets/${assetId}/remove`), {
+        method: 'POST',
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to remove asset (${assetId})`);
+    }
+};
+globalThis.avatarService = { getAvatarAssetRules: _get_avatar_asset_rules__WEBPACK_IMPORTED_MODULE_2__["default"], getAvatarAssets, wearItem, removeItem };
 
 
 
@@ -992,6 +1248,65 @@ const followUser = async (userId) => {
     await (0,_utils_launchProtocolUrl__WEBPACK_IMPORTED_MODULE_0__["default"])(url);
 };
 globalThis.gameLaunchService = { followUser };
+
+
+
+/***/ }),
+
+/***/ "./src/js/services/game-passes/get-game-pass-sale-count.ts":
+/*!*****************************************************************!*\
+  !*** ./src/js/services/game-passes/get-game-pass-sale-count.ts ***!
+  \*****************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+const messageDestination = 'gamePassesService.getGamePassSaleCount';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const getGamePassSaleCount = async (gamePassId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { gamePassId });
+};
+const loadGamePassSales = async (gamePassId) => {
+    const response = await fetch(`https://economy.roblox.com/v1/game-pass/${gamePassId}/game-pass-product-info`);
+    if (!response.ok) {
+        throw new Error('Failed to load game pass product info');
+    }
+    const result = await response.json();
+    return result.Sales || NaN;
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.gamePassId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadGamePassSales(message.gamePassId));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getGamePassSaleCount);
+
+
+/***/ }),
+
+/***/ "./src/js/services/game-passes/index.ts":
+/*!**********************************************!*\
+  !*** ./src/js/services/game-passes/index.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getGamePassSaleCount": () => (/* reexport safe */ _get_game_pass_sale_count__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _get_game_pass_sale_count__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./get-game-pass-sale-count */ "./src/js/services/game-passes/get-game-pass-sale-count.ts");
+
+globalThis.gamePassesService = { getGamePassSaleCount: _get_game_pass_sale_count__WEBPACK_IMPORTED_MODULE_0__["default"] };
 
 
 
@@ -2970,42 +3285,48 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "assets": () => (/* reexport module object */ _services_assets__WEBPACK_IMPORTED_MODULE_0__),
-/* harmony export */   "badges": () => (/* reexport module object */ _services_badges__WEBPACK_IMPORTED_MODULE_1__),
-/* harmony export */   "currency": () => (/* reexport module object */ _services_currency__WEBPACK_IMPORTED_MODULE_2__),
-/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_17__.executeNotifier),
-/* harmony export */   "followings": () => (/* reexport module object */ _services_followings__WEBPACK_IMPORTED_MODULE_3__),
-/* harmony export */   "friends": () => (/* reexport module object */ _services_friends__WEBPACK_IMPORTED_MODULE_4__),
-/* harmony export */   "gameLaunch": () => (/* reexport module object */ _services_game_launch__WEBPACK_IMPORTED_MODULE_5__),
-/* harmony export */   "inventory": () => (/* reexport module object */ _services_inventory__WEBPACK_IMPORTED_MODULE_6__),
-/* harmony export */   "localization": () => (/* reexport module object */ _services_localization__WEBPACK_IMPORTED_MODULE_7__),
-/* harmony export */   "message": () => (/* reexport module object */ _services_message__WEBPACK_IMPORTED_MODULE_8__),
-/* harmony export */   "premium": () => (/* reexport module object */ _services_premium__WEBPACK_IMPORTED_MODULE_9__),
-/* harmony export */   "premiumPayouts": () => (/* reexport module object */ _services_premium_payouts__WEBPACK_IMPORTED_MODULE_10__),
-/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_11__),
-/* harmony export */   "privateMessages": () => (/* reexport module object */ _services_private_messages__WEBPACK_IMPORTED_MODULE_12__),
-/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_13__),
-/* harmony export */   "thumbnails": () => (/* reexport module object */ _services_thumbnails__WEBPACK_IMPORTED_MODULE_14__),
-/* harmony export */   "trades": () => (/* reexport module object */ _services_trades__WEBPACK_IMPORTED_MODULE_15__),
-/* harmony export */   "users": () => (/* reexport module object */ _services_users__WEBPACK_IMPORTED_MODULE_16__)
+/* harmony export */   "avatar": () => (/* reexport module object */ _services_avatar__WEBPACK_IMPORTED_MODULE_1__),
+/* harmony export */   "badges": () => (/* reexport module object */ _services_badges__WEBPACK_IMPORTED_MODULE_2__),
+/* harmony export */   "currency": () => (/* reexport module object */ _services_currency__WEBPACK_IMPORTED_MODULE_3__),
+/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_19__.executeNotifier),
+/* harmony export */   "followings": () => (/* reexport module object */ _services_followings__WEBPACK_IMPORTED_MODULE_4__),
+/* harmony export */   "friends": () => (/* reexport module object */ _services_friends__WEBPACK_IMPORTED_MODULE_5__),
+/* harmony export */   "gameLaunch": () => (/* reexport module object */ _services_game_launch__WEBPACK_IMPORTED_MODULE_6__),
+/* harmony export */   "gamePasses": () => (/* reexport module object */ _services_game_passes__WEBPACK_IMPORTED_MODULE_7__),
+/* harmony export */   "inventory": () => (/* reexport module object */ _services_inventory__WEBPACK_IMPORTED_MODULE_8__),
+/* harmony export */   "localization": () => (/* reexport module object */ _services_localization__WEBPACK_IMPORTED_MODULE_9__),
+/* harmony export */   "message": () => (/* reexport module object */ _services_message__WEBPACK_IMPORTED_MODULE_10__),
+/* harmony export */   "premium": () => (/* reexport module object */ _services_premium__WEBPACK_IMPORTED_MODULE_11__),
+/* harmony export */   "premiumPayouts": () => (/* reexport module object */ _services_premium_payouts__WEBPACK_IMPORTED_MODULE_12__),
+/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_13__),
+/* harmony export */   "privateMessages": () => (/* reexport module object */ _services_private_messages__WEBPACK_IMPORTED_MODULE_14__),
+/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_15__),
+/* harmony export */   "thumbnails": () => (/* reexport module object */ _services_thumbnails__WEBPACK_IMPORTED_MODULE_16__),
+/* harmony export */   "trades": () => (/* reexport module object */ _services_trades__WEBPACK_IMPORTED_MODULE_17__),
+/* harmony export */   "users": () => (/* reexport module object */ _services_users__WEBPACK_IMPORTED_MODULE_18__)
 /* harmony export */ });
 /* harmony import */ var _services_assets__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/assets */ "./src/js/services/assets/index.ts");
-/* harmony import */ var _services_badges__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/badges */ "./src/js/services/badges/index.ts");
-/* harmony import */ var _services_currency__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/currency */ "./src/js/services/currency/index.ts");
-/* harmony import */ var _services_followings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/followings */ "./src/js/services/followings/index.ts");
-/* harmony import */ var _services_friends__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/friends */ "./src/js/services/friends/index.ts");
-/* harmony import */ var _services_game_launch__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/game-launch */ "./src/js/services/game-launch/index.ts");
-/* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/inventory */ "./src/js/services/inventory/index.ts");
-/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../services/localization */ "./src/js/services/localization/index.ts");
-/* harmony import */ var _services_message__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../services/message */ "./src/js/services/message/index.ts");
-/* harmony import */ var _services_premium__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../services/premium */ "./src/js/services/premium/index.ts");
-/* harmony import */ var _services_premium_payouts__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../services/premium-payouts */ "./src/js/services/premium-payouts/index.ts");
-/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
-/* harmony import */ var _services_private_messages__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../services/private-messages */ "./src/js/services/private-messages/index.ts");
-/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
-/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
-/* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../services/trades */ "./src/js/services/trades/index.ts");
-/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../services/users */ "./src/js/services/users/index.ts");
-/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
+/* harmony import */ var _services_avatar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/avatar */ "./src/js/services/avatar/index.ts");
+/* harmony import */ var _services_badges__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/badges */ "./src/js/services/badges/index.ts");
+/* harmony import */ var _services_currency__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/currency */ "./src/js/services/currency/index.ts");
+/* harmony import */ var _services_followings__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/followings */ "./src/js/services/followings/index.ts");
+/* harmony import */ var _services_friends__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/friends */ "./src/js/services/friends/index.ts");
+/* harmony import */ var _services_game_launch__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/game-launch */ "./src/js/services/game-launch/index.ts");
+/* harmony import */ var _services_game_passes__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../services/game-passes */ "./src/js/services/game-passes/index.ts");
+/* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../services/inventory */ "./src/js/services/inventory/index.ts");
+/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../services/localization */ "./src/js/services/localization/index.ts");
+/* harmony import */ var _services_message__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../services/message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _services_premium__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../services/premium */ "./src/js/services/premium/index.ts");
+/* harmony import */ var _services_premium_payouts__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../services/premium-payouts */ "./src/js/services/premium-payouts/index.ts");
+/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
+/* harmony import */ var _services_private_messages__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../services/private-messages */ "./src/js/services/private-messages/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
+/* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../services/trades */ "./src/js/services/trades/index.ts");
+/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../services/users */ "./src/js/services/users/index.ts");
+/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
+
+
 
 
 

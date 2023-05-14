@@ -41,17 +41,15 @@ class OtherSettings extends SettingsTab {
       class: "section-content"
     }, /*#__PURE__*/React.createElement("span", {
       class: "text-lead"
-    }, "Live number remaining counter for limiteds."), /*#__PURE__*/React.createElement(PillToggle, {
-      getValue: this.getPillValue.bind(this, "remainingCounter"),
-      onToggle: this.setPillValue.bind(this, "remainingCounter")
+    }, "Created Items Sales Counter"), /*#__PURE__*/React.createElement(PillToggle, {
+      getValue: this.getPillValue.bind(this, "itemSalesCounter"),
+      onToggle: this.setPillValue.bind(this, "itemSalesCounter"),
+      disabled: !this.state.isPremium
     }), /*#__PURE__*/React.createElement("div", {
       class: "rbx-divider"
     }), /*#__PURE__*/React.createElement("span", {
-      class: "text-lead"
-    }, "Sales counter on created items."), /*#__PURE__*/React.createElement(PillToggle, {
-      getValue: this.getPillValue.bind(this, "itemSalesCounter"),
-      onToggle: this.setPillValue.bind(this, "itemSalesCounter")
-    }))), /*#__PURE__*/React.createElement("div", {
+      class: "text-description"
+    }, "Adds a sales count label on item details pages for items that you created. This feature is for Roblox+ Premium users only."))), /*#__PURE__*/React.createElement("div", {
       class: "section"
     }, /*#__PURE__*/React.createElement("div", {
       class: "container-header"
