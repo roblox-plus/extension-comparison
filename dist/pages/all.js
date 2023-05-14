@@ -679,7 +679,7 @@ const getUserRobuxHistory = async (userId, startDateTime, endDateTime) => {
         currencyHolderType: 'User',
         currencyHolderId: message.userId,
         robux: message.robux,
-        robuxDate: robuxDateTime,
+        robuxDate: robuxDateTime.getTime(),
     });
 }, {
     levelOfParallelism: 1,
