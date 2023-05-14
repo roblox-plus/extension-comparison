@@ -1,5 +1,5 @@
 {
-  "version": "2.4.112",
+  "version": "2.4.115",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Adds features and notifiers made by WebGL3D to the Roblox website",
@@ -74,8 +74,7 @@
         "/js/rplus/RobloxPlus.js",
         "/js/rplus/settings.js",
         "/js/rplus/premium.js",
-        "/js/rplus/bucketedSales.js",
-        "/js/rplus/robuxHistory.js"
+        "/js/rplus/bucketedSales.js"
       ],
       "css": [
         "/css/icons.css",
@@ -303,7 +302,7 @@
     },
     {
       "js": [
-        "/js/output/react/pages/money/robux-history-chart.js"
+        "./dist/pages/transactions.js"
       ],
       "matches": [
         "https://www.roblox.com/transactions*",
