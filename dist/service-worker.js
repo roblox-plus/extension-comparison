@@ -572,6 +572,118 @@ const getAssetContentsUrl = async (assetId) => {
 
 /***/ }),
 
+/***/ "./src/js/services/assets/get-asset-dependencies.ts":
+/*!**********************************************************!*\
+  !*** ./src/js/services/assets/get-asset-dependencies.ts ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _get_asset_contents_url__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./get-asset-contents-url */ "./src/js/services/assets/get-asset-contents-url.ts");
+
+
+
+const messageDestination = 'assetsService.getAssetDependencies';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const contentRegexes = [
+    /"TextureI?d?".*=\s*(\d+)/gi,
+    /"TextureI?d?".*rbxassetid:\/\/(\d+)/gi,
+    /"MeshId".*=\s*(\d+)/gi,
+    /MeshId.*rbxassetid:\/\/(\d+)/gi,
+    /asset\/?\?\s*id\s*=\s*(\d+)/gi,
+    /rbxassetid:\/\/(\d+)/gi,
+    /:LoadAsset\((\d+)\)/gi,
+    /require\((\d+)\)/gi,
+];
+const getAssetDependencies = async (assetId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { assetId });
+};
+const loadAssetDependencies = async (assetId) => {
+    const assetIds = [];
+    const assetContentsUrl = await (0,_get_asset_contents_url__WEBPACK_IMPORTED_MODULE_2__["default"])(assetId);
+    if (!assetContentsUrl) {
+        return [];
+    }
+    const assetContentsResponse = await fetch(assetContentsUrl);
+    const assetContents = await assetContentsResponse.text();
+    contentRegexes.forEach((regex) => {
+        let match = assetContents.match(regex) || [];
+        match.forEach((m) => {
+            let id = Number((m.match(/(\d+)/) || [])[1]);
+            if (id && !isNaN(id) && !assetIds.includes(id)) {
+                assetIds.push(id);
+            }
+        });
+    });
+    return assetIds;
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.assetId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadAssetDependencies(message.assetId));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getAssetDependencies);
+
+
+/***/ }),
+
+/***/ "./src/js/services/assets/get-asset-details.ts":
+/*!*****************************************************!*\
+  !*** ./src/js/services/assets/get-asset-details.ts ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+const messageDestination = 'assetsService.getAssetDetails';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 5 * 60 * 1000);
+const getAssetDetails = async (assetId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { assetId });
+};
+const loadAssetDetails = async (assetId) => {
+    const response = await fetch(`https://economy.roblox.com/v2/assets/${assetId}/details`);
+    if (!response.ok) {
+        throw new Error('Failed to load asset product info');
+    }
+    const result = await response.json();
+    return {
+        id: assetId,
+        name: result.Name,
+        type: result.AssetTypeId,
+        sales: result.Sales,
+    };
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.assetId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadAssetDetails(message.assetId));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getAssetDetails);
+
+
+/***/ }),
+
 /***/ "./src/js/services/assets/get-asset-sales-count.ts":
 /*!*********************************************************!*\
   !*** ./src/js/services/assets/get-asset-sales-count.ts ***!
@@ -624,13 +736,24 @@ const loadAssetSalesCount = async (assetId) => {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getAssetContentsUrl": () => (/* reexport safe */ _get_asset_contents_url__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   "getAssetDependencies": () => (/* reexport safe */ _get_asset_dependencies__WEBPACK_IMPORTED_MODULE_2__["default"]),
+/* harmony export */   "getAssetDetails": () => (/* reexport safe */ _get_asset_details__WEBPACK_IMPORTED_MODULE_3__["default"]),
 /* harmony export */   "getAssetSalesCount": () => (/* reexport safe */ _get_asset_sales_count__WEBPACK_IMPORTED_MODULE_1__["default"])
 /* harmony export */ });
 /* harmony import */ var _get_asset_contents_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./get-asset-contents-url */ "./src/js/services/assets/get-asset-contents-url.ts");
 /* harmony import */ var _get_asset_sales_count__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./get-asset-sales-count */ "./src/js/services/assets/get-asset-sales-count.ts");
+/* harmony import */ var _get_asset_dependencies__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./get-asset-dependencies */ "./src/js/services/assets/get-asset-dependencies.ts");
+/* harmony import */ var _get_asset_details__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./get-asset-details */ "./src/js/services/assets/get-asset-details.ts");
 
 
-globalThis.assetsService = { getAssetContentsUrl: _get_asset_contents_url__WEBPACK_IMPORTED_MODULE_0__["default"], getAssetSalesCount: _get_asset_sales_count__WEBPACK_IMPORTED_MODULE_1__["default"] };
+
+
+globalThis.assetsService = {
+    getAssetContentsUrl: _get_asset_contents_url__WEBPACK_IMPORTED_MODULE_0__["default"],
+    getAssetSalesCount: _get_asset_sales_count__WEBPACK_IMPORTED_MODULE_1__["default"],
+    getAssetDependencies: _get_asset_dependencies__WEBPACK_IMPORTED_MODULE_2__["default"],
+    getAssetDetails: _get_asset_details__WEBPACK_IMPORTED_MODULE_3__["default"],
+};
 
 
 
@@ -2494,16 +2617,17 @@ const thumbnailBatchProcessor = new ThumbnailBatchProcessor();
 
 /***/ }),
 
-/***/ "./src/js/services/thumbnails/getAvatarHeadshotThumbnail.ts":
-/*!******************************************************************!*\
-  !*** ./src/js/services/thumbnails/getAvatarHeadshotThumbnail.ts ***!
-  \******************************************************************/
+/***/ "./src/js/services/thumbnails/index.ts":
+/*!*********************************************!*\
+  !*** ./src/js/services/thumbnails/index.ts ***!
+  \*********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */   "getAssetThumbnail": () => (/* binding */ getAssetThumbnail),
+/* harmony export */   "getAvatarHeadshotThumbnail": () => (/* binding */ getAvatarHeadshotThumbnail)
 /* harmony export */ });
 /* harmony import */ var _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../enums/thumbnailState */ "./src/js/enums/thumbnailState.ts");
 /* harmony import */ var _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../enums/thumbnailType */ "./src/js/enums/thumbnailType.ts");
@@ -2517,49 +2641,40 @@ __webpack_require__.r(__webpack_exports__);
 
 const messageDestination = 'thumbnailsService.getAvatarHeadshotThumbnail';
 const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__["default"](messageDestination, 5 * 60 * 1000);
-// Fetches the list of friends for the user.
+// Fetches an avatar headshot thumbnail, for the given user ID.
 const getAvatarHeadshotThumbnail = (userId) => {
     return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        userId,
+        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].AvatarHeadShot,
+        targetId: userId,
+    });
+};
+// Fetches an asset thumbnail, for the given asset ID.
+const getAssetThumbnail = (assetId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
+        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].Asset,
+        targetId: assetId,
     });
 };
 // Listen for messages sent to the service worker.
 (0,_message__WEBPACK_IMPORTED_MODULE_3__.addListener)(messageDestination, async (message) => {
+    const cacheKey = `${message.type}:${message.targetId}`;
     // Check the cache
-    const thumbnail = await cache.getOrAdd(`${message.userId}`, () => 
+    const thumbnail = await cache.getOrAdd(cacheKey, () => 
     // Queue up the fetch request, when not in the cache
     _batchProcessor__WEBPACK_IMPORTED_MODULE_4__["default"].enqueue({
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].AvatarHeadShot,
-        targetId: message.userId,
+        type: message.type,
+        targetId: message.targetId,
         size: '420x420',
     }));
     if (thumbnail.state !== _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_0__["default"].Completed) {
         setTimeout(() => {
             // If the thumbnail isn't complete, evict it from the cache early.
-            cache.evict(`${message.userId}`);
+            cache.evict(cacheKey);
         }, 30 * 1000);
     }
     return thumbnail;
 });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getAvatarHeadshotThumbnail);
-
-
-/***/ }),
-
-/***/ "./src/js/services/thumbnails/index.ts":
-/*!*********************************************!*\
-  !*** ./src/js/services/thumbnails/index.ts ***!
-  \*********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getAvatarHeadshotThumbnail": () => (/* reexport safe */ _getAvatarHeadshotThumbnail__WEBPACK_IMPORTED_MODULE_0__["default"])
-/* harmony export */ });
-/* harmony import */ var _getAvatarHeadshotThumbnail__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getAvatarHeadshotThumbnail */ "./src/js/services/thumbnails/getAvatarHeadshotThumbnail.ts");
-
-globalThis.thumbnailsService = { getAvatarHeadshotThumbnail: _getAvatarHeadshotThumbnail__WEBPACK_IMPORTED_MODULE_0__["default"] };
+globalThis.thumbnailsService = { getAvatarHeadshotThumbnail, getAssetThumbnail };
 
 
 

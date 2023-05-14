@@ -49,7 +49,18 @@ class OtherSettings extends SettingsTab {
       class: "rbx-divider"
     }), /*#__PURE__*/React.createElement("span", {
       class: "text-description"
-    }, "Adds a sales count label on item details pages for items that you created. This feature is for Roblox+ Premium users only."))), /*#__PURE__*/React.createElement("div", {
+    }, "Adds a sales count label on item details pages for items that you created. This feature is for Roblox+ Premium users only.")), /*#__PURE__*/React.createElement("div", {
+      class: "section-content"
+    }, /*#__PURE__*/React.createElement("span", {
+      class: "text-lead"
+    }, "Asset Dependencies"), /*#__PURE__*/React.createElement(PillToggle, {
+      getValue: this.getPillValue.bind(this, "asset-dependency-list"),
+      onToggle: this.setPillValue.bind(this, "asset-dependency-list")
+    }), /*#__PURE__*/React.createElement("div", {
+      class: "rbx-divider"
+    }), /*#__PURE__*/React.createElement("span", {
+      class: "text-description"
+    }, "Shows the assets that an item depends on, on the item details page."))), /*#__PURE__*/React.createElement("div", {
       class: "section"
     }, /*#__PURE__*/React.createElement("div", {
       class: "container-header"

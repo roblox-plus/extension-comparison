@@ -18,8 +18,7 @@ class ItemDetailsTabs extends React.Component {
       recommendationsContent: recommendationsContent
     };
     this.childRefs = {
-      owners: React.createRef(),
-      linkedItems: React.createRef()
+      owners: React.createRef()
     };
     this.initRefs = {};
   }
@@ -46,8 +45,6 @@ class ItemDetailsTabs extends React.Component {
     switch (tabType) {
       case ItemDetailsTabs.tabTypes.owners:
         return "Owners";
-      case ItemDetailsTabs.tabTypes.linkedItems:
-        return "Linked Items";
       case ItemDetailsTabs.tabTypes.recommendations:
         return "Recommendations";
       case ItemDetailsTabs.tabTypes.resellers:
@@ -102,13 +99,6 @@ class ItemDetailsTabs extends React.Component {
             ref: this.childRefs.owners,
             assetId: this.state.assetId
           }));
-        case ItemDetailsTabs.tabTypes.linkedItems:
-          return /*#__PURE__*/React.createElement("div", {
-            class: this.getTabPaneClassName(tabType)
-          }, /*#__PURE__*/React.createElement(LinkedItems, {
-            ref: this.childRefs.linkedItems,
-            assetId: this.state.assetId
-          }));
         default:
           return /*#__PURE__*/React.createElement("div", {
             class: "tab-pane"
@@ -131,7 +121,6 @@ class ItemDetailsTabs extends React.Component {
 }
 ItemDetailsTabs.tabTypes = {
   owners: "owners",
-  linkedItems: "linkedItems",
   recommendations: "recommendations",
   resellers: "resellers"
 };
