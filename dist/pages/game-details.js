@@ -138,6 +138,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 const updateVoteTitle = (upvoteSpan, downvoteSpan) => {
+    if (document.querySelector('.rplus-vote-percentage-label')) {
+        // Label already exists, do nothing.
+        return;
+    }
     const upvoteCount = Number(upvoteSpan?.getAttribute('title'));
     const downvoteCount = Number(downvoteSpan?.getAttribute('title'));
     if (isNaN(upvoteCount) ||
@@ -153,6 +157,7 @@ const updateVoteTitle = (upvoteSpan, downvoteSpan) => {
     if (upvoteSpan?.parentElement?.parentElement) {
         const percentageSpan = document.createElement('span');
         percentageSpan.classList.add('count-middle');
+        percentageSpan.classList.add('rplus-vote-percentage-label');
         percentageSpan.setAttribute('title', `${percentage === 100 ? 100 : percentage.toFixed(3)}% of players recommend this game`);
         percentageSpan.innerText = `${Math.floor(percentage)}%`;
         upvoteSpan.closest('.vote-summary')?.prepend(percentageSpan);
