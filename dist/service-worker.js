@@ -3781,7 +3781,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "avatar": () => (/* reexport module object */ _services_avatar__WEBPACK_IMPORTED_MODULE_1__),
 /* harmony export */   "badges": () => (/* reexport module object */ _services_badges__WEBPACK_IMPORTED_MODULE_2__),
 /* harmony export */   "currency": () => (/* reexport module object */ _services_currency__WEBPACK_IMPORTED_MODULE_3__),
-/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_19__.executeNotifier),
+/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_20__.executeNotifier),
 /* harmony export */   "followings": () => (/* reexport module object */ _services_followings__WEBPACK_IMPORTED_MODULE_4__),
 /* harmony export */   "friends": () => (/* reexport module object */ _services_friends__WEBPACK_IMPORTED_MODULE_5__),
 /* harmony export */   "gameLaunch": () => (/* reexport module object */ _services_game_launch__WEBPACK_IMPORTED_MODULE_6__),
@@ -3817,7 +3817,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
 /* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../services/trades */ "./src/js/services/trades/index.ts");
 /* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../services/users */ "./src/js/services/users/index.ts");
-/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../constants */ "./src/js/constants/index.ts");
+/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
 
 
 
@@ -3838,6 +3839,16 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+chrome.browserAction.setTitle({
+    title: `${_constants__WEBPACK_IMPORTED_MODULE_19__.manifest.name} ${_constants__WEBPACK_IMPORTED_MODULE_19__.manifest.version}`,
+});
+chrome.browserAction.onClicked.addListener(() => {
+    chrome.tabs.create({
+        url: _constants__WEBPACK_IMPORTED_MODULE_19__.manifest.homepage_url,
+        active: true,
+    });
+});
 
 })();
 
