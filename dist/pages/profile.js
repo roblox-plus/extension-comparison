@@ -82,12 +82,10 @@ const getTotalInventoryValue = (limitedInventory) => {
     const inventoryValueStat = (0,_utils__WEBPACK_IMPORTED_MODULE_4__.createStat)('RAP', '...');
     inventoryValueStat.parentElement?.addEventListener('click', async (event) => {
         event.preventDefault();
-        try {
-            window.RPlus.quickInfo.trigger(location.href);
-        }
-        catch (err) {
-            console.error('Failed to open browser action', err, _details__WEBPACK_IMPORTED_MODULE_3__.user);
-        }
+        window.postMessage({
+            messageType: 'open-roblox-plus-widget',
+            searchValue: location.href,
+        });
     });
     (0,_services_inventory__WEBPACK_IMPORTED_MODULE_0__.getLimitedInventory)(_details__WEBPACK_IMPORTED_MODULE_3__.user.id)
         .then((limitedInventory) => {
@@ -859,6 +857,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _rap__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./rap */ "./src/js/pages/profile/rap.ts");
 
+setTimeout(() => {
+    // Allow the thumbnail to be dragged, and copy the URL of the user.
+    const thumbnail = document.querySelector('.profile-avatar-thumb>.thumbnail-2d-container');
+    if (!thumbnail || !(thumbnail instanceof HTMLElement)) {
+        return;
+    }
+    thumbnail.draggable = true;
+    thumbnail.addEventListener('dragstart', (e) => {
+        e.dataTransfer?.setData('text/plain', location.href);
+    });
+}, 1000);
 
 })();
 

@@ -2755,6 +2755,166 @@ globalThis.tradesService = { getTradeCount: _getTradeCount__WEBPACK_IMPORTED_MOD
 
 /***/ }),
 
+/***/ "./src/js/services/users/get-user-by-id.ts":
+/*!*************************************************!*\
+  !*** ./src/js/services/users/get-user-by-id.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/batch */ "./node_modules/@tix-factory/batch/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+
+
+const messageDestination = 'usersService.getUserById';
+class UsersBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__.Batch {
+    constructor() {
+        super({
+            levelOfParallelism: 1,
+            maxSize: 100,
+            minimumDelay: 1000,
+            enqueueDeferDelay: 10,
+        });
+    }
+    async process(items) {
+        const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_2__["default"])(new URL(`https://users.roblox.com/v1/users`), {
+            method: 'POST',
+            body: JSON.stringify({
+                userIds: items.map((i) => i.key),
+                excludeBannedUsers: false,
+            }),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to users by ids');
+        }
+        const result = await response.json();
+        items.forEach((item) => {
+            const user = result.data.find((a) => a.id === item.value);
+            if (user) {
+                item.resolve({
+                    id: user.id,
+                    name: user.name,
+                    displayName: user.displayName,
+                });
+            }
+            else {
+                item.resolve(null);
+            }
+        });
+    }
+    getKey(item) {
+        return item.toString();
+    }
+}
+const batchProcessor = new UsersBatchProcessor();
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 2 * 60 * 1000);
+// Fetches the date when a badge was awarded to the specified user.
+const getUserById = async (id) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
+        id,
+    });
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_3__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(batchProcessor.getKey(message.id), () => {
+        // Queue up the fetch request, when not in the cache
+        return batchProcessor.enqueue(message.id);
+    });
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getUserById);
+
+
+/***/ }),
+
+/***/ "./src/js/services/users/get-user-by-name.ts":
+/*!***************************************************!*\
+  !*** ./src/js/services/users/get-user-by-name.ts ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/batch */ "./node_modules/@tix-factory/batch/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+
+
+const messageDestination = 'usersService.getUserByName';
+class UserNamesBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__.Batch {
+    constructor() {
+        super({
+            levelOfParallelism: 1,
+            maxSize: 100,
+            minimumDelay: 1000,
+            enqueueDeferDelay: 10,
+        });
+    }
+    async process(items) {
+        const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_2__["default"])(new URL(`https://users.roblox.com/v1/usernames/users`), {
+            method: 'POST',
+            body: JSON.stringify({
+                usernames: items.map((i) => i.key),
+                excludeBannedUsers: false,
+            }),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to users by names');
+        }
+        const result = await response.json();
+        items.forEach((item) => {
+            const user = result.data.find((a) => a.requestedUsername === item.key);
+            if (user) {
+                item.resolve({
+                    id: user.id,
+                    name: user.name,
+                    displayName: user.displayName,
+                });
+            }
+            else {
+                item.resolve(null);
+            }
+        });
+    }
+    getKey(item) {
+        return item;
+    }
+}
+const batchProcessor = new UserNamesBatchProcessor();
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 2 * 60 * 1000);
+// Fetches the date when a badge was awarded to the specified user.
+const getUserByName = async (name) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
+        name: name.toLowerCase(),
+    });
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_3__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(batchProcessor.getKey(message.name), () => {
+        // Queue up the fetch request, when not in the cache
+        return batchProcessor.enqueue(message.name);
+    });
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getUserByName);
+
+
+/***/ }),
+
 /***/ "./src/js/services/users/getAuthenticatedUser.ts":
 /*!*******************************************************!*\
   !*** ./src/js/services/users/getAuthenticatedUser.ts ***!
@@ -2818,11 +2978,17 @@ const loadAuthenticatedUser = async () => {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getAuthenticatedUser": () => (/* reexport safe */ _getAuthenticatedUser__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */   "getAuthenticatedUser": () => (/* reexport safe */ _getAuthenticatedUser__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   "getUserById": () => (/* reexport safe */ _get_user_by_id__WEBPACK_IMPORTED_MODULE_2__["default"]),
+/* harmony export */   "getUserByName": () => (/* reexport safe */ _get_user_by_name__WEBPACK_IMPORTED_MODULE_1__["default"])
 /* harmony export */ });
 /* harmony import */ var _getAuthenticatedUser__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getAuthenticatedUser */ "./src/js/services/users/getAuthenticatedUser.ts");
+/* harmony import */ var _get_user_by_name__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./get-user-by-name */ "./src/js/services/users/get-user-by-name.ts");
+/* harmony import */ var _get_user_by_id__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./get-user-by-id */ "./src/js/services/users/get-user-by-id.ts");
 
-globalThis.usersService = { getAuthenticatedUser: _getAuthenticatedUser__WEBPACK_IMPORTED_MODULE_0__["default"] };
+
+
+globalThis.usersService = { getAuthenticatedUser: _getAuthenticatedUser__WEBPACK_IMPORTED_MODULE_0__["default"], getUserByName: _get_user_by_name__WEBPACK_IMPORTED_MODULE_1__["default"], getUserById: _get_user_by_id__WEBPACK_IMPORTED_MODULE_2__["default"] };
 
 
 

@@ -19,88 +19,89 @@
       white-space: nowrap;
       text-overflow: ellipsis; }
 
-#navbar-rplus {
-  padding: 4px; }
-  #navbar-rplus a {
-    width: 28px;
-    height: 28px;
-    margin: 2px; }
-    #navbar-rplus a:hover {
-      background-color: transparent; }
+#navbar-settings {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center; }
+  #navbar-settings button#navbar-rplus {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent;
+    background-size: 80%;
+    border: none;
+    margin-left: 4px; }
 
-.rplus-quick-info-widget {
-  float: right;
-  padding: 0;
-  overflow: hidden;
-  margin-top: -4px;
-  right: 10px;
-  width: 418px;
+#rplus-widget {
   height: 0;
-  transition: height 0.2s, padding 0.2s; }
-  .rplus-quick-info-widget.rplus-quick-info-widget-open {
-    height: 600px;
-    padding: 5px;
-    overflow-y: auto; }
-  .rplus-quick-info-widget .form-group .input-field {
-    width: 402px; }
-  .rplus-quick-info-widget .rplus-quick-info-widget-user .avatar-card-container {
-    width: 402px; }
-    .rplus-quick-info-widget .rplus-quick-info-widget-user .avatar-card-container .avatar-card-image {
+  width: 420px;
+  margin-right: 8px;
+  float: right;
+  overflow: hidden;
+  display: flex;
+  flex-flow: column;
+  transition: height 0.2s, padding 0.2s;
+  border-radius: 8px; }
+  #rplus-widget.rplus-widget-open {
+    height: 600px; }
+  #rplus-widget .form-group {
+    margin-bottom: 4px; }
+    #rplus-widget .form-group .input-field {
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      width: 100%; }
+  #rplus-widget .spinner {
+    margin-top: 16px; }
+  #rplus-widget .rplus-user-widget {
+    padding: 0 0 4px 6px;
+    overflow-x: hidden;
+    overflow-y: scroll; }
+    #rplus-widget .rplus-user-widget::-webkit-scrollbar {
+      width: 6px; }
+    #rplus-widget .rplus-user-widget .avatar-card-container .avatar-card-image {
       overflow: hidden; }
-      .rplus-quick-info-widget .rplus-quick-info-widget-user .avatar-card-container .avatar-card-image img {
+      #rplus-widget .rplus-user-widget .avatar-card-container .avatar-card-image img {
         width: 100%;
         height: 100%; }
-  .rplus-quick-info-widget .rplus-quick-info-widget-user .rplus-icon-32x32 {
-    display: block;
-    position: absolute;
-    top: 5px;
-    right: 5px; }
-  .rplus-quick-info-widget .rplus-quick-info-widget-inventory .item-card {
-    width: 126px;
-    height: 220px;
-    margin-right: 5px; }
-    .rplus-quick-info-widget .rplus-quick-info-widget-inventory .item-card a:link, .rplus-quick-info-widget .rplus-quick-info-widget-inventory .item-card a:visited, .rplus-quick-info-widget .rplus-quick-info-widget-inventory .item-card a:active {
-      color: inherit; }
-    .rplus-quick-info-widget .rplus-quick-info-widget-inventory .item-card img {
-      width: 100%;
-      height: 100%; }
-    .rplus-quick-info-widget .rplus-quick-info-widget-inventory .item-card .item-card-price {
+    #rplus-widget .rplus-user-widget .avatar-card-container .avatar-card-label .text-subheader {
+      margin-right: 4px; }
+    #rplus-widget .rplus-user-widget .avatar-card-container .avatar-card-label.rplus-stat-label {
+      width: 75%; }
+      #rplus-widget .rplus-user-widget .avatar-card-container .avatar-card-label.rplus-stat-label .rplus-value-label {
+        float: right; }
+    #rplus-widget .rplus-user-widget .avatar-card-container .rplus-premium-indicator {
       position: absolute;
-      bottom: 10px; }
-      .rplus-quick-info-widget .rplus-quick-info-widget-inventory .item-card .item-card-price .text-robux {
-        margin-left: 6px; }
-  .rplus-quick-info-widget::-webkit-scrollbar {
-    width: 6px; }
-  .rplus-quick-info-widget::-webkit-scrollbar-track {
-    background-color: #f0f0f0; }
-  .rplus-quick-info-widget::-webkit-scrollbar-thumb {
-    background-color: #bcbcbc;
-    border-radius: 3px;
-    transition: background-color .5s; }
-  .rplus-quick-info-widget::-webkit-scrollbar-thumb:hover {
-    background-color: darkgray; }
+      top: 4px;
+      right: 4px; }
+    #rplus-widget .rplus-user-widget .list-item.item-card {
+      width: auto;
+      height: 220px; }
+      #rplus-widget .rplus-user-widget .list-item.item-card .item-card-link {
+        overflow: hidden;
+        border-radius: 8px; }
+      #rplus-widget .rplus-user-widget .list-item.item-card .limited-number {
+        margin: 0 2px 0 2px; }
+      #rplus-widget .rplus-user-widget .list-item.item-card .item-card-price {
+        position: absolute;
+        bottom: 8px; }
+        #rplus-widget .rplus-user-widget .list-item.item-card .item-card-price .text-robux {
+          margin-left: 4px; }
 
-.dark-theme .rplus-quick-info-widget.roblox-popover-container {
-  background: #1f2123; }
-  .dark-theme .rplus-quick-info-widget.roblox-popover-container::-webkit-scrollbar {
-    width: 6px; }
-  .dark-theme .rplus-quick-info-widget.roblox-popover-container::-webkit-scrollbar-track {
-    background-color: transparent; }
-  .dark-theme .rplus-quick-info-widget.roblox-popover-container::-webkit-scrollbar-thumb {
-    background-color: #000;
-    opacity: 0.75; }
-  .dark-theme .rplus-quick-info-widget.roblox-popover-container::-webkit-scrollbar-thumb:hover {
-    opacity: 0.25; }
+.dark-theme #rplus-widget {
+  background-color: #191b1d; }
 
-/* Legacy pages are weird... */
-body:not(.rbx-body) .rplus-quick-info-widget {
-  margin-top: 0;
+.light-theme #rplus-widget {
+  background-color: #dee1e3; }
+
+/* Handle legacy pages */
+body:not(.rbx-body) #rplus-widget * {
+  box-sizing: border-box; }
+
+body:not(.rbx-body) #rplus-widget ul.item-cards {
   padding: 0; }
-  body:not(.rbx-body) .rplus-quick-info-widget * {
-    box-sizing: border-box; }
-  body:not(.rbx-body) .rplus-quick-info-widget .rplus-quick-info-widget-inventory {
-    padding-left: 0; }
-    body:not(.rbx-body) .rplus-quick-info-widget .rplus-quick-info-widget-inventory .item-card .limited-icon-container {
+  body:not(.rbx-body) #rplus-widget ul.item-cards li {
+    float: left; }
+    body:not(.rbx-body) #rplus-widget ul.item-cards li .item-card .limited-icon-container {
       border-radius: 12px;
       padding: 2px 5px; }
 

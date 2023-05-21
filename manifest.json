@@ -1,5 +1,5 @@
 {
-  "version": "2.4.121",
+  "version": "2.4.123",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Adds features and notifiers made by WebGL3D to the Roblox website",
@@ -59,7 +59,6 @@
         "/js/output/react/vendors/HighchartsReact.js",
         "/js/roblox/thumbnails.js",
         "/js/roblox/users.js",
-        "/js/roblox/presence.js",
         "/js/roblox/catalog.js",
         "/js/roblox/inventory.js",
         "/js/roblox/games.js",
@@ -103,25 +102,9 @@
     },
     {
       "js": [
-        "/js/output/react/features/quick-info/quick-info-widget.js",
-        "/js/output/react/features/quick-info/user-info/user-info-widget.js",
-        "/js/output/react/features/quick-info/user-info/user-card.js",
-        "/js/output/react/features/quick-info/user-info/user-inventory.js",
-        "/js/output/react/features/quick-info/user-info/inventory-item-card.js",
-        "/js/jquery/quickInfoBox.js"
-      ],
-      "matches": [
-        "https://www.roblox.com/*",
-        "https://web.roblox.com/*"
-      ],
-      "run_at": "document_end"
-    },
-    {
-      "js": [
         "/js/output/react/components/vertical-tabs.js",
         "/js/output/react/components/pill-toggle.js",
-        "/js/output/react/components/thumbnail.js",
-        "/js/output/react/components/thumbnail-presence.js"
+        "/js/output/react/components/thumbnail.js"
       ],
       "matches": [
         "https://www.roblox.com/*",
