@@ -163,7 +163,8 @@ globalThis.gamePassesService = { getGamePassSaleCount: _get_game_pass_sale_count
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getTranslationResource": () => (/* binding */ getTranslationResource)
+/* harmony export */   "getTranslationResource": () => (/* binding */ getTranslationResource),
+/* harmony export */   "getTranslationResourceWithFallback": () => (/* binding */ getTranslationResourceWithFallback)
 /* harmony export */ });
 /* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
 
@@ -206,6 +207,19 @@ const getTranslationResource = async (namespace, key) => {
     }
     return resource?.value || '';
 };
+const getTranslationResourceWithFallback = async (namespace, key, defaultValue) => {
+    try {
+        const value = await getTranslationResource(namespace, key);
+        if (!value) {
+            return defaultValue;
+        }
+        return value;
+    }
+    catch (e) {
+        console.warn('Failed to load translation resource', namespace, key, e);
+        return defaultValue;
+    }
+};
 // Listener to ensure these always happen in the background, for strongest caching potential.
 (0,_message__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, async () => {
     if (translationResourceCache.length > 0) {
@@ -235,7 +249,7 @@ const getTranslationResource = async (namespace, key) => {
     // Ensure that multiple requests for this information can't be processed at once.
     levelOfParallelism: 1,
 });
-globalThis.localizationService = { getTranslationResource };
+globalThis.localizationService = { getTranslationResource, getTranslationResourceWithFallback };
 
 
 
@@ -660,7 +674,7 @@ const getUserProfileLink = (userId) => {
     return getSEOLink(userId, 'profile', 'users');
 };
 const getIdFromUrl = (url) => {
-    const match = url.pathname.match(/^\/(badges|games|game-pass|groups|catalog|library|users)\/(\d+)\//i) || [];
+    const match = url.pathname.match(/^\/(badges|games|game-pass|groups|catalog|library|users)\/(\d+)\/?/i) || [];
     // Returns NaN if the URL doesn't match.
     return Number(match[2]);
 };

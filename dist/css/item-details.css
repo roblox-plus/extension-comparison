@@ -4,40 +4,41 @@
 #rplus-asset-dependencies .item-card {
   height: 192px; }
 
-.rplus-item-details-tabs .rbx-tabs-horizontal {
-  margin-bottom: 12px; }
-  .rplus-item-details-tabs .rbx-tabs-horizontal .nav-tabs[rplus-tab-count='2'] > li {
-    width: 50%; }
-  .rplus-item-details-tabs .rbx-tabs-horizontal .nav-tabs[rplus-tab-count='3'] > li {
-    width: calc(100% / 3); }
-  .rplus-item-details-tabs .rbx-tabs-horizontal .nav-tabs[rplus-tab-count='4'] > li {
-    width: 25%; }
-
-.rplus-item-details-tabs .rplus-item-owners .pager ul {
-  width: 250px;
-  margin: 0 auto; }
-
-.rplus-item-details-tabs .rplus-item-owners .pager .select-group {
-  float: right;
-  width: 150px; }
-
-.rplus-item-details-tabs .rplus-item-owners .vlist .list-item {
-  margin-bottom: 0; }
-  .rplus-item-details-tabs .rplus-item-owners .vlist .list-item:first-child {
-    border-top: none; }
-  .rplus-item-details-tabs .rplus-item-owners .vlist .list-item .list-header .rplus-react-thumbnail {
-    border-radius: 100%;
-    height: 60px;
-    width: 60px; }
-  .rplus-item-details-tabs .rplus-item-owners .vlist .list-item .rplus-ownership-info {
-    padding-top: 24px; }
-  .rplus-item-details-tabs .rplus-item-owners .vlist .list-item .separator {
-    padding: 0 5px; }
-
-.rplus-item-details-tabs .rplus-linked-items .item-card {
-  height: 185px; }
-  .rplus-item-details-tabs .rplus-linked-items .item-card .item-card-link .item-card-thumb-container {
-    overflow: hidden; }
-    .rplus-item-details-tabs .rplus-linked-items .item-card .item-card-link .item-card-thumb-container img {
-      width: 100%; }
+#rplus-item-details-tabs {
+  margin-bottom: 8px; }
+  #rplus-item-details-tabs ul.nav-tabs {
+    display: flex; }
+    #rplus-item-details-tabs ul.nav-tabs li.rbx-tab {
+      flex-grow: 1; }
+      #rplus-item-details-tabs ul.nav-tabs li.rbx-tab .rbx-tab-heading {
+        width: 100%; }
+  #rplus-item-details-tabs .rplus-owners-list .container-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; }
+    #rplus-item-details-tabs .rplus-owners-list .container-header h2 {
+      text-align: left; }
+    #rplus-item-details-tabs .rplus-owners-list .container-header > * {
+      flex-grow: 1; }
+    #rplus-item-details-tabs .rplus-owners-list .container-header .rplus-hide-private-inventories {
+      text-align: center; }
+      #rplus-item-details-tabs .rplus-owners-list .container-header .rplus-hide-private-inventories label {
+        margin-left: 4px; }
+    #rplus-item-details-tabs .rplus-owners-list .container-header .btn-control-sm {
+      transform: rotate(90deg);
+      float: right;
+      padding: 4px;
+      margin-top: 4px;
+      margin-bottom: -16px; }
+  #rplus-item-details-tabs .rplus-owners-list .list-item {
+    margin-bottom: 0;
+    display: flex;
+    align-items: center; }
+    #rplus-item-details-tabs .rplus-owners-list .list-item .separator {
+      margin-left: 8px;
+      margin-right: 8px; }
+    #rplus-item-details-tabs .rplus-owners-list .list-item:first-child {
+      border-top: none; }
+  #rplus-item-details-tabs .rplus-owners-list .btn-control-md {
+    width: 100%; }
 

@@ -600,7 +600,7 @@ const getUserProfileLink = (userId) => {
     return getSEOLink(userId, 'profile', 'users');
 };
 const getIdFromUrl = (url) => {
-    const match = url.pathname.match(/^\/(badges|games|game-pass|groups|catalog|library|users)\/(\d+)\//i) || [];
+    const match = url.pathname.match(/^\/(badges|games|game-pass|groups|catalog|library|users)\/(\d+)\/?/i) || [];
     // Returns NaN if the URL doesn't match.
     return Number(match[2]);
 };

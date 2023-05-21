@@ -36443,6 +36443,51 @@ globalThis.gameLaunchService = { followUser };
 
 /***/ }),
 
+/***/ "./src/js/services/inventory/get-asset-owners.ts":
+/*!*******************************************************!*\
+  !*** ./src/js/services/inventory/get-asset-owners.ts ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _users__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../users */ "./src/js/services/users/index.ts");
+
+const getAssetOwners = async (assetId, cursor, isAscending) => {
+    const response = await fetch(`https://inventory.roblox.com/v2/assets/${assetId}/owners?limit=100&cursor=${cursor}&sortOrder=${isAscending ? 'Asc' : 'Desc'}`, {
+        credentials: 'include',
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to load ownership records (${assetId}, ${cursor}, ${isAscending})`);
+    }
+    const result = await response.json();
+    const ownershipRecords = [];
+    await Promise.all(result.data.map(async (i) => {
+        const record = {
+            id: i.id,
+            user: null,
+            serialNumber: i.serialNumber || NaN,
+            created: new Date(i.created),
+            updated: new Date(i.updated),
+        };
+        ownershipRecords.push(record);
+        if (i.owner) {
+            record.user = await (0,_users__WEBPACK_IMPORTED_MODULE_0__.getUserById)(i.owner.id);
+        }
+    }));
+    return {
+        nextPageCursor: result.nextPageCursor || '',
+        data: ownershipRecords,
+    };
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getAssetOwners);
+
+
+/***/ }),
+
 /***/ "./src/js/services/inventory/index.ts":
 /*!********************************************!*\
   !*** ./src/js/services/inventory/index.ts ***!
@@ -36453,10 +36498,13 @@ globalThis.gameLaunchService = { followUser };
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "deleteAsset": () => (/* binding */ deleteAsset),
+/* harmony export */   "getAssetOwners": () => (/* reexport safe */ _get_asset_owners__WEBPACK_IMPORTED_MODULE_2__["default"]),
 /* harmony export */   "getLimitedInventory": () => (/* reexport safe */ _limitedInventory__WEBPACK_IMPORTED_MODULE_1__["default"])
 /* harmony export */ });
 /* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
 /* harmony import */ var _limitedInventory__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./limitedInventory */ "./src/js/services/inventory/limitedInventory.ts");
+/* harmony import */ var _get_asset_owners__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./get-asset-owners */ "./src/js/services/inventory/get-asset-owners.ts");
+
 
 
 // Removes an asset from the authenticated user's inventory.
@@ -36471,7 +36519,7 @@ const deleteAsset = async (assetId) => {
         throw new Error(`Failed to remove asset (${assetId})`);
     }
 };
-globalThis.inventoryService = { deleteAsset, getLimitedInventory: _limitedInventory__WEBPACK_IMPORTED_MODULE_1__["default"] };
+globalThis.inventoryService = { deleteAsset, getLimitedInventory: _limitedInventory__WEBPACK_IMPORTED_MODULE_1__["default"], getAssetOwners: _get_asset_owners__WEBPACK_IMPORTED_MODULE_2__["default"] };
 
 
 
@@ -36565,7 +36613,8 @@ const loadLimitedInventory = async (userId) => {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getTranslationResource": () => (/* binding */ getTranslationResource)
+/* harmony export */   "getTranslationResource": () => (/* binding */ getTranslationResource),
+/* harmony export */   "getTranslationResourceWithFallback": () => (/* binding */ getTranslationResourceWithFallback)
 /* harmony export */ });
 /* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
 
@@ -36608,6 +36657,19 @@ const getTranslationResource = async (namespace, key) => {
     }
     return resource?.value || '';
 };
+const getTranslationResourceWithFallback = async (namespace, key, defaultValue) => {
+    try {
+        const value = await getTranslationResource(namespace, key);
+        if (!value) {
+            return defaultValue;
+        }
+        return value;
+    }
+    catch (e) {
+        console.warn('Failed to load translation resource', namespace, key, e);
+        return defaultValue;
+    }
+};
 // Listener to ensure these always happen in the background, for strongest caching potential.
 (0,_message__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, async () => {
     if (translationResourceCache.length > 0) {
@@ -36637,7 +36699,7 @@ const getTranslationResource = async (namespace, key) => {
     // Ensure that multiple requests for this information can't be processed at once.
     levelOfParallelism: 1,
 });
-globalThis.localizationService = { getTranslationResource };
+globalThis.localizationService = { getTranslationResource, getTranslationResourceWithFallback };
 
 
 
@@ -38033,7 +38095,7 @@ const getUserProfileLink = (userId) => {
     return getSEOLink(userId, 'profile', 'users');
 };
 const getIdFromUrl = (url) => {
-    const match = url.pathname.match(/^\/(badges|games|game-pass|groups|catalog|library|users)\/(\d+)\//i) || [];
+    const match = url.pathname.match(/^\/(badges|games|game-pass|groups|catalog|library|users)\/(\d+)\/?/i) || [];
     // Returns NaN if the URL doesn't match.
     return Number(match[2]);
 };
