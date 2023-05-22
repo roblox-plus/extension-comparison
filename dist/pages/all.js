@@ -35825,7 +35825,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function UserCard({ user }) {
-    const [premiumExpiration, setPremiumExpiration] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(undefined);
+    const [premiumExpiration, setPremiumExpiration] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)('');
     const [inventory, setInventory] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
     const [loadingState, setLoadingState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(_enums_loadingState__WEBPACK_IMPORTED_MODULE_3__["default"].Success);
     const inventoryValue = (0,react__WEBPACK_IMPORTED_MODULE_1__.useMemo)(() => {
@@ -35840,7 +35840,7 @@ function UserCard({ user }) {
     const profileUrl = (0,_utils_linkify__WEBPACK_IMPORTED_MODULE_2__.getUserProfileLink)(user.id).href;
     (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
         setLoadingState(_enums_loadingState__WEBPACK_IMPORTED_MODULE_3__["default"].Loading);
-        setPremiumExpiration(undefined);
+        setPremiumExpiration('');
         setInventory([]);
         let cancelled = false;
         (0,_services_inventory__WEBPACK_IMPORTED_MODULE_4__.getLimitedInventory)(user.id)
@@ -35861,7 +35861,15 @@ function UserCard({ user }) {
             if (cancelled) {
                 return;
             }
-            setPremiumExpiration(expiration);
+            if (expiration) {
+                setPremiumExpiration(expiration.toLocaleDateString());
+            }
+            else if (expiration === null) {
+                setPremiumExpiration('never');
+            }
+            else {
+                setPremiumExpiration('');
+            }
         })
             .catch((err) => {
             if (cancelled) {
@@ -35873,7 +35881,7 @@ function UserCard({ user }) {
             cancelled = true;
         };
     }, [user]);
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "avatar-card-container", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "avatar-card-content", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "avatar avatar-card-fullbody", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", { href: profileUrl, className: "avatar-card-link", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "avatar-card-image", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_presence_thumbnail__WEBPACK_IMPORTED_MODULE_5__["default"], { userId: user.id }) }) }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "avatar-card-caption", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "avatar-name-container", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", { href: profileUrl, className: "text-overflow avatar-name", children: user.displayName }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "avatar-card-label", children: `@${user.name}` }), inventory.length > 0 && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "avatar-card-label rplus-stat-label", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { className: "text-subheader", children: "Limiteds" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { className: "rplus-value-label", children: inventory.length.toLocaleString() })] })), inventoryValue > 0 && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "avatar-card-label rplus-stat-label", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { className: "text-subheader", children: "Inventory Value" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { className: "rplus-value-label", children: inventoryValue.toLocaleString() })] }))] }) }), premiumExpiration !== undefined ? ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "rplus-premium-indicator rplus-icon-32x32", title: `Expiration: ${premiumExpiration?.toLocaleDateString() || 'never'}` })) : null] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_actions__WEBPACK_IMPORTED_MODULE_6__["default"], { user: user })] }));
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "avatar-card-container", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "avatar-card-content", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "avatar avatar-card-fullbody", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", { href: profileUrl, className: "avatar-card-link", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "avatar-card-image", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_presence_thumbnail__WEBPACK_IMPORTED_MODULE_5__["default"], { userId: user.id }) }) }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "avatar-card-caption", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "avatar-name-container", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", { href: profileUrl, className: "text-overflow avatar-name", children: user.displayName }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "avatar-card-label", children: `@${user.name}` }), inventory.length > 0 && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "avatar-card-label rplus-stat-label", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { className: "text-subheader", children: "Limiteds" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { className: "rplus-value-label", children: inventory.length.toLocaleString() })] })), inventoryValue > 0 && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "avatar-card-label rplus-stat-label", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { className: "text-subheader", children: "Inventory Value" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { className: "rplus-value-label", children: inventoryValue.toLocaleString() })] }))] }) }), premiumExpiration ? ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "rplus-premium-indicator rplus-icon-32x32", title: `Expiration: ${premiumExpiration}` })) : null] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_actions__WEBPACK_IMPORTED_MODULE_6__["default"], { user: user })] }));
 }
 
 
