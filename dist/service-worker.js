@@ -202,6 +202,14 @@ var ThumbnailType;
     ThumbnailType["AvatarHeadShot"] = "AvatarHeadShot";
     // The thumbnail for an asset.
     ThumbnailType["Asset"] = "Asset";
+    // The icon for a group.
+    ThumbnailType["GroupIcon"] = "GroupIcon";
+    // The icon for a game pass.
+    ThumbnailType["GamePass"] = "GamePass";
+    // The icon for a developer product.
+    ThumbnailType["DeveloperProduct"] = "DeveloperProduct";
+    // The icon for a game.
+    ThumbnailType["GameIcon"] = "GameIcon";
 })(ThumbnailType || (ThumbnailType = {}));
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ThumbnailType);
 
@@ -1603,6 +1611,182 @@ globalThis.gamePassesService = { getGamePassSaleCount: _get_game_pass_sale_count
 
 /***/ }),
 
+/***/ "./src/js/services/groups/get-creator-groups.ts":
+/*!******************************************************!*\
+  !*** ./src/js/services/groups/get-creator-groups.ts ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+const messageDestination = 'groupsService.getCreatorGroups';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+// Fetches the groups the user has access privileged roles in.
+const getCreatorGroups = (userId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { userId });
+};
+// Loads the groups the user has access privileged roles in.
+const loadAuthenticatedUserCreatorGroups = async () => {
+    const response = await fetch(`https://develop.roblox.com/v1/user/groups/canmanage`);
+    if (response.status === 401) {
+        throw 'User is unauthenticated';
+    }
+    else if (!response.ok) {
+        throw 'Failed to load creation groups for the authenticated user';
+    }
+    const result = await response.json();
+    return result.data.map((g) => {
+        return {
+            id: g.id,
+            name: g.name,
+        };
+    });
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.userId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadAuthenticatedUserCreatorGroups());
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getCreatorGroups);
+
+
+/***/ }),
+
+/***/ "./src/js/services/groups/get-user-groups.ts":
+/*!***************************************************!*\
+  !*** ./src/js/services/groups/get-user-groups.ts ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+const messageDestination = 'groupsService.getUserGroups';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+// Fetches the groups the user is a member of.
+const getUserGroups = (userId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { userId });
+};
+// Loads the groups the user is a member of.
+const loadUserGroups = async (userId) => {
+    const response = await fetch(`https://groups.roblox.com/v1/users/${userId}/groups/roles`);
+    if (!response.ok) {
+        throw 'Failed to load groups the user is a member of';
+    }
+    const result = await response.json();
+    return result.data.map((g) => {
+        return {
+            id: g.group.id,
+            name: g.group.name,
+        };
+    });
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.userId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadUserGroups(message.userId));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getUserGroups);
+
+
+/***/ }),
+
+/***/ "./src/js/services/groups/get-user-primary-group.ts":
+/*!**********************************************************!*\
+  !*** ./src/js/services/groups/get-user-primary-group.ts ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+const messageDestination = 'groupsService.getUserPrimaryGroup';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+// Fetches the groups the user is a member of.
+const getUserPrimaryGroup = (userId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { userId });
+};
+// Loads the groups the user is a member of.
+const loadUserPrimaryGroup = async (userId) => {
+    const response = await fetch(`https://groups.roblox.com/v1/users/${userId}/groups/primary/role`);
+    if (!response.ok) {
+        throw 'Failed to load primary group for the user';
+    }
+    const result = await response.json();
+    if (!result || !result.group) {
+        return null;
+    }
+    return {
+        id: result.group.id,
+        name: result.group.name,
+    };
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.userId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadUserPrimaryGroup(message.userId));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getUserPrimaryGroup);
+
+
+/***/ }),
+
+/***/ "./src/js/services/groups/index.ts":
+/*!*****************************************!*\
+  !*** ./src/js/services/groups/index.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getCreatorGroups": () => (/* reexport safe */ _get_creator_groups__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   "getUserGroups": () => (/* reexport safe */ _get_user_groups__WEBPACK_IMPORTED_MODULE_1__["default"]),
+/* harmony export */   "getUserPrimaryGroup": () => (/* reexport safe */ _get_user_primary_group__WEBPACK_IMPORTED_MODULE_2__["default"])
+/* harmony export */ });
+/* harmony import */ var _get_creator_groups__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./get-creator-groups */ "./src/js/services/groups/get-creator-groups.ts");
+/* harmony import */ var _get_user_groups__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./get-user-groups */ "./src/js/services/groups/get-user-groups.ts");
+/* harmony import */ var _get_user_primary_group__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./get-user-primary-group */ "./src/js/services/groups/get-user-primary-group.ts");
+
+
+
+globalThis.groupsService = { getCreatorGroups: _get_creator_groups__WEBPACK_IMPORTED_MODULE_0__["default"], getUserGroups: _get_user_groups__WEBPACK_IMPORTED_MODULE_1__["default"], getUserPrimaryGroup: _get_user_primary_group__WEBPACK_IMPORTED_MODULE_2__["default"] };
+
+
+
+/***/ }),
+
 /***/ "./src/js/services/inventory/get-asset-owners.ts":
 /*!*******************************************************!*\
   !*** ./src/js/services/inventory/get-asset-owners.ts ***!
@@ -2689,7 +2873,11 @@ const thumbnailBatchProcessor = new ThumbnailBatchProcessor();
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getAssetThumbnail": () => (/* binding */ getAssetThumbnail),
-/* harmony export */   "getAvatarHeadshotThumbnail": () => (/* binding */ getAvatarHeadshotThumbnail)
+/* harmony export */   "getAvatarHeadshotThumbnail": () => (/* binding */ getAvatarHeadshotThumbnail),
+/* harmony export */   "getDeveloperProductIcon": () => (/* binding */ getDeveloperProductIcon),
+/* harmony export */   "getGameIcon": () => (/* binding */ getGameIcon),
+/* harmony export */   "getGamePassIcon": () => (/* binding */ getGamePassIcon),
+/* harmony export */   "getGroupIcon": () => (/* binding */ getGroupIcon)
 /* harmony export */ });
 /* harmony import */ var _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../enums/thumbnailState */ "./src/js/enums/thumbnailState.ts");
 /* harmony import */ var _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../enums/thumbnailType */ "./src/js/enums/thumbnailType.ts");
@@ -2717,6 +2905,45 @@ const getAssetThumbnail = (assetId) => {
         targetId: assetId,
     });
 };
+// Fetches a group icon.
+const getGroupIcon = (groupId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
+        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GroupIcon,
+        targetId: groupId,
+    });
+};
+// Fetches a game pass icon.
+const getGamePassIcon = (gamePassId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
+        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GamePass,
+        targetId: gamePassId,
+    });
+};
+// Fetches a developer product icon.
+const getDeveloperProductIcon = (gamePassId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
+        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].DeveloperProduct,
+        targetId: gamePassId,
+    });
+};
+// Fetches a game icon.
+const getGameIcon = (gamePassId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
+        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GameIcon,
+        targetId: gamePassId,
+    });
+};
+// Gets the default size for the thumbnail, by type.
+const getThumbnailSize = (thumbnailType) => {
+    switch (thumbnailType) {
+        case _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GamePass:
+            return '150x150';
+        case _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GameIcon:
+            return '256x256';
+        default:
+            return '420x420';
+    }
+};
 // Listen for messages sent to the service worker.
 (0,_message__WEBPACK_IMPORTED_MODULE_3__.addListener)(messageDestination, async (message) => {
     const cacheKey = `${message.type}:${message.targetId}`;
@@ -2726,7 +2953,7 @@ const getAssetThumbnail = (assetId) => {
     _batchProcessor__WEBPACK_IMPORTED_MODULE_4__["default"].enqueue({
         type: message.type,
         targetId: message.targetId,
-        size: '420x420',
+        size: getThumbnailSize(message.type),
     }));
     if (thumbnail.state !== _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_0__["default"].Completed) {
         setTimeout(() => {
@@ -2736,7 +2963,14 @@ const getAssetThumbnail = (assetId) => {
     }
     return thumbnail;
 });
-globalThis.thumbnailsService = { getAvatarHeadshotThumbnail, getAssetThumbnail };
+globalThis.thumbnailsService = {
+    getAvatarHeadshotThumbnail,
+    getAssetThumbnail,
+    getGroupIcon,
+    getGamePassIcon,
+    getDeveloperProductIcon,
+    getGameIcon,
+};
 
 
 
@@ -2812,6 +3046,84 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _getTradeCount__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getTradeCount */ "./src/js/services/trades/getTradeCount.ts");
 
 globalThis.tradesService = { getTradeCount: _getTradeCount__WEBPACK_IMPORTED_MODULE_0__["default"] };
+
+
+
+/***/ }),
+
+/***/ "./src/js/services/transactions/email-transactions.ts":
+/*!************************************************************!*\
+  !*** ./src/js/services/transactions/email-transactions.ts ***!
+  \************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+
+
+const messageDestination = 'transactionsService.emailTransactions';
+// Fetches the groups the user has access privileged roles in.
+const emailTransactions = (targetType, targetId, transactionType, startDate, endDate) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, {
+        targetType,
+        targetId,
+        transactionType,
+        startDate: startDate.getTime(),
+        endDate: endDate.getTime(),
+    });
+};
+// Loads the groups the user has access privileged roles in.
+const doEmailTransactions = async (targetType, targetId, transactionType, startDate, endDate) => {
+    const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_0__["default"])(new URL(`https://economy.roblox.com/v2/sales/sales-report-download`), {
+        method: 'POST',
+        body: JSON.stringify({
+            targetType,
+            targetId,
+            transactionType,
+            startDate: startDate.toISOString(),
+            endDate: endDate.toISOString(),
+        }),
+    });
+    if (!response.ok) {
+        throw 'Failed to send transactions email';
+    }
+};
+// Listen for messages sent to the service worker.
+(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return doEmailTransactions(message.targetType, message.targetId, message.transactionType, new Date(message.startDate), new Date(message.endDate));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (emailTransactions);
+
+
+/***/ }),
+
+/***/ "./src/js/services/transactions/index.ts":
+/*!***********************************************!*\
+  !*** ./src/js/services/transactions/index.ts ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "emailGroupTransactionSales": () => (/* binding */ emailGroupTransactionSales),
+/* harmony export */   "emailUserTransactionSales": () => (/* binding */ emailUserTransactionSales)
+/* harmony export */ });
+/* harmony import */ var _email_transactions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./email-transactions */ "./src/js/services/transactions/email-transactions.ts");
+
+// Sends an email to the authenticated user with the group's transactions (sales).
+const emailGroupTransactionSales = (groupId, startDate, endDate) => (0,_email_transactions__WEBPACK_IMPORTED_MODULE_0__["default"])('Group', groupId, 'Sale', startDate, endDate);
+// Sends an email to the authenticated user with their personally transactions (sales).
+const emailUserTransactionSales = (userId, startDate, endDate) => (0,_email_transactions__WEBPACK_IMPORTED_MODULE_0__["default"])('User', userId, 'Sale', startDate, endDate);
+globalThis.transactionsService = { emailGroupTransactionSales, emailUserTransactionSales };
 
 
 
@@ -3843,22 +4155,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "avatar": () => (/* reexport module object */ _services_avatar__WEBPACK_IMPORTED_MODULE_1__),
 /* harmony export */   "badges": () => (/* reexport module object */ _services_badges__WEBPACK_IMPORTED_MODULE_2__),
 /* harmony export */   "currency": () => (/* reexport module object */ _services_currency__WEBPACK_IMPORTED_MODULE_3__),
-/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_20__.executeNotifier),
+/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_22__.executeNotifier),
 /* harmony export */   "followings": () => (/* reexport module object */ _services_followings__WEBPACK_IMPORTED_MODULE_4__),
 /* harmony export */   "friends": () => (/* reexport module object */ _services_friends__WEBPACK_IMPORTED_MODULE_5__),
 /* harmony export */   "gameLaunch": () => (/* reexport module object */ _services_game_launch__WEBPACK_IMPORTED_MODULE_6__),
 /* harmony export */   "gamePasses": () => (/* reexport module object */ _services_game_passes__WEBPACK_IMPORTED_MODULE_7__),
-/* harmony export */   "inventory": () => (/* reexport module object */ _services_inventory__WEBPACK_IMPORTED_MODULE_8__),
-/* harmony export */   "localization": () => (/* reexport module object */ _services_localization__WEBPACK_IMPORTED_MODULE_9__),
-/* harmony export */   "message": () => (/* reexport module object */ _services_message__WEBPACK_IMPORTED_MODULE_10__),
-/* harmony export */   "premium": () => (/* reexport module object */ _services_premium__WEBPACK_IMPORTED_MODULE_11__),
-/* harmony export */   "premiumPayouts": () => (/* reexport module object */ _services_premium_payouts__WEBPACK_IMPORTED_MODULE_12__),
-/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_13__),
-/* harmony export */   "privateMessages": () => (/* reexport module object */ _services_private_messages__WEBPACK_IMPORTED_MODULE_14__),
-/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_15__),
-/* harmony export */   "thumbnails": () => (/* reexport module object */ _services_thumbnails__WEBPACK_IMPORTED_MODULE_16__),
-/* harmony export */   "trades": () => (/* reexport module object */ _services_trades__WEBPACK_IMPORTED_MODULE_17__),
-/* harmony export */   "users": () => (/* reexport module object */ _services_users__WEBPACK_IMPORTED_MODULE_18__)
+/* harmony export */   "groups": () => (/* reexport module object */ _services_groups__WEBPACK_IMPORTED_MODULE_8__),
+/* harmony export */   "inventory": () => (/* reexport module object */ _services_inventory__WEBPACK_IMPORTED_MODULE_9__),
+/* harmony export */   "localization": () => (/* reexport module object */ _services_localization__WEBPACK_IMPORTED_MODULE_10__),
+/* harmony export */   "message": () => (/* reexport module object */ _services_message__WEBPACK_IMPORTED_MODULE_11__),
+/* harmony export */   "premium": () => (/* reexport module object */ _services_premium__WEBPACK_IMPORTED_MODULE_12__),
+/* harmony export */   "premiumPayouts": () => (/* reexport module object */ _services_premium_payouts__WEBPACK_IMPORTED_MODULE_13__),
+/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_14__),
+/* harmony export */   "privateMessages": () => (/* reexport module object */ _services_private_messages__WEBPACK_IMPORTED_MODULE_15__),
+/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_16__),
+/* harmony export */   "thumbnails": () => (/* reexport module object */ _services_thumbnails__WEBPACK_IMPORTED_MODULE_17__),
+/* harmony export */   "trades": () => (/* reexport module object */ _services_trades__WEBPACK_IMPORTED_MODULE_18__),
+/* harmony export */   "transactions": () => (/* reexport module object */ _services_transactions__WEBPACK_IMPORTED_MODULE_19__),
+/* harmony export */   "users": () => (/* reexport module object */ _services_users__WEBPACK_IMPORTED_MODULE_20__)
 /* harmony export */ });
 /* harmony import */ var _services_assets__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/assets */ "./src/js/services/assets/index.ts");
 /* harmony import */ var _services_avatar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/avatar */ "./src/js/services/avatar/index.ts");
@@ -3868,19 +4182,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_friends__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/friends */ "./src/js/services/friends/index.ts");
 /* harmony import */ var _services_game_launch__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/game-launch */ "./src/js/services/game-launch/index.ts");
 /* harmony import */ var _services_game_passes__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../services/game-passes */ "./src/js/services/game-passes/index.ts");
-/* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../services/inventory */ "./src/js/services/inventory/index.ts");
-/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../services/localization */ "./src/js/services/localization/index.ts");
-/* harmony import */ var _services_message__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../services/message */ "./src/js/services/message/index.ts");
-/* harmony import */ var _services_premium__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../services/premium */ "./src/js/services/premium/index.ts");
-/* harmony import */ var _services_premium_payouts__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../services/premium-payouts */ "./src/js/services/premium-payouts/index.ts");
-/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
-/* harmony import */ var _services_private_messages__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../services/private-messages */ "./src/js/services/private-messages/index.ts");
-/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
-/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
-/* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../services/trades */ "./src/js/services/trades/index.ts");
-/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../services/users */ "./src/js/services/users/index.ts");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../constants */ "./src/js/constants/index.ts");
-/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
+/* harmony import */ var _services_groups__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../services/groups */ "./src/js/services/groups/index.ts");
+/* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../services/inventory */ "./src/js/services/inventory/index.ts");
+/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../services/localization */ "./src/js/services/localization/index.ts");
+/* harmony import */ var _services_message__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../services/message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _services_premium__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../services/premium */ "./src/js/services/premium/index.ts");
+/* harmony import */ var _services_premium_payouts__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../services/premium-payouts */ "./src/js/services/premium-payouts/index.ts");
+/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
+/* harmony import */ var _services_private_messages__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../services/private-messages */ "./src/js/services/private-messages/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
+/* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../services/trades */ "./src/js/services/trades/index.ts");
+/* harmony import */ var _services_transactions__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../services/transactions */ "./src/js/services/transactions/index.ts");
+/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../services/users */ "./src/js/services/users/index.ts");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../constants */ "./src/js/constants/index.ts");
+/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
+
+
 
 
 
@@ -3903,11 +4221,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 chrome.browserAction.setTitle({
-    title: `${_constants__WEBPACK_IMPORTED_MODULE_19__.manifest.name} ${_constants__WEBPACK_IMPORTED_MODULE_19__.manifest.version}`,
+    title: `${_constants__WEBPACK_IMPORTED_MODULE_21__.manifest.name} ${_constants__WEBPACK_IMPORTED_MODULE_21__.manifest.version}`,
 });
 chrome.browserAction.onClicked.addListener(() => {
     chrome.tabs.create({
-        url: _constants__WEBPACK_IMPORTED_MODULE_19__.manifest.homepage_url,
+        url: _constants__WEBPACK_IMPORTED_MODULE_21__.manifest.homepage_url,
         active: true,
     });
 });

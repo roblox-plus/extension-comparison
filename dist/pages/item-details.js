@@ -35059,6 +35059,14 @@ var ThumbnailType;
     ThumbnailType["AvatarHeadShot"] = "AvatarHeadShot";
     // The thumbnail for an asset.
     ThumbnailType["Asset"] = "Asset";
+    // The icon for a group.
+    ThumbnailType["GroupIcon"] = "GroupIcon";
+    // The icon for a game pass.
+    ThumbnailType["GamePass"] = "GamePass";
+    // The icon for a developer product.
+    ThumbnailType["DeveloperProduct"] = "DeveloperProduct";
+    // The icon for a game.
+    ThumbnailType["GameIcon"] = "GameIcon";
 })(ThumbnailType || (ThumbnailType = {}));
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ThumbnailType);
 
@@ -36776,7 +36784,11 @@ const thumbnailBatchProcessor = new ThumbnailBatchProcessor();
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getAssetThumbnail": () => (/* binding */ getAssetThumbnail),
-/* harmony export */   "getAvatarHeadshotThumbnail": () => (/* binding */ getAvatarHeadshotThumbnail)
+/* harmony export */   "getAvatarHeadshotThumbnail": () => (/* binding */ getAvatarHeadshotThumbnail),
+/* harmony export */   "getDeveloperProductIcon": () => (/* binding */ getDeveloperProductIcon),
+/* harmony export */   "getGameIcon": () => (/* binding */ getGameIcon),
+/* harmony export */   "getGamePassIcon": () => (/* binding */ getGamePassIcon),
+/* harmony export */   "getGroupIcon": () => (/* binding */ getGroupIcon)
 /* harmony export */ });
 /* harmony import */ var _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../enums/thumbnailState */ "./src/js/enums/thumbnailState.ts");
 /* harmony import */ var _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../enums/thumbnailType */ "./src/js/enums/thumbnailType.ts");
@@ -36804,6 +36816,45 @@ const getAssetThumbnail = (assetId) => {
         targetId: assetId,
     });
 };
+// Fetches a group icon.
+const getGroupIcon = (groupId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
+        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GroupIcon,
+        targetId: groupId,
+    });
+};
+// Fetches a game pass icon.
+const getGamePassIcon = (gamePassId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
+        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GamePass,
+        targetId: gamePassId,
+    });
+};
+// Fetches a developer product icon.
+const getDeveloperProductIcon = (gamePassId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
+        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].DeveloperProduct,
+        targetId: gamePassId,
+    });
+};
+// Fetches a game icon.
+const getGameIcon = (gamePassId) => {
+    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
+        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GameIcon,
+        targetId: gamePassId,
+    });
+};
+// Gets the default size for the thumbnail, by type.
+const getThumbnailSize = (thumbnailType) => {
+    switch (thumbnailType) {
+        case _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GamePass:
+            return '150x150';
+        case _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GameIcon:
+            return '256x256';
+        default:
+            return '420x420';
+    }
+};
 // Listen for messages sent to the service worker.
 (0,_message__WEBPACK_IMPORTED_MODULE_3__.addListener)(messageDestination, async (message) => {
     const cacheKey = `${message.type}:${message.targetId}`;
@@ -36813,7 +36864,7 @@ const getAssetThumbnail = (assetId) => {
     _batchProcessor__WEBPACK_IMPORTED_MODULE_4__["default"].enqueue({
         type: message.type,
         targetId: message.targetId,
-        size: '420x420',
+        size: getThumbnailSize(message.type),
     }));
     if (thumbnail.state !== _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_0__["default"].Completed) {
         setTimeout(() => {
@@ -36823,7 +36874,14 @@ const getAssetThumbnail = (assetId) => {
     }
     return thumbnail;
 });
-globalThis.thumbnailsService = { getAvatarHeadshotThumbnail, getAssetThumbnail };
+globalThis.thumbnailsService = {
+    getAvatarHeadshotThumbnail,
+    getAssetThumbnail,
+    getGroupIcon,
+    getGamePassIcon,
+    getDeveloperProductIcon,
+    getGameIcon,
+};
 
 
 
