@@ -216,6 +216,29 @@ var ThumbnailType;
 
 /***/ }),
 
+/***/ "./src/js/enums/tradeStatusType.ts":
+/*!*****************************************!*\
+  !*** ./src/js/enums/tradeStatusType.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var TradeStatusType;
+(function (TradeStatusType) {
+    TradeStatusType["Inbound"] = "Inbound";
+    TradeStatusType["Outbound"] = "Outbound";
+    TradeStatusType["Completed"] = "Completed";
+    TradeStatusType["Inactive"] = "Inactive";
+})(TradeStatusType || (TradeStatusType = {}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TradeStatusType);
+
+
+/***/ }),
+
 /***/ "./src/js/service-worker/notifiers/friend-presence/index.ts":
 /*!******************************************************************!*\
   !*** ./src/js/service-worker/notifiers/friend-presence/index.ts ***!
@@ -448,10 +471,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "executeNotifier": () => (/* binding */ executeNotifier)
 /* harmony export */ });
 /* harmony import */ var _friend_presence__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./friend-presence */ "./src/js/service-worker/notifiers/friend-presence/index.ts");
+/* harmony import */ var _trades__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./trades */ "./src/js/service-worker/notifiers/trades/index.ts");
+
 
 // Registry of all the notifiers
 const notifiers = {};
 notifiers['notifiers/friend-presence'] = _friend_presence__WEBPACK_IMPORTED_MODULE_0__["default"];
+notifiers['notifiers/trade'] = _trades__WEBPACK_IMPORTED_MODULE_1__["default"];
 // TODO: Update to use chrome.storage.session for manifest V3
 const notifierStates = {};
 // Execute a notifier by name.
@@ -487,9 +513,230 @@ for (let name in notifiers) {
     });
 }
 globalThis.notifiers = notifiers;
+globalThis.notifierStates = notifierStates;
 globalThis.executeNotifier = executeNotifier;
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (notifiers);
+
+
+/***/ }),
+
+/***/ "./src/js/service-worker/notifiers/trades/index.ts":
+/*!*********************************************************!*\
+  !*** ./src/js/service-worker/notifiers/trades/index.ts ***!
+  \*********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
+/* harmony import */ var _utils_fetchDataUri__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../utils/fetchDataUri */ "./src/js/utils/fetchDataUri.ts");
+/* harmony import */ var _enums_tradeStatusType__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../enums/tradeStatusType */ "./src/js/enums/tradeStatusType.ts");
+
+
+
+
+// The prefix for the ID of the notification to display.
+const notificationIdPrefix = 'trade-notifier-';
+// Gets the trade status types that should be notified on.
+const getEnabledTradeStatusTypes = async () => {
+    const enabled = await (0,_services_settings__WEBPACK_IMPORTED_MODULE_0__.getToggleSettingValue)('tradeNotifier');
+    if (enabled) {
+        return [
+            _enums_tradeStatusType__WEBPACK_IMPORTED_MODULE_3__["default"].Inbound,
+            _enums_tradeStatusType__WEBPACK_IMPORTED_MODULE_3__["default"].Outbound,
+            _enums_tradeStatusType__WEBPACK_IMPORTED_MODULE_3__["default"].Completed,
+            _enums_tradeStatusType__WEBPACK_IMPORTED_MODULE_3__["default"].Inactive,
+        ];
+    }
+    return [];
+    /*
+    const values = await getSettingValue('notifiers/trade/status-types');
+    if (!Array.isArray(values)) {
+      return [];
+    }
+  
+    return values.filter((v) => Object.keys(v).includes(v));
+    */
+};
+// Load the trade IDs for a status type.
+const getTrades = async (tradeStatusType) => {
+    const response = await fetch(`https://trades.roblox.com/v1/trades/${tradeStatusType}?limit=10&sortOrder=Desc`);
+    const result = await response.json();
+    return result.data.map((t) => t.id);
+};
+// Gets an individual trade by its ID.
+const getTrade = async (id, tradeStatusType) => {
+    const response = await fetch(`https://trades.roblox.com/v1/trades/${id}`);
+    const result = await response.json();
+    const tradePartner = result.user;
+    const tradePartnerOffer = result.offers.find((o) => o.user.id === tradePartner.id);
+    const authenticatedUserOffer = result.offers.find((o) => o.user.id !== tradePartner.id);
+    return {
+        id,
+        tradePartner,
+        authenticatedUserOffer: {
+            robux: authenticatedUserOffer.robux,
+            assets: authenticatedUserOffer.userAssets.map((a) => {
+                return {
+                    id: a.assetId,
+                    userAssetId: a.id,
+                    name: a.name,
+                    recentAveragePrice: a.recentAveragePrice,
+                };
+            }),
+        },
+        partnerOffer: {
+            robux: tradePartnerOffer.robux,
+            assets: tradePartnerOffer.userAssets.map((a) => {
+                return {
+                    id: a.assetId,
+                    userAssetId: a.id,
+                    name: a.name,
+                    recentAveragePrice: a.recentAveragePrice,
+                };
+            }),
+        },
+        status: result.status,
+        type: tradeStatusType,
+    };
+};
+// Gets the icon URL to display on the notification.
+const getNotificationIconUrl = async (trade) => {
+    const thumbnail = await (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_1__.getAvatarHeadshotThumbnail)(trade.tradePartner.id);
+    if (!thumbnail.imageUrl) {
+        return '';
+    }
+    try {
+        return await (0,_utils_fetchDataUri__WEBPACK_IMPORTED_MODULE_2__["default"])(new URL(thumbnail.imageUrl));
+    }
+    catch (err) {
+        console.error('Failed to fetch icon URL from thumbnail', trade, thumbnail, err);
+        return '';
+    }
+};
+// Fetches the title for the notification to display to the user, based on current and previous known presence.
+const getNotificationTitle = (trade) => {
+    switch (trade.type) {
+        case _enums_tradeStatusType__WEBPACK_IMPORTED_MODULE_3__["default"].Inbound:
+            return 'Trade inbound';
+        case _enums_tradeStatusType__WEBPACK_IMPORTED_MODULE_3__["default"].Outbound:
+            return 'Trade sent';
+        case _enums_tradeStatusType__WEBPACK_IMPORTED_MODULE_3__["default"].Completed:
+            return 'Trade completed';
+        default:
+            return 'Trade ' + trade.status.toLowerCase();
+    }
+};
+const getOfferValue = (tradeOffer) => {
+    let value = 0;
+    tradeOffer.assets.forEach((asset) => {
+        value += asset.recentAveragePrice;
+    });
+    return (`${value.toLocaleString()}` +
+        (tradeOffer.robux > 0 ? ` + R\$${tradeOffer.robux.toLocaleString()}` : ''));
+};
+// Handle what happens when a notification is clicked.
+chrome.notifications.onClicked.addListener((notificationId) => {
+    if (!notificationId.startsWith(notificationIdPrefix)) {
+        return;
+    }
+    // If only we could link to specific trades..
+    const tradeId = Number(notificationId.substring(notificationIdPrefix.length));
+    chrome.tabs.create({
+        url: 'https://www.roblox.com/trades',
+        active: true,
+    });
+});
+// Processes the presences, and send the notifications, when appropriate.
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async (previousState) => {
+    const previousEnabledStatusTypes = previousState?.enabledStatusTypes || [];
+    const previousTradeStatusTypes = previousState?.tradeStatusMap || {};
+    const newState = {
+        // Preserve the trade statuses for the future
+        // This is definitely how memory leaks come to be, but... how many trades could someone possibly be going through.
+        tradeStatusMap: Object.assign({}, previousTradeStatusTypes),
+        enabledStatusTypes: await getEnabledTradeStatusTypes(),
+    };
+    await Promise.all(newState.enabledStatusTypes.map(async (tradeStatusType) => {
+        try {
+            const trades = await getTrades(tradeStatusType);
+            const tradePromises = [];
+            // No matter what: Keep track of this trade we have seen, for future reference.
+            trades.forEach((tradeId) => {
+                newState.tradeStatusMap[tradeId] = tradeStatusType;
+            });
+            // now check each of them, to see if we want to send a notification.
+            for (let i = 0; i < trades.length; i++) {
+                const tradeId = trades[i];
+                // Previously, the notifier type wasn't enabled.
+                // Do nothing with the information we now know.
+                if (!previousEnabledStatusTypes.includes(tradeStatusType)) {
+                    continue;
+                }
+                // We have seen this trade before, in this same status type
+                // Because the trades are ordered in descending order, we know there are
+                // no other changes further down in this list. We can break.
+                if (previousTradeStatusTypes[tradeId] === tradeStatusType) {
+                    // And in fact, we have to break.
+                    // Because if we don't, "new" trades could come in at the bottom of the list.
+                    break;
+                }
+                // In all cases, we clear the current notification, to make room for a potential new one.
+                const notificationId = notificationIdPrefix + tradeId;
+                chrome.notifications.clear(notificationId);
+                tradePromises.push(getTrade(tradeId, tradeStatusType)
+                    .then(async (trade) => {
+                    try {
+                        const iconUrl = await getNotificationIconUrl(trade);
+                        if (!iconUrl) {
+                            // No icon.. no new notification.
+                            return;
+                        }
+                        const title = getNotificationTitle(trade);
+                        chrome.notifications.create(notificationId, {
+                            type: 'list',
+                            iconUrl,
+                            title,
+                            message: '@' + trade.tradePartner.name,
+                            items: [
+                                {
+                                    title: 'Partner',
+                                    message: trade.tradePartner.displayName,
+                                },
+                                {
+                                    title: 'Your Value',
+                                    message: getOfferValue(trade.authenticatedUserOffer),
+                                },
+                                {
+                                    title: 'Partner Value',
+                                    message: getOfferValue(trade.partnerOffer),
+                                },
+                            ],
+                            contextMessage: 'Roblox+ Trade Notifier',
+                            isClickable: true,
+                        });
+                    }
+                    catch (e) {
+                        console.error('Failed to send notification about trade', trade);
+                    }
+                })
+                    .catch((err) => {
+                    console.error('Failed to load trade information', tradeId, tradeStatusType, err);
+                }));
+            }
+            await Promise.all(tradePromises);
+        }
+        catch (e) {
+            console.error(`Failed to check ${tradeStatusType} trade notifier`, e);
+        }
+    }));
+    return newState;
+});
 
 
 /***/ }),
@@ -1447,81 +1694,6 @@ globalThis.friendsService = { getUserFriends: _getUserFriends__WEBPACK_IMPORTED_
 
 /***/ }),
 
-/***/ "./src/js/services/game-launch/buildProtocolUrl.ts":
-/*!*********************************************************!*\
-  !*** ./src/js/services/game-launch/buildProtocolUrl.ts ***!
-  \*********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../constants */ "./src/js/constants/index.ts");
-/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
-
-
-// The generated authentication ticket URL, to prevent other extensions from getting the special headers included.
-const authTicketUrl = new URL(`https://auth.roblox.com/v1/authentication-ticket?roblox-plus-security-token=${crypto.randomUUID()}`);
-// Fetches the authentication ticket, to launch the experience with.
-const getAuthenticationTicket = async () => {
-    const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_1__["default"])(authTicketUrl, {
-        method: 'POST',
-    });
-    if (!response.ok) {
-        throw new Error(`Failed to fetch authentication ticket for game launch`);
-    }
-    return response.headers.get('rbx-authentication-ticket');
-};
-// Builds the place launcher URL, used to craft the protocol launcher URL.
-const buildPlaceLauncherUrl = (info) => {
-    const prefix = `https://assetgame.roblox.com/game/PlaceLauncher.ashx?request=`;
-    if (info.followUserId) {
-        return `${prefix}RequestFollowUser&userId=${info.followUserId}`;
-    }
-    throw new Error('Unable to determine place launcher URL');
-};
-// Builds the protocol launcher URL, to launch the experience with.
-const buildProtocolUrl = async (info) => {
-    const authenticationTicket = await getAuthenticationTicket();
-    const placeLauncherUrl = encodeURIComponent(buildPlaceLauncherUrl(info));
-    const currentTime = +new Date();
-    return `roblox-player:1+launchmode:play+launchTime:${currentTime}+placelauncherurl:${placeLauncherUrl}+gameinfo:${authenticationTicket}`;
-};
-if (_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
-    // Set the Referer header, so that we can access the authentication ticket, for the protocol launcher URL.
-    chrome.declarativeNetRequest.updateSessionRules({
-        removeRuleIds: [1],
-        addRules: [
-            {
-                id: 1,
-                condition: {
-                    urlFilter: authTicketUrl.href,
-                    requestMethods: [chrome.declarativeNetRequest.RequestMethod.POST],
-                    resourceTypes: [
-                        chrome.declarativeNetRequest.ResourceType.XMLHTTPREQUEST,
-                    ],
-                },
-                action: {
-                    type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
-                    requestHeaders: [
-                        {
-                            header: 'Referer',
-                            operation: chrome.declarativeNetRequest.HeaderOperation.SET,
-                            value: 'https://www.roblox.com/groups/2518656/Roblox-Plus?extension-game-launch=true',
-                        },
-                    ],
-                },
-            },
-        ],
-    });
-}
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (buildProtocolUrl);
-
-
-/***/ }),
-
 /***/ "./src/js/services/game-launch/index.ts":
 /*!**********************************************!*\
   !*** ./src/js/services/game-launch/index.ts ***!
@@ -1534,15 +1706,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "followUser": () => (/* binding */ followUser)
 /* harmony export */ });
 /* harmony import */ var _utils_launchProtocolUrl__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/launchProtocolUrl */ "./src/js/utils/launchProtocolUrl.ts");
-/* harmony import */ var _buildProtocolUrl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./buildProtocolUrl */ "./src/js/services/game-launch/buildProtocolUrl.ts");
-
 
 // Launches into the experience that the specified user is playing.
 const followUser = async (userId) => {
-    const url = await (0,_buildProtocolUrl__WEBPACK_IMPORTED_MODULE_1__["default"])({
-        followUserId: userId,
-    });
-    await (0,_utils_launchProtocolUrl__WEBPACK_IMPORTED_MODULE_0__["default"])(url);
+    await (0,_utils_launchProtocolUrl__WEBPACK_IMPORTED_MODULE_0__["default"])(`roblox://userId=${userId}`);
 };
 globalThis.gameLaunchService = { followUser };
 

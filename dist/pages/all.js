@@ -35007,6 +35007,29 @@ var ThumbnailType;
 
 /***/ }),
 
+/***/ "./src/js/enums/tradeStatusType.ts":
+/*!*****************************************!*\
+  !*** ./src/js/enums/tradeStatusType.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var TradeStatusType;
+(function (TradeStatusType) {
+    TradeStatusType["Inbound"] = "Inbound";
+    TradeStatusType["Outbound"] = "Outbound";
+    TradeStatusType["Completed"] = "Completed";
+    TradeStatusType["Inactive"] = "Inactive";
+})(TradeStatusType || (TradeStatusType = {}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TradeStatusType);
+
+
+/***/ }),
+
 /***/ "./src/js/pages/all/navigation/bubble.ts":
 /*!***********************************************!*\
   !*** ./src/js/pages/all/navigation/bubble.ts ***!
@@ -35099,15 +35122,17 @@ const setBubbleValue = async (navigationBarItem, value) => {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../constants */ "./src/js/constants/index.ts");
-/* harmony import */ var _services_friends__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/friends */ "./src/js/services/friends/index.ts");
-/* harmony import */ var _services_private_messages__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/private-messages */ "./src/js/services/private-messages/index.ts");
-/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
-/* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../services/trades */ "./src/js/services/trades/index.ts");
-/* harmony import */ var _utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../utils/authenticatedUser */ "./src/js/utils/authenticatedUser.ts");
-/* harmony import */ var _bubble__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./bubble */ "./src/js/pages/all/navigation/bubble.ts");
-/* harmony import */ var _links__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./links */ "./src/js/pages/all/navigation/links.ts");
-/* harmony import */ var _robux__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./robux */ "./src/js/pages/all/navigation/robux.ts");
-/* harmony import */ var _widget__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./widget */ "./src/js/pages/all/navigation/widget/index.tsx");
+/* harmony import */ var _enums_tradeStatusType__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../enums/tradeStatusType */ "./src/js/enums/tradeStatusType.ts");
+/* harmony import */ var _services_friends__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/friends */ "./src/js/services/friends/index.ts");
+/* harmony import */ var _services_private_messages__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../services/private-messages */ "./src/js/services/private-messages/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../services/trades */ "./src/js/services/trades/index.ts");
+/* harmony import */ var _utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../utils/authenticatedUser */ "./src/js/utils/authenticatedUser.ts");
+/* harmony import */ var _bubble__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./bubble */ "./src/js/pages/all/navigation/bubble.ts");
+/* harmony import */ var _links__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./links */ "./src/js/pages/all/navigation/links.ts");
+/* harmony import */ var _robux__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./robux */ "./src/js/pages/all/navigation/robux.ts");
+/* harmony import */ var _widget__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./widget */ "./src/js/pages/all/navigation/widget/index.tsx");
+
 
 
 
@@ -35121,7 +35146,7 @@ __webpack_require__.r(__webpack_exports__);
 // Check if we should be refreshing the counter values.
 const refreshEnabled = async () => {
     try {
-        return await (0,_services_settings__WEBPACK_IMPORTED_MODULE_3__.getToggleSettingValue)('navcounter');
+        return await (0,_services_settings__WEBPACK_IMPORTED_MODULE_4__.getToggleSettingValue)('navcounter');
     }
     catch (err) {
         console.warn('Failed to check if live navigation counters are enabled', err);
@@ -35130,55 +35155,55 @@ const refreshEnabled = async () => {
 };
 // Fetches the count of friend requests
 const getFriendRequestBubbleCount = async (refresh) => {
-    const authenticatedUser = (0,_utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_5__.parseAuthenticatedUser)();
+    const authenticatedUser = (0,_utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_6__.parseAuthenticatedUser)();
     if (refresh && authenticatedUser) {
-        return await (0,_services_friends__WEBPACK_IMPORTED_MODULE_1__.getFriendRequestCount)(authenticatedUser.id);
+        return await (0,_services_friends__WEBPACK_IMPORTED_MODULE_2__.getFriendRequestCount)(authenticatedUser.id);
     }
-    return (0,_bubble__WEBPACK_IMPORTED_MODULE_6__.getBubbleValue)('nav-friends');
+    return (0,_bubble__WEBPACK_IMPORTED_MODULE_7__.getBubbleValue)('nav-friends');
 };
 // Fetches the count of unread private messages
 const getPrivateMessageBubbleCount = async (refresh) => {
-    const authenticatedUser = (0,_utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_5__.parseAuthenticatedUser)();
+    const authenticatedUser = (0,_utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_6__.parseAuthenticatedUser)();
     if (refresh && authenticatedUser) {
-        return await (0,_services_private_messages__WEBPACK_IMPORTED_MODULE_2__.getUnreadMessageCount)(authenticatedUser.id);
+        return await (0,_services_private_messages__WEBPACK_IMPORTED_MODULE_3__.getUnreadMessageCount)(authenticatedUser.id);
     }
-    return (0,_bubble__WEBPACK_IMPORTED_MODULE_6__.getBubbleValue)('nav-message');
+    return (0,_bubble__WEBPACK_IMPORTED_MODULE_7__.getBubbleValue)('nav-message');
 };
 // Fetches the count of inbound trades
 const getTradeBubbleCount = async (refresh) => {
-    const authenticatedUser = (0,_utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_5__.parseAuthenticatedUser)();
+    const authenticatedUser = (0,_utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_6__.parseAuthenticatedUser)();
     if (refresh && authenticatedUser) {
-        return await (0,_services_trades__WEBPACK_IMPORTED_MODULE_4__.getTradeCount)('inbound');
+        return await (0,_services_trades__WEBPACK_IMPORTED_MODULE_5__.getTradeCount)(_enums_tradeStatusType__WEBPACK_IMPORTED_MODULE_1__["default"].Inbound);
     }
-    return (0,_bubble__WEBPACK_IMPORTED_MODULE_6__.getBubbleValue)('nav-trade');
+    return (0,_bubble__WEBPACK_IMPORTED_MODULE_7__.getBubbleValue)('nav-trade');
 };
 // Update the navigation bar, periodically.
 setInterval(async () => {
     const shouldRefresh = await refreshEnabled();
     // Update the Robux count.
-    const robux = await (0,_robux__WEBPACK_IMPORTED_MODULE_8__.getRobux)(shouldRefresh);
-    (0,_robux__WEBPACK_IMPORTED_MODULE_8__.setRobux)(robux);
+    const robux = await (0,_robux__WEBPACK_IMPORTED_MODULE_9__.getRobux)(shouldRefresh);
+    (0,_robux__WEBPACK_IMPORTED_MODULE_9__.setRobux)(robux);
     // Update the friend request count.
     const friendRequests = await getFriendRequestBubbleCount(shouldRefresh);
-    (0,_bubble__WEBPACK_IMPORTED_MODULE_6__.setBubbleValue)('nav-friends', friendRequests);
+    (0,_bubble__WEBPACK_IMPORTED_MODULE_7__.setBubbleValue)('nav-friends', friendRequests);
     // Update the private message count.
     const unreadPrivateMessages = await getPrivateMessageBubbleCount(shouldRefresh);
-    (0,_bubble__WEBPACK_IMPORTED_MODULE_6__.setBubbleValue)('nav-message', unreadPrivateMessages);
+    (0,_bubble__WEBPACK_IMPORTED_MODULE_7__.setBubbleValue)('nav-message', unreadPrivateMessages);
     // Update the trade count.
     const trades = await getTradeBubbleCount(shouldRefresh);
-    (0,_bubble__WEBPACK_IMPORTED_MODULE_6__.setBubbleValue)('nav-trade', trades);
+    (0,_bubble__WEBPACK_IMPORTED_MODULE_7__.setBubbleValue)('nav-trade', trades);
     // Update navigation links.
-    const links = await (0,_links__WEBPACK_IMPORTED_MODULE_7__.getLinkOverrides)();
+    const links = await (0,_links__WEBPACK_IMPORTED_MODULE_8__.getLinkOverrides)();
     if (links.length === 2) {
         // First element in the array is the third link in the navigation bar.
         // Which is also the link that is second to last.
         if (links[0].override) {
-            (0,_links__WEBPACK_IMPORTED_MODULE_7__.updateNavigationLink)(-2, links[0].text, links[0].href);
+            (0,_links__WEBPACK_IMPORTED_MODULE_8__.updateNavigationLink)(-2, links[0].text, links[0].href);
         }
         // Second element in the array is the fourth link in the navigation bar.
         // Which is also the link that is also the last link in the navigation bar.
         if (links[1].override) {
-            (0,_links__WEBPACK_IMPORTED_MODULE_7__.updateNavigationLink)(-1, links[1].text, links[1].href);
+            (0,_links__WEBPACK_IMPORTED_MODULE_8__.updateNavigationLink)(-1, links[1].text, links[1].href);
         }
     }
     // Control panel link.
@@ -35212,18 +35237,18 @@ setInterval(async () => {
     }
     const header = document.getElementById('header');
     const settingsButton = document.getElementById('navbar-settings');
-    let widgetButtonContainer = document.getElementById(_widget__WEBPACK_IMPORTED_MODULE_9__.button.id);
+    let widgetButtonContainer = document.getElementById(_widget__WEBPACK_IMPORTED_MODULE_10__.button.id);
     if (!widgetButtonContainer && settingsButton && header) {
-        settingsButton.append(_widget__WEBPACK_IMPORTED_MODULE_9__.button);
-        (0,_widget__WEBPACK_IMPORTED_MODULE_9__.render)(header);
+        settingsButton.append(_widget__WEBPACK_IMPORTED_MODULE_10__.button);
+        (0,_widget__WEBPACK_IMPORTED_MODULE_10__.render)(header);
     }
 }, 500);
 window.navigationBar = {
-    getRobux: _robux__WEBPACK_IMPORTED_MODULE_8__.getRobux,
-    setRobux: _robux__WEBPACK_IMPORTED_MODULE_8__.setRobux,
-    getBubbleValue: _bubble__WEBPACK_IMPORTED_MODULE_6__.getBubbleValue,
-    setBubbleValue: _bubble__WEBPACK_IMPORTED_MODULE_6__.setBubbleValue,
-    updateNavigationLink: _links__WEBPACK_IMPORTED_MODULE_7__.updateNavigationLink,
+    getRobux: _robux__WEBPACK_IMPORTED_MODULE_9__.getRobux,
+    setRobux: _robux__WEBPACK_IMPORTED_MODULE_9__.setRobux,
+    getBubbleValue: _bubble__WEBPACK_IMPORTED_MODULE_7__.getBubbleValue,
+    setBubbleValue: _bubble__WEBPACK_IMPORTED_MODULE_7__.setBubbleValue,
+    updateNavigationLink: _links__WEBPACK_IMPORTED_MODULE_8__.updateNavigationLink,
 };
 
 
@@ -36356,81 +36381,6 @@ globalThis.friendsService = { getUserFriends: _getUserFriends__WEBPACK_IMPORTED_
 
 /***/ }),
 
-/***/ "./src/js/services/game-launch/buildProtocolUrl.ts":
-/*!*********************************************************!*\
-  !*** ./src/js/services/game-launch/buildProtocolUrl.ts ***!
-  \*********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../constants */ "./src/js/constants/index.ts");
-/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
-
-
-// The generated authentication ticket URL, to prevent other extensions from getting the special headers included.
-const authTicketUrl = new URL(`https://auth.roblox.com/v1/authentication-ticket?roblox-plus-security-token=${crypto.randomUUID()}`);
-// Fetches the authentication ticket, to launch the experience with.
-const getAuthenticationTicket = async () => {
-    const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_1__["default"])(authTicketUrl, {
-        method: 'POST',
-    });
-    if (!response.ok) {
-        throw new Error(`Failed to fetch authentication ticket for game launch`);
-    }
-    return response.headers.get('rbx-authentication-ticket');
-};
-// Builds the place launcher URL, used to craft the protocol launcher URL.
-const buildPlaceLauncherUrl = (info) => {
-    const prefix = `https://assetgame.roblox.com/game/PlaceLauncher.ashx?request=`;
-    if (info.followUserId) {
-        return `${prefix}RequestFollowUser&userId=${info.followUserId}`;
-    }
-    throw new Error('Unable to determine place launcher URL');
-};
-// Builds the protocol launcher URL, to launch the experience with.
-const buildProtocolUrl = async (info) => {
-    const authenticationTicket = await getAuthenticationTicket();
-    const placeLauncherUrl = encodeURIComponent(buildPlaceLauncherUrl(info));
-    const currentTime = +new Date();
-    return `roblox-player:1+launchmode:play+launchTime:${currentTime}+placelauncherurl:${placeLauncherUrl}+gameinfo:${authenticationTicket}`;
-};
-if (_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
-    // Set the Referer header, so that we can access the authentication ticket, for the protocol launcher URL.
-    chrome.declarativeNetRequest.updateSessionRules({
-        removeRuleIds: [1],
-        addRules: [
-            {
-                id: 1,
-                condition: {
-                    urlFilter: authTicketUrl.href,
-                    requestMethods: [chrome.declarativeNetRequest.RequestMethod.POST],
-                    resourceTypes: [
-                        chrome.declarativeNetRequest.ResourceType.XMLHTTPREQUEST,
-                    ],
-                },
-                action: {
-                    type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
-                    requestHeaders: [
-                        {
-                            header: 'Referer',
-                            operation: chrome.declarativeNetRequest.HeaderOperation.SET,
-                            value: 'https://www.roblox.com/groups/2518656/Roblox-Plus?extension-game-launch=true',
-                        },
-                    ],
-                },
-            },
-        ],
-    });
-}
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (buildProtocolUrl);
-
-
-/***/ }),
-
 /***/ "./src/js/services/game-launch/index.ts":
 /*!**********************************************!*\
   !*** ./src/js/services/game-launch/index.ts ***!
@@ -36443,15 +36393,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "followUser": () => (/* binding */ followUser)
 /* harmony export */ });
 /* harmony import */ var _utils_launchProtocolUrl__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/launchProtocolUrl */ "./src/js/utils/launchProtocolUrl.ts");
-/* harmony import */ var _buildProtocolUrl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./buildProtocolUrl */ "./src/js/services/game-launch/buildProtocolUrl.ts");
-
 
 // Launches into the experience that the specified user is playing.
 const followUser = async (userId) => {
-    const url = await (0,_buildProtocolUrl__WEBPACK_IMPORTED_MODULE_1__["default"])({
-        followUserId: userId,
-    });
-    await (0,_utils_launchProtocolUrl__WEBPACK_IMPORTED_MODULE_0__["default"])(url);
+    await (0,_utils_launchProtocolUrl__WEBPACK_IMPORTED_MODULE_0__["default"])(`roblox://userId=${userId}`);
 };
 globalThis.gameLaunchService = { followUser };
 

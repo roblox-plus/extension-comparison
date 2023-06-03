@@ -363,10 +363,7 @@ class NotificationSettings extends SettingsTab {
       class: "rbx-divider"
     }), /*#__PURE__*/React.createElement("span", {
       class: "text-description"
-    }, "Notifications when you get a trade, send one, or a trade closes."), /*#__PURE__*/React.createElement("a", {
-      class: "icon-Musical",
-      onClick: this.promptChangeNotifierSound.bind(this, "tradeInbound")
-    }))), /*#__PURE__*/React.createElement("div", {
+    }, "Notifications when you get a trade, send one, or a trade closes."))), /*#__PURE__*/React.createElement("div", {
       class: "section"
     }, /*#__PURE__*/React.createElement("div", {
       class: "container-header"

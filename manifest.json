@@ -1,5 +1,5 @@
 {
-  "version": "2.4.157",
+  "version": "2.4.159",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Adds features and notifiers made by WebGL3D to the Roblox website",
@@ -63,11 +63,9 @@
         "/js/roblox/thumbnails.js",
         "/js/roblox/users.js",
         "/js/roblox/catalog.js",
-        "/js/roblox/inventory.js",
         "/js/roblox/games.js",
         "/js/roblox/content.js",
         "/js/roblox/audio.js",
-        "/js/roblox/trades.js",
         "/js/roblox/groups.js",
         "/js/roblox/economy.js",
         "/js/roblox/ui.js",
