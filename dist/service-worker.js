@@ -1,40 +1,76 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./node_modules/db.js/dist/db.min.js":
-/*!*******************************************!*\
-  !*** ./node_modules/db.js/dist/db.min.js ***!
-  \*******************************************/
-/***/ ((module) => {
-
-!function(a){if(true)module.exports=a();else { var b; }}(function(){var a;return function b(a,c,d){function e(g,h){if(!c[g]){if(!a[g]){var i=undefined;if(!h&&i)return require(g,!0);if(f)return f(g,!0);var j=new Error("Cannot find module '"+g+"'");throw j.code="MODULE_NOT_FOUND",j}var k=c[g]={exports:{}};a[g][0].call(k.exports,function(b){var c=a[g][1][b];return e(c?c:b)},k,k.exports,b,a,c,d)}return c[g].exports}for(var f=undefined,g=0;g<d.length;g++)e(d[g]);return e}({1:[function(b,c,d){"use strict";function e(a){if(Array.isArray(a)){for(var b=0,c=Array(a.length);b<a.length;b++)c[b]=a[b];return c}return Array.from(a)}var f=function(){function a(a,b){var c=[],d=!0,e=!1,f=void 0;try{for(var g,h=a[Symbol.iterator]();!(d=(g=h.next()).done)&&(c.push(g.value),!b||c.length!==b);d=!0);}catch(i){e=!0,f=i}finally{try{!d&&h["return"]&&h["return"]()}finally{if(e)throw f}}return c}return function(b,c){if(Array.isArray(b))return b;if(Symbol.iterator in Object(b))return a(b,c);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}(),g="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(a){return typeof a}:function(a){return a&&"function"==typeof Symbol&&a.constructor===Symbol?"symbol":typeof a};!function(b){function d(a){return a&&"object"===("undefined"==typeof a?"undefined":g(a))}function h(a){var b=Object.keys(a).sort();if(1===b.length){var c=b[0],d=a[c],e=void 0,f=void 0;switch(c){case"eq":e="only";break;case"gt":e="lowerBound",f=!0;break;case"lt":e="upperBound",f=!0;break;case"gte":e="lowerBound";break;case"lte":e="upperBound";break;default:throw new TypeError("`"+c+"` is not a valid key")}return[e,[d,f]]}var g=a[b[0]],h=a[b[1]],i=b.join("-");switch(i){case"gt-lt":case"gt-lte":case"gte-lt":case"gte-lte":return["bound",[g,h,"gt"===b[0],"lt"===b[1]]];default:throw new TypeError("`"+i+"` are conflicted keys")}}function i(a){if(a&&"object"===("undefined"==typeof a?"undefined":g(a))&&!(a instanceof j)){var b=h(a),c=f(b,2),d=c[0],i=c[1];return j[d].apply(j,e(i))}return a}var j=b.IDBKeyRange||b.webkitIDBKeyRange,k={readonly:"readonly",readwrite:"readwrite"},l=Object.prototype.hasOwnProperty,m=function(a){return a},n=b.indexedDB||b.webkitIndexedDB||b.mozIndexedDB||b.oIndexedDB||b.msIndexedDB||b.shimIndexedDB||function(){throw new Error("IndexedDB required")}(),o={},p=["abort","error","versionchange"],q=function(a,b,c,d){var f=this,i=null,l=function(d,f,h,l,m,n,o){return new Promise(function(p,q){var r=void 0;try{r=d?j[d].apply(j,e(f)):null}catch(s){return void q(s)}n=n||[],m=m||null;var t=[],u=0,v=[r],w=b.transaction(a,i?k.readwrite:k.readonly);w.onerror=function(a){return q(a)},w.onabort=function(a){return q(a)},w.oncomplete=function(){return p(t)};var x=w.objectStore(a),y="string"==typeof c?x.index(c):x;"count"!==h&&v.push(l||"next");var z=i?Object.keys(i):[],A=function(a){return z.forEach(function(b){var c=i[b];"function"==typeof c&&(c=c(a)),a[b]=c}),a};y[h].apply(y,v).onsuccess=function(a){var b=a.target.result;if("number"==typeof b)t=b;else if(b)if(null!==m&&m[0]>u)u=m[0],b.advance(m[0]);else if(null!==m&&u>=m[0]+m[1]);else{var c=function(){var a=!0,c="value"in b?b.value:b.key;try{n.forEach(function(b){a="function"==typeof b[0]?a&&b[0](c):a&&c[b[0]]===b[1]})}catch(d){return q(d),{v:void 0}}if(a){if(u++,i)try{c=A(c),b.update(c)}catch(d){return q(d),{v:void 0}}try{t.push(o(c))}catch(d){return q(d),{v:void 0}}}b["continue"]()}();if("object"===("undefined"==typeof c?"undefined":g(c)))return c.v}}})},n=function(a,b,c){var e=[],f="next",h="openCursor",j=null,k=m,n=!1,o=d||c,p=function(){return o?Promise.reject(o):l(a,b,h,n?f+"unique":f,j,e,k)},q=function(){return f=null,h="count",{execute:p}},r=function(){return h="openKeyCursor",{desc:u,distinct:v,execute:p,filter:t,limit:s,map:x}},s=function(a,b){return j=b?[a,b]:[0,a],o=j.some(function(a){return"number"!=typeof a})?new Error("limit() arguments must be numeric"):o,{desc:u,distinct:v,filter:t,keys:r,execute:p,map:x,modify:w}},t=function y(a,b){return e.push([a,b]),{desc:u,distinct:v,execute:p,filter:y,keys:r,limit:s,map:x,modify:w}},u=function(){return f="prev",{distinct:v,execute:p,filter:t,keys:r,limit:s,map:x,modify:w}},v=function(){return n=!0,{count:q,desc:u,execute:p,filter:t,keys:r,limit:s,map:x,modify:w}},w=function(a){return i=a&&"object"===("undefined"==typeof a?"undefined":g(a))?a:null,{execute:p}},x=function(a){return k=a,{count:q,desc:u,distinct:v,execute:p,filter:t,keys:r,limit:s,modify:w}};return{count:q,desc:u,distinct:v,execute:p,filter:t,keys:r,limit:s,map:x,modify:w}};["only","bound","upperBound","lowerBound"].forEach(function(a){f[a]=function(){return n(a,arguments)}}),this.range=function(a){var b=void 0,c=[null,null];try{c=h(a)}catch(d){b=d}return n.apply(void 0,e(c).concat([b]))},this.filter=function(){var a=n(null,null);return a.filter.apply(a,arguments)},this.all=function(){return this.filter()}},r=function(a,b,c,e){var f=this,g=!1;if(this.getIndexedDB=function(){return a},this.isClosed=function(){return g},this.query=function(b,c){var d=g?new Error("Database has been closed"):null;return new q(b,a,c,d)},this.add=function(b){for(var c=arguments.length,e=Array(c>1?c-1:0),f=1;c>f;f++)e[f-1]=arguments[f];return new Promise(function(c,f){if(g)return void f(new Error("Database has been closed"));var h=e.reduce(function(a,b){return a.concat(b)},[]),j=a.transaction(b,k.readwrite);j.onerror=function(a){a.preventDefault(),f(a)},j.onabort=function(a){return f(a)},j.oncomplete=function(){return c(h)};var m=j.objectStore(b);h.some(function(a){var b=void 0,c=void 0;if(d(a)&&l.call(a,"item")&&(c=a.key,a=a.item,null!=c))try{c=i(c)}catch(e){return f(e),!0}try{b=null!=c?m.add(a,c):m.add(a)}catch(e){return f(e),!0}b.onsuccess=function(b){if(d(a)){var c=b.target,e=c.source.keyPath;null===e&&(e="__id__"),l.call(a,e)||Object.defineProperty(a,e,{value:c.result,enumerable:!0})}}})})},this.update=function(b){for(var c=arguments.length,e=Array(c>1?c-1:0),f=1;c>f;f++)e[f-1]=arguments[f];return new Promise(function(c,f){if(g)return void f(new Error("Database has been closed"));var h=e.reduce(function(a,b){return a.concat(b)},[]),j=a.transaction(b,k.readwrite);j.onerror=function(a){a.preventDefault(),f(a)},j.onabort=function(a){return f(a)},j.oncomplete=function(){return c(h)};var m=j.objectStore(b);h.some(function(a){var b=void 0,c=void 0;if(d(a)&&l.call(a,"item")&&(c=a.key,a=a.item,null!=c))try{c=i(c)}catch(e){return f(e),!0}try{b=null!=c?m.put(a,c):m.put(a)}catch(g){return f(g),!0}b.onsuccess=function(b){if(d(a)){var c=b.target,e=c.source.keyPath;null===e&&(e="__id__"),l.call(a,e)||Object.defineProperty(a,e,{value:c.result,enumerable:!0})}}})})},this.put=function(){return this.update.apply(this,arguments)},this.remove=function(b,c){return new Promise(function(d,e){if(g)return void e(new Error("Database has been closed"));try{c=i(c)}catch(f){return void e(f)}var h=a.transaction(b,k.readwrite);h.onerror=function(a){a.preventDefault(),e(a)},h.onabort=function(a){return e(a)},h.oncomplete=function(){return d(c)};var j=h.objectStore(b);try{j["delete"](c)}catch(l){e(l)}})},this["delete"]=function(){return this.remove.apply(this,arguments)},this.clear=function(b){return new Promise(function(c,d){if(g)return void d(new Error("Database has been closed"));var e=a.transaction(b,k.readwrite);e.onerror=function(a){return d(a)},e.onabort=function(a){return d(a)},e.oncomplete=function(){return c()};var f=e.objectStore(b);f.clear()})},this.close=function(){return new Promise(function(d,e){return g?void e(new Error("Database has been closed")):(a.close(),g=!0,delete o[b][c],void d())})},this.get=function(b,c){return new Promise(function(d,e){if(g)return void e(new Error("Database has been closed"));try{c=i(c)}catch(f){return void e(f)}var h=a.transaction(b);h.onerror=function(a){a.preventDefault(),e(a)},h.onabort=function(a){return e(a)};var j=h.objectStore(b),k=void 0;try{k=j.get(c)}catch(l){e(l)}k.onsuccess=function(a){return d(a.target.result)}})},this.count=function(b,c){return new Promise(function(d,e){if(g)return void e(new Error("Database has been closed"));try{c=i(c)}catch(f){return void e(f)}var h=a.transaction(b);h.onerror=function(a){a.preventDefault(),e(a)},h.onabort=function(a){return e(a)};var j=h.objectStore(b),k=void 0;try{k=null==c?j.count():j.count(c)}catch(l){e(l)}k.onsuccess=function(a){return d(a.target.result)}})},this.addEventListener=function(b,c){if(!p.includes(b))throw new Error("Unrecognized event type "+b);return"error"===b?void a.addEventListener(b,function(a){a.preventDefault(),c(a)}):void a.addEventListener(b,c)},this.removeEventListener=function(b,c){if(!p.includes(b))throw new Error("Unrecognized event type "+b);a.removeEventListener(b,c)},p.forEach(function(a){this[a]=function(b){return this.addEventListener(a,b),this}},this),!e){var h=void 0;return[].some.call(a.objectStoreNames,function(a){if(f[a])return h=new Error('The store name, "'+a+'", which you have attempted to load, conflicts with db.js method names."'),f.close(),!0;f[a]={};var b=Object.keys(f);b.filter(function(a){return![].concat(p,["close","addEventListener","removeEventListener"]).includes(a)}).map(function(b){return f[a][b]=function(){for(var c=arguments.length,d=Array(c),e=0;c>e;e++)d[e]=arguments[e];return f[b].apply(f,[a].concat(d))}})}),h}},s=function(a,b,c,d,e,f){if(c&&0!==c.length){for(var h=0;h<d.objectStoreNames.length;h++){var i=d.objectStoreNames[h];l.call(c,i)||d.deleteObjectStore(i)}var j=void 0;return Object.keys(c).some(function(a){var e=c[a],f=void 0;if(d.objectStoreNames.contains(a))f=b.transaction.objectStore(a);else try{f=d.createObjectStore(a,e.key)}catch(h){return j=h,!0}Object.keys(e.indexes||{}).some(function(a){try{f.index(a)}catch(b){var c=e.indexes[a];c=c&&"object"===("undefined"==typeof c?"undefined":g(c))?c:{};try{f.createIndex(a,c.keyPath||c.key||a,c)}catch(d){return j=d,!0}}})}),j}},t=function(a,b,c,d){var e=a.target.result;o[b][c]=e;var f=new r(e,b,c,d);return f instanceof Error?Promise.reject(f):Promise.resolve(f)},u={version:"0.15.0",open:function(a){var b=a.server,c=a.version||1,d=a.schema,e=a.noServerMethods;return o[b]||(o[b]={}),new Promise(function(a,f){if(o[b][c])t({target:{result:o[b][c]}},b,c,e).then(a,f);else{var h=function(){if("function"==typeof d)try{d=d()}catch(g){return f(g),{v:void 0}}var h=n.open(b,c);h.onsuccess=function(d){return t(d,b,c,e).then(a,f)},h.onerror=function(a){a.preventDefault(),f(a)},h.onupgradeneeded=function(a){var e=s(a,h,d,a.target.result,b,c);e&&f(e)},h.onblocked=function(a){var d=new Promise(function(a,d){h.onsuccess=function(f){t(f,b,c,e).then(a,d)},h.onerror=function(a){return d(a)}});a.resume=d,f(a)}}();if("object"===("undefined"==typeof h?"undefined":g(h)))return h.v}})},"delete":function(a){return new Promise(function(b,c){var d=n.deleteDatabase(a);d.onsuccess=function(a){return b(a)},d.onerror=function(a){return c(a)},d.onblocked=function(a){a=null===a.newVersion||"undefined"==typeof Proxy?a:new Proxy(a,{get:function(a,b){return"newVersion"===b?null:a[b]}});var b=new Promise(function(b,c){d.onsuccess=function(c){"newVersion"in c||(c.newVersion=a.newVersion),"oldVersion"in c||(c.oldVersion=a.oldVersion),b(c)},d.onerror=function(a){return c(a)}});a.resume=b,c(a)}})},cmp:function(a,b){return new Promise(function(c,d){try{c(n.cmp(a,b))}catch(e){d(e)}})}};"undefined"!=typeof c&&"undefined"!=typeof c.exports?c.exports=u:"function"==typeof a&&a.amd?a(function(){return u}):b.db=u}(self)},{}]},{},[1])(1)});
-//# sourceMappingURL=db.min.js.map
-
-/***/ }),
-
-/***/ "./src/js/constants/index.ts":
-/*!***********************************!*\
-  !*** ./src/js/constants/index.ts ***!
-  \***********************************/
+/***/ "./libs/extension-utils/dist/enums/loading-state.js":
+/*!**********************************************************!*\
+  !*** ./libs/extension-utils/dist/enums/loading-state.js ***!
+  \**********************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "isBackgroundPage": () => (/* binding */ isBackgroundPage),
-/* harmony export */   "manifest": () => (/* binding */ manifest)
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-const manifest = chrome.runtime.getManifest();
-const isBackgroundPage = chrome.runtime.getURL(manifest.background?.page || '') === location.href;
+// A generic loading state enum.
+var LoadingState;
+(function (LoadingState) {
+    LoadingState["Loading"] = "Loading";
+    LoadingState["Success"] = "Success";
+    LoadingState["Error"] = "Error";
+})(LoadingState || (LoadingState = {}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (LoadingState);
+
+
+/***/ }),
+
+/***/ "./libs/extension-utils/dist/index.js":
+/*!********************************************!*\
+  !*** ./libs/extension-utils/dist/index.js ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "LoadingState": () => (/* reexport safe */ _enums_loading_state__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   "wait": () => (/* reexport safe */ _utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])
+/* harmony export */ });
+/* harmony import */ var _enums_loading_state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./enums/loading-state */ "./libs/extension-utils/dist/enums/loading-state.js");
+/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/wait */ "./libs/extension-utils/dist/utils/wait.js");
+// Export enums
+
+// Export utils
 
 
 
 /***/ }),
 
-/***/ "./src/js/enums/assetType.ts":
-/*!***********************************!*\
-  !*** ./src/js/enums/assetType.ts ***!
-  \***********************************/
+/***/ "./libs/extension-utils/dist/utils/wait.js":
+/*!*************************************************!*\
+  !*** ./libs/extension-utils/dist/utils/wait.js ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+const wait = (time) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(resolve, time);
+    });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (wait);
+
+
+/***/ }),
+
+/***/ "./libs/roblox/dist/enums/asset-type.js":
+/*!**********************************************!*\
+  !*** ./libs/roblox/dist/enums/asset-type.js ***!
+  \**********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -124,10 +160,10 @@ var AssetType;
 
 /***/ }),
 
-/***/ "./src/js/enums/presenceType.ts":
-/*!**************************************!*\
-  !*** ./src/js/enums/presenceType.ts ***!
-  \**************************************/
+/***/ "./libs/roblox/dist/enums/presence-type.js":
+/*!*************************************************!*\
+  !*** ./libs/roblox/dist/enums/presence-type.js ***!
+  \*************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -152,10 +188,10 @@ var PresenceType;
 
 /***/ }),
 
-/***/ "./src/js/enums/thumbnailState.ts":
-/*!****************************************!*\
-  !*** ./src/js/enums/thumbnailState.ts ***!
-  \****************************************/
+/***/ "./libs/roblox/dist/enums/thumbnail-state.js":
+/*!***************************************************!*\
+  !*** ./libs/roblox/dist/enums/thumbnail-state.js ***!
+  \***************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -184,10 +220,10 @@ var ThumbnailState;
 
 /***/ }),
 
-/***/ "./src/js/enums/thumbnailType.ts":
-/*!***************************************!*\
-  !*** ./src/js/enums/thumbnailType.ts ***!
-  \***************************************/
+/***/ "./libs/roblox/dist/enums/thumbnail-type.js":
+/*!**************************************************!*\
+  !*** ./libs/roblox/dist/enums/thumbnail-type.js ***!
+  \**************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -216,10 +252,10 @@ var ThumbnailType;
 
 /***/ }),
 
-/***/ "./src/js/enums/tradeStatusType.ts":
-/*!*****************************************!*\
-  !*** ./src/js/enums/tradeStatusType.ts ***!
-  \*****************************************/
+/***/ "./libs/roblox/dist/enums/trade-status-type.js":
+/*!*****************************************************!*\
+  !*** ./libs/roblox/dist/enums/trade-status-type.js ***!
+  \*****************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -239,6 +275,130 @@ var TradeStatusType;
 
 /***/ }),
 
+/***/ "./libs/roblox/dist/index.js":
+/*!***********************************!*\
+  !*** ./libs/roblox/dist/index.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "AssetType": () => (/* reexport safe */ _enums_asset_type__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   "PresenceType": () => (/* reexport safe */ _enums_presence_type__WEBPACK_IMPORTED_MODULE_1__["default"]),
+/* harmony export */   "ThumbnailState": () => (/* reexport safe */ _enums_thumbnail_state__WEBPACK_IMPORTED_MODULE_2__["default"]),
+/* harmony export */   "ThumbnailType": () => (/* reexport safe */ _enums_thumbnail_type__WEBPACK_IMPORTED_MODULE_3__["default"]),
+/* harmony export */   "TradeStatusType": () => (/* reexport safe */ _enums_trade_status_type__WEBPACK_IMPORTED_MODULE_4__["default"]),
+/* harmony export */   "getCatalogLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getCatalogLink),
+/* harmony export */   "getGamePassLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getGamePassLink),
+/* harmony export */   "getIdFromUrl": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getIdFromUrl),
+/* harmony export */   "getLibraryLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getLibraryLink),
+/* harmony export */   "getPlaceLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getPlaceLink),
+/* harmony export */   "getUserProfileLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getUserProfileLink)
+/* harmony export */ });
+/* harmony import */ var _enums_asset_type__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./enums/asset-type */ "./libs/roblox/dist/enums/asset-type.js");
+/* harmony import */ var _enums_presence_type__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./enums/presence-type */ "./libs/roblox/dist/enums/presence-type.js");
+/* harmony import */ var _enums_thumbnail_state__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./enums/thumbnail-state */ "./libs/roblox/dist/enums/thumbnail-state.js");
+/* harmony import */ var _enums_thumbnail_type__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./enums/thumbnail-type */ "./libs/roblox/dist/enums/thumbnail-type.js");
+/* harmony import */ var _enums_trade_status_type__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./enums/trade-status-type */ "./libs/roblox/dist/enums/trade-status-type.js");
+/* harmony import */ var _utils_linkify__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils/linkify */ "./libs/roblox/dist/utils/linkify.js");
+// Export enums
+
+
+
+
+
+// Export utils
+
+
+
+/***/ }),
+
+/***/ "./libs/roblox/dist/utils/linkify.js":
+/*!*******************************************!*\
+  !*** ./libs/roblox/dist/utils/linkify.js ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getCatalogLink": () => (/* binding */ getCatalogLink),
+/* harmony export */   "getGamePassLink": () => (/* binding */ getGamePassLink),
+/* harmony export */   "getIdFromUrl": () => (/* binding */ getIdFromUrl),
+/* harmony export */   "getLibraryLink": () => (/* binding */ getLibraryLink),
+/* harmony export */   "getPlaceLink": () => (/* binding */ getPlaceLink),
+/* harmony export */   "getUserProfileLink": () => (/* binding */ getUserProfileLink)
+/* harmony export */ });
+const getSEOLink = (id, name, path) => {
+    if (!name) {
+        name = 'redirect';
+    }
+    else {
+        name =
+            name
+                .replace(/'/g, '')
+                .replace(/\W+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '') || 'redirect';
+    }
+    return new URL(`https://www.roblox.com/${path}/${id}/${name}`);
+};
+const getGamePassLink = (gamePassId, gamePassName) => {
+    return getSEOLink(gamePassId, gamePassName, 'game-pass');
+};
+const getCatalogLink = (assetId, assetName) => {
+    return getSEOLink(assetId, assetName, 'catalog');
+};
+const getLibraryLink = (assetId, assetName) => {
+    return getSEOLink(assetId, assetName, 'library');
+};
+const getPlaceLink = (placeId, placeName) => {
+    return getSEOLink(placeId, placeName, 'games');
+};
+const getUserProfileLink = (userId) => {
+    return getSEOLink(userId, 'profile', 'users');
+};
+const getIdFromUrl = (url) => {
+    const match = url.pathname.match(/^\/(badges|games|game-pass|groups|catalog|library|users)\/(\d+)\/?/i) || [];
+    // Returns NaN if the URL doesn't match.
+    return Number(match[2]);
+};
+
+
+
+/***/ }),
+
+/***/ "./node_modules/db.js/dist/db.min.js":
+/*!*******************************************!*\
+  !*** ./node_modules/db.js/dist/db.min.js ***!
+  \*******************************************/
+/***/ ((module) => {
+
+!function(a){if(true)module.exports=a();else { var b; }}(function(){var a;return function b(a,c,d){function e(g,h){if(!c[g]){if(!a[g]){var i=undefined;if(!h&&i)return require(g,!0);if(f)return f(g,!0);var j=new Error("Cannot find module '"+g+"'");throw j.code="MODULE_NOT_FOUND",j}var k=c[g]={exports:{}};a[g][0].call(k.exports,function(b){var c=a[g][1][b];return e(c?c:b)},k,k.exports,b,a,c,d)}return c[g].exports}for(var f=undefined,g=0;g<d.length;g++)e(d[g]);return e}({1:[function(b,c,d){"use strict";function e(a){if(Array.isArray(a)){for(var b=0,c=Array(a.length);b<a.length;b++)c[b]=a[b];return c}return Array.from(a)}var f=function(){function a(a,b){var c=[],d=!0,e=!1,f=void 0;try{for(var g,h=a[Symbol.iterator]();!(d=(g=h.next()).done)&&(c.push(g.value),!b||c.length!==b);d=!0);}catch(i){e=!0,f=i}finally{try{!d&&h["return"]&&h["return"]()}finally{if(e)throw f}}return c}return function(b,c){if(Array.isArray(b))return b;if(Symbol.iterator in Object(b))return a(b,c);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}(),g="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(a){return typeof a}:function(a){return a&&"function"==typeof Symbol&&a.constructor===Symbol?"symbol":typeof a};!function(b){function d(a){return a&&"object"===("undefined"==typeof a?"undefined":g(a))}function h(a){var b=Object.keys(a).sort();if(1===b.length){var c=b[0],d=a[c],e=void 0,f=void 0;switch(c){case"eq":e="only";break;case"gt":e="lowerBound",f=!0;break;case"lt":e="upperBound",f=!0;break;case"gte":e="lowerBound";break;case"lte":e="upperBound";break;default:throw new TypeError("`"+c+"` is not a valid key")}return[e,[d,f]]}var g=a[b[0]],h=a[b[1]],i=b.join("-");switch(i){case"gt-lt":case"gt-lte":case"gte-lt":case"gte-lte":return["bound",[g,h,"gt"===b[0],"lt"===b[1]]];default:throw new TypeError("`"+i+"` are conflicted keys")}}function i(a){if(a&&"object"===("undefined"==typeof a?"undefined":g(a))&&!(a instanceof j)){var b=h(a),c=f(b,2),d=c[0],i=c[1];return j[d].apply(j,e(i))}return a}var j=b.IDBKeyRange||b.webkitIDBKeyRange,k={readonly:"readonly",readwrite:"readwrite"},l=Object.prototype.hasOwnProperty,m=function(a){return a},n=b.indexedDB||b.webkitIndexedDB||b.mozIndexedDB||b.oIndexedDB||b.msIndexedDB||b.shimIndexedDB||function(){throw new Error("IndexedDB required")}(),o={},p=["abort","error","versionchange"],q=function(a,b,c,d){var f=this,i=null,l=function(d,f,h,l,m,n,o){return new Promise(function(p,q){var r=void 0;try{r=d?j[d].apply(j,e(f)):null}catch(s){return void q(s)}n=n||[],m=m||null;var t=[],u=0,v=[r],w=b.transaction(a,i?k.readwrite:k.readonly);w.onerror=function(a){return q(a)},w.onabort=function(a){return q(a)},w.oncomplete=function(){return p(t)};var x=w.objectStore(a),y="string"==typeof c?x.index(c):x;"count"!==h&&v.push(l||"next");var z=i?Object.keys(i):[],A=function(a){return z.forEach(function(b){var c=i[b];"function"==typeof c&&(c=c(a)),a[b]=c}),a};y[h].apply(y,v).onsuccess=function(a){var b=a.target.result;if("number"==typeof b)t=b;else if(b)if(null!==m&&m[0]>u)u=m[0],b.advance(m[0]);else if(null!==m&&u>=m[0]+m[1]);else{var c=function(){var a=!0,c="value"in b?b.value:b.key;try{n.forEach(function(b){a="function"==typeof b[0]?a&&b[0](c):a&&c[b[0]]===b[1]})}catch(d){return q(d),{v:void 0}}if(a){if(u++,i)try{c=A(c),b.update(c)}catch(d){return q(d),{v:void 0}}try{t.push(o(c))}catch(d){return q(d),{v:void 0}}}b["continue"]()}();if("object"===("undefined"==typeof c?"undefined":g(c)))return c.v}}})},n=function(a,b,c){var e=[],f="next",h="openCursor",j=null,k=m,n=!1,o=d||c,p=function(){return o?Promise.reject(o):l(a,b,h,n?f+"unique":f,j,e,k)},q=function(){return f=null,h="count",{execute:p}},r=function(){return h="openKeyCursor",{desc:u,distinct:v,execute:p,filter:t,limit:s,map:x}},s=function(a,b){return j=b?[a,b]:[0,a],o=j.some(function(a){return"number"!=typeof a})?new Error("limit() arguments must be numeric"):o,{desc:u,distinct:v,filter:t,keys:r,execute:p,map:x,modify:w}},t=function y(a,b){return e.push([a,b]),{desc:u,distinct:v,execute:p,filter:y,keys:r,limit:s,map:x,modify:w}},u=function(){return f="prev",{distinct:v,execute:p,filter:t,keys:r,limit:s,map:x,modify:w}},v=function(){return n=!0,{count:q,desc:u,execute:p,filter:t,keys:r,limit:s,map:x,modify:w}},w=function(a){return i=a&&"object"===("undefined"==typeof a?"undefined":g(a))?a:null,{execute:p}},x=function(a){return k=a,{count:q,desc:u,distinct:v,execute:p,filter:t,keys:r,limit:s,modify:w}};return{count:q,desc:u,distinct:v,execute:p,filter:t,keys:r,limit:s,map:x,modify:w}};["only","bound","upperBound","lowerBound"].forEach(function(a){f[a]=function(){return n(a,arguments)}}),this.range=function(a){var b=void 0,c=[null,null];try{c=h(a)}catch(d){b=d}return n.apply(void 0,e(c).concat([b]))},this.filter=function(){var a=n(null,null);return a.filter.apply(a,arguments)},this.all=function(){return this.filter()}},r=function(a,b,c,e){var f=this,g=!1;if(this.getIndexedDB=function(){return a},this.isClosed=function(){return g},this.query=function(b,c){var d=g?new Error("Database has been closed"):null;return new q(b,a,c,d)},this.add=function(b){for(var c=arguments.length,e=Array(c>1?c-1:0),f=1;c>f;f++)e[f-1]=arguments[f];return new Promise(function(c,f){if(g)return void f(new Error("Database has been closed"));var h=e.reduce(function(a,b){return a.concat(b)},[]),j=a.transaction(b,k.readwrite);j.onerror=function(a){a.preventDefault(),f(a)},j.onabort=function(a){return f(a)},j.oncomplete=function(){return c(h)};var m=j.objectStore(b);h.some(function(a){var b=void 0,c=void 0;if(d(a)&&l.call(a,"item")&&(c=a.key,a=a.item,null!=c))try{c=i(c)}catch(e){return f(e),!0}try{b=null!=c?m.add(a,c):m.add(a)}catch(e){return f(e),!0}b.onsuccess=function(b){if(d(a)){var c=b.target,e=c.source.keyPath;null===e&&(e="__id__"),l.call(a,e)||Object.defineProperty(a,e,{value:c.result,enumerable:!0})}}})})},this.update=function(b){for(var c=arguments.length,e=Array(c>1?c-1:0),f=1;c>f;f++)e[f-1]=arguments[f];return new Promise(function(c,f){if(g)return void f(new Error("Database has been closed"));var h=e.reduce(function(a,b){return a.concat(b)},[]),j=a.transaction(b,k.readwrite);j.onerror=function(a){a.preventDefault(),f(a)},j.onabort=function(a){return f(a)},j.oncomplete=function(){return c(h)};var m=j.objectStore(b);h.some(function(a){var b=void 0,c=void 0;if(d(a)&&l.call(a,"item")&&(c=a.key,a=a.item,null!=c))try{c=i(c)}catch(e){return f(e),!0}try{b=null!=c?m.put(a,c):m.put(a)}catch(g){return f(g),!0}b.onsuccess=function(b){if(d(a)){var c=b.target,e=c.source.keyPath;null===e&&(e="__id__"),l.call(a,e)||Object.defineProperty(a,e,{value:c.result,enumerable:!0})}}})})},this.put=function(){return this.update.apply(this,arguments)},this.remove=function(b,c){return new Promise(function(d,e){if(g)return void e(new Error("Database has been closed"));try{c=i(c)}catch(f){return void e(f)}var h=a.transaction(b,k.readwrite);h.onerror=function(a){a.preventDefault(),e(a)},h.onabort=function(a){return e(a)},h.oncomplete=function(){return d(c)};var j=h.objectStore(b);try{j["delete"](c)}catch(l){e(l)}})},this["delete"]=function(){return this.remove.apply(this,arguments)},this.clear=function(b){return new Promise(function(c,d){if(g)return void d(new Error("Database has been closed"));var e=a.transaction(b,k.readwrite);e.onerror=function(a){return d(a)},e.onabort=function(a){return d(a)},e.oncomplete=function(){return c()};var f=e.objectStore(b);f.clear()})},this.close=function(){return new Promise(function(d,e){return g?void e(new Error("Database has been closed")):(a.close(),g=!0,delete o[b][c],void d())})},this.get=function(b,c){return new Promise(function(d,e){if(g)return void e(new Error("Database has been closed"));try{c=i(c)}catch(f){return void e(f)}var h=a.transaction(b);h.onerror=function(a){a.preventDefault(),e(a)},h.onabort=function(a){return e(a)};var j=h.objectStore(b),k=void 0;try{k=j.get(c)}catch(l){e(l)}k.onsuccess=function(a){return d(a.target.result)}})},this.count=function(b,c){return new Promise(function(d,e){if(g)return void e(new Error("Database has been closed"));try{c=i(c)}catch(f){return void e(f)}var h=a.transaction(b);h.onerror=function(a){a.preventDefault(),e(a)},h.onabort=function(a){return e(a)};var j=h.objectStore(b),k=void 0;try{k=null==c?j.count():j.count(c)}catch(l){e(l)}k.onsuccess=function(a){return d(a.target.result)}})},this.addEventListener=function(b,c){if(!p.includes(b))throw new Error("Unrecognized event type "+b);return"error"===b?void a.addEventListener(b,function(a){a.preventDefault(),c(a)}):void a.addEventListener(b,c)},this.removeEventListener=function(b,c){if(!p.includes(b))throw new Error("Unrecognized event type "+b);a.removeEventListener(b,c)},p.forEach(function(a){this[a]=function(b){return this.addEventListener(a,b),this}},this),!e){var h=void 0;return[].some.call(a.objectStoreNames,function(a){if(f[a])return h=new Error('The store name, "'+a+'", which you have attempted to load, conflicts with db.js method names."'),f.close(),!0;f[a]={};var b=Object.keys(f);b.filter(function(a){return![].concat(p,["close","addEventListener","removeEventListener"]).includes(a)}).map(function(b){return f[a][b]=function(){for(var c=arguments.length,d=Array(c),e=0;c>e;e++)d[e]=arguments[e];return f[b].apply(f,[a].concat(d))}})}),h}},s=function(a,b,c,d,e,f){if(c&&0!==c.length){for(var h=0;h<d.objectStoreNames.length;h++){var i=d.objectStoreNames[h];l.call(c,i)||d.deleteObjectStore(i)}var j=void 0;return Object.keys(c).some(function(a){var e=c[a],f=void 0;if(d.objectStoreNames.contains(a))f=b.transaction.objectStore(a);else try{f=d.createObjectStore(a,e.key)}catch(h){return j=h,!0}Object.keys(e.indexes||{}).some(function(a){try{f.index(a)}catch(b){var c=e.indexes[a];c=c&&"object"===("undefined"==typeof c?"undefined":g(c))?c:{};try{f.createIndex(a,c.keyPath||c.key||a,c)}catch(d){return j=d,!0}}})}),j}},t=function(a,b,c,d){var e=a.target.result;o[b][c]=e;var f=new r(e,b,c,d);return f instanceof Error?Promise.reject(f):Promise.resolve(f)},u={version:"0.15.0",open:function(a){var b=a.server,c=a.version||1,d=a.schema,e=a.noServerMethods;return o[b]||(o[b]={}),new Promise(function(a,f){if(o[b][c])t({target:{result:o[b][c]}},b,c,e).then(a,f);else{var h=function(){if("function"==typeof d)try{d=d()}catch(g){return f(g),{v:void 0}}var h=n.open(b,c);h.onsuccess=function(d){return t(d,b,c,e).then(a,f)},h.onerror=function(a){a.preventDefault(),f(a)},h.onupgradeneeded=function(a){var e=s(a,h,d,a.target.result,b,c);e&&f(e)},h.onblocked=function(a){var d=new Promise(function(a,d){h.onsuccess=function(f){t(f,b,c,e).then(a,d)},h.onerror=function(a){return d(a)}});a.resume=d,f(a)}}();if("object"===("undefined"==typeof h?"undefined":g(h)))return h.v}})},"delete":function(a){return new Promise(function(b,c){var d=n.deleteDatabase(a);d.onsuccess=function(a){return b(a)},d.onerror=function(a){return c(a)},d.onblocked=function(a){a=null===a.newVersion||"undefined"==typeof Proxy?a:new Proxy(a,{get:function(a,b){return"newVersion"===b?null:a[b]}});var b=new Promise(function(b,c){d.onsuccess=function(c){"newVersion"in c||(c.newVersion=a.newVersion),"oldVersion"in c||(c.oldVersion=a.oldVersion),b(c)},d.onerror=function(a){return c(a)}});a.resume=b,c(a)}})},cmp:function(a,b){return new Promise(function(c,d){try{c(n.cmp(a,b))}catch(e){d(e)}})}};"undefined"!=typeof c&&"undefined"!=typeof c.exports?c.exports=u:"function"==typeof a&&a.amd?a(function(){return u}):b.db=u}(self)},{}]},{},[1])(1)});
+//# sourceMappingURL=db.min.js.map
+
+/***/ }),
+
+/***/ "./src/js/constants/index.ts":
+/*!***********************************!*\
+  !*** ./src/js/constants/index.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "isBackgroundPage": () => (/* binding */ isBackgroundPage),
+/* harmony export */   "manifest": () => (/* binding */ manifest)
+/* harmony export */ });
+const manifest = chrome.runtime.getManifest();
+const isBackgroundPage = chrome.runtime.getURL(manifest.background?.page || '') === location.href;
+
+
+
+/***/ }),
+
 /***/ "./src/js/service-worker/notifiers/friend-presence/index.ts":
 /*!******************************************************************!*\
   !*** ./src/js/service-worker/notifiers/friend-presence/index.ts ***!
@@ -250,18 +410,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../enums/presenceType */ "./src/js/enums/presenceType.ts");
-/* harmony import */ var _services_friends__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/friends */ "./src/js/services/friends/index.ts");
-/* harmony import */ var _services_game_launch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/game-launch */ "./src/js/services/game-launch/index.ts");
-/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../services/localization */ "./src/js/services/localization/index.ts");
-/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../services/presence */ "./src/js/services/presence/index.ts");
-/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
-/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
-/* harmony import */ var _services_followings__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../services/followings */ "./src/js/services/followings/index.ts");
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
+/* harmony import */ var _services_followings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/followings */ "./src/js/services/followings/index.ts");
+/* harmony import */ var _services_friends__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/friends */ "./src/js/services/friends/index.ts");
+/* harmony import */ var _services_game_launch__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../services/game-launch */ "./src/js/services/game-launch/index.ts");
+/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../services/localization */ "./src/js/services/localization/index.ts");
+/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../services/presence */ "./src/js/services/presence/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
 /* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../../services/users */ "./src/js/services/users/index.ts");
 /* harmony import */ var _utils_fetchDataUri__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../../utils/fetchDataUri */ "./src/js/utils/fetchDataUri.ts");
-/* harmony import */ var _utils_linkify__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../../utils/linkify */ "./src/js/utils/linkify.ts");
-
 
 
 
@@ -288,23 +446,23 @@ const presenceMatches = (a, b) => {
     return true;
 };
 const isEnabled = async () => {
-    const setting = await (0,_services_settings__WEBPACK_IMPORTED_MODULE_5__.getSettingValue)('friendNotifier');
+    const setting = await (0,_services_settings__WEBPACK_IMPORTED_MODULE_6__.getSettingValue)('friendNotifier');
     return setting?.on === true;
 };
 const isPresenceTypeEnabled = async (presenceType) => {
-    const setting = await (0,_services_settings__WEBPACK_IMPORTED_MODULE_5__.getSettingValue)('friendNotifier');
+    const setting = await (0,_services_settings__WEBPACK_IMPORTED_MODULE_6__.getSettingValue)('friendNotifier');
     switch (presenceType) {
-        case _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Online:
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.PresenceType.Online:
             return setting?.online || false;
-        case _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Offline:
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.PresenceType.Offline:
             return setting?.offline || false;
-        case _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Experience:
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.PresenceType.Experience:
             // If the setting is somehow null, assume we want to know about this one by default.
             if (setting?.game === false) {
                 return false;
             }
             return true;
-        case _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Studio:
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.PresenceType.Studio:
         default:
             // We don't care about these presence types.
             return false;
@@ -312,7 +470,7 @@ const isPresenceTypeEnabled = async (presenceType) => {
 };
 // Gets the icon URL to display on the notification.
 const getNotificationIconUrl = async (userId) => {
-    const thumbnail = await (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_6__.getAvatarHeadshotThumbnail)(userId);
+    const thumbnail = await (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_7__.getAvatarHeadshotThumbnail)(userId);
     if (!thumbnail.imageUrl) {
         return '';
     }
@@ -327,28 +485,28 @@ const getNotificationIconUrl = async (userId) => {
 // Fetches the title for the notification to display to the user, based on current and previous known presence.
 const getNotificationTitle = (user, presence, previousState) => {
     switch (presence.type) {
-        case _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Offline:
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.PresenceType.Offline:
             return `${user.displayName} went offline`;
-        case _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Online:
-            if (previousState.type !== _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Offline) {
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.PresenceType.Online:
+            if (previousState.type !== roblox__WEBPACK_IMPORTED_MODULE_0__.PresenceType.Offline) {
                 // If they were already online, don't notify them of this again.
                 return '';
             }
             return `${user.displayName} is now online`;
-        case _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Experience:
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.PresenceType.Experience:
             if (!presence.location?.name) {
                 // They joined an experience, but we don't know what they're playing.
                 // Don't tell the human what we don't know.
                 return '';
             }
             return `${user.displayName} is now playing`;
-        case _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Studio:
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.PresenceType.Studio:
             if (!presence.location?.name) {
                 // They launched Roblox studio, but we don't know what they're creating.
                 // Don't tell the human what we don't know.
                 return '';
             }
-            if (previousState.type !== _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Online) {
+            if (previousState.type !== roblox__WEBPACK_IMPORTED_MODULE_0__.PresenceType.Online) {
                 // If they went from in-experience -> in-studio, it's possible they just had Roblox studio open
                 // while playing a game, and then closed it.
                 // Occassionally I have also observed offline <-> Studio swapping back and forth..
@@ -360,8 +518,8 @@ const getNotificationTitle = (user, presence, previousState) => {
 };
 // Gets the buttons that should be displayed on a notification, based on the presence.
 const getNotificationButtons = async (presence) => {
-    if (presence.type === _enums_presenceType__WEBPACK_IMPORTED_MODULE_0__["default"].Experience && presence.location?.placeId) {
-        const joinText = await (0,_services_localization__WEBPACK_IMPORTED_MODULE_3__.getTranslationResource)('Feature.PeopleList', 'Action.Join');
+    if (presence.type === roblox__WEBPACK_IMPORTED_MODULE_0__.PresenceType.Experience && presence.location?.placeId) {
+        const joinText = await (0,_services_localization__WEBPACK_IMPORTED_MODULE_4__.getTranslationResource)('Feature.PeopleList', 'Action.Join');
         return [
             {
                 title: joinText,
@@ -376,7 +534,7 @@ chrome.notifications.onClicked.addListener((notificationId) => {
         return;
     }
     chrome.tabs.create({
-        url: (0,_utils_linkify__WEBPACK_IMPORTED_MODULE_10__.getUserProfileLink)(Number(notificationId.substring(notificationIdPrefix.length))).href,
+        url: (0,roblox__WEBPACK_IMPORTED_MODULE_0__.getUserProfileLink)(Number(notificationId.substring(notificationIdPrefix.length))).href,
         active: true,
     });
 });
@@ -386,7 +544,7 @@ chrome.notifications.onButtonClicked.addListener(async (notificationId) => {
     }
     const userId = Number(notificationId.substring(notificationIdPrefix.length));
     try {
-        await (0,_services_game_launch__WEBPACK_IMPORTED_MODULE_2__.followUser)(userId);
+        await (0,_services_game_launch__WEBPACK_IMPORTED_MODULE_3__.followUser)(userId);
     }
     catch (err) {
         console.error('Failed to launch the experience', err);
@@ -407,11 +565,11 @@ chrome.notifications.onButtonClicked.addListener(async (notificationId) => {
         return null;
     }
     // Fetch the friends
-    const friends = await (0,_services_friends__WEBPACK_IMPORTED_MODULE_1__.getUserFriends)(authenticatedUser.id);
+    const friends = await (0,_services_friends__WEBPACK_IMPORTED_MODULE_2__.getUserFriends)(authenticatedUser.id);
     // Check the presence for each of the friends
     const currentState = {};
     await Promise.all(friends.map(async (friend) => {
-        const presence = (currentState[friend.id] = await (0,_services_presence__WEBPACK_IMPORTED_MODULE_4__.getUserPresence)(friend.id));
+        const presence = (currentState[friend.id] = await (0,_services_presence__WEBPACK_IMPORTED_MODULE_5__.getUserPresence)(friend.id));
         const previousState = previousStates && previousStates[friend.id];
         if (previousState && !presenceMatches(previousState, presence)) {
             // The presence for this friend changed, do something!
@@ -429,7 +587,7 @@ chrome.notifications.onButtonClicked.addListener(async (notificationId) => {
                 chrome.notifications.clear(notificationId);
                 return;
             }
-            const isFollowing = await (0,_services_followings__WEBPACK_IMPORTED_MODULE_7__.isAuthenticatedUserFollowing)(friend.id);
+            const isFollowing = await (0,_services_followings__WEBPACK_IMPORTED_MODULE_1__.isAuthenticatedUserFollowing)(friend.id);
             if (!isFollowing) {
                 // We're not following this friend, don't show notifications about them.
                 chrome.notifications.clear(notificationId);
@@ -532,10 +690,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
-/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
-/* harmony import */ var _utils_fetchDataUri__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../utils/fetchDataUri */ "./src/js/utils/fetchDataUri.ts");
-/* harmony import */ var _enums_tradeStatusType__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../enums/tradeStatusType */ "./src/js/enums/tradeStatusType.ts");
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
+/* harmony import */ var _utils_fetchDataUri__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../utils/fetchDataUri */ "./src/js/utils/fetchDataUri.ts");
 
 
 
@@ -544,13 +702,13 @@ __webpack_require__.r(__webpack_exports__);
 const notificationIdPrefix = 'trade-notifier-';
 // Gets the trade status types that should be notified on.
 const getEnabledTradeStatusTypes = async () => {
-    const enabled = await (0,_services_settings__WEBPACK_IMPORTED_MODULE_0__.getToggleSettingValue)('tradeNotifier');
+    const enabled = await (0,_services_settings__WEBPACK_IMPORTED_MODULE_1__.getToggleSettingValue)('tradeNotifier');
     if (enabled) {
         return [
-            _enums_tradeStatusType__WEBPACK_IMPORTED_MODULE_3__["default"].Inbound,
-            _enums_tradeStatusType__WEBPACK_IMPORTED_MODULE_3__["default"].Outbound,
-            _enums_tradeStatusType__WEBPACK_IMPORTED_MODULE_3__["default"].Completed,
-            _enums_tradeStatusType__WEBPACK_IMPORTED_MODULE_3__["default"].Inactive,
+            roblox__WEBPACK_IMPORTED_MODULE_0__.TradeStatusType.Inbound,
+            roblox__WEBPACK_IMPORTED_MODULE_0__.TradeStatusType.Outbound,
+            roblox__WEBPACK_IMPORTED_MODULE_0__.TradeStatusType.Completed,
+            roblox__WEBPACK_IMPORTED_MODULE_0__.TradeStatusType.Inactive,
         ];
     }
     return [];
@@ -607,12 +765,12 @@ const getTrade = async (id, tradeStatusType) => {
 };
 // Gets the icon URL to display on the notification.
 const getNotificationIconUrl = async (trade) => {
-    const thumbnail = await (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_1__.getAvatarHeadshotThumbnail)(trade.tradePartner.id);
+    const thumbnail = await (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_2__.getAvatarHeadshotThumbnail)(trade.tradePartner.id);
     if (!thumbnail.imageUrl) {
         return '';
     }
     try {
-        return await (0,_utils_fetchDataUri__WEBPACK_IMPORTED_MODULE_2__["default"])(new URL(thumbnail.imageUrl));
+        return await (0,_utils_fetchDataUri__WEBPACK_IMPORTED_MODULE_3__["default"])(new URL(thumbnail.imageUrl));
     }
     catch (err) {
         console.error('Failed to fetch icon URL from thumbnail', trade, thumbnail, err);
@@ -622,11 +780,11 @@ const getNotificationIconUrl = async (trade) => {
 // Fetches the title for the notification to display to the user, based on current and previous known presence.
 const getNotificationTitle = (trade) => {
     switch (trade.type) {
-        case _enums_tradeStatusType__WEBPACK_IMPORTED_MODULE_3__["default"].Inbound:
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.TradeStatusType.Inbound:
             return 'Trade inbound';
-        case _enums_tradeStatusType__WEBPACK_IMPORTED_MODULE_3__["default"].Outbound:
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.TradeStatusType.Outbound:
             return 'Trade sent';
-        case _enums_tradeStatusType__WEBPACK_IMPORTED_MODULE_3__["default"].Completed:
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.TradeStatusType.Completed:
             return 'Trade completed';
         default:
             return 'Trade ' + trade.status.toLowerCase();
@@ -1074,7 +1232,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "removeItem": () => (/* binding */ removeItem),
 /* harmony export */   "wearItem": () => (/* binding */ wearItem)
 /* harmony export */ });
-/* harmony import */ var _enums_assetType__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../enums/assetType */ "./src/js/enums/assetType.ts");
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
 /* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
 /* harmony import */ var _get_avatar_asset_rules__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./get-avatar-asset-rules */ "./src/js/services/avatar/get-avatar-asset-rules.ts");
 
@@ -1097,7 +1255,7 @@ const getAvatarAssets = async (userId) => {
         assets.push({
             id: emote.assetId,
             name: emote.assetName,
-            assetType: _enums_assetType__WEBPACK_IMPORTED_MODULE_0__["default"].Emote,
+            assetType: roblox__WEBPACK_IMPORTED_MODULE_0__.AssetType.Emote,
         });
     });
     return assets;
@@ -1109,7 +1267,7 @@ const wearItem = async (assetId, authenticatedUserId) => {
         method: 'POST',
         body: JSON.stringify({
             assetIds: [assetId].concat(currentAssets
-                .filter((a) => a.assetType !== _enums_assetType__WEBPACK_IMPORTED_MODULE_0__["default"].Emote)
+                .filter((a) => a.assetType !== roblox__WEBPACK_IMPORTED_MODULE_0__.AssetType.Emote)
                 .map((a) => a.id)),
         }),
     });
@@ -1260,8 +1418,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/wait */ "./src/js/utils/wait.ts");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 /* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
 /* harmony import */ var _history__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./history */ "./src/js/services/currency/history.ts");
 
@@ -1269,7 +1427,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const messageDestination = 'currencyService.getRobuxBalance';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 30 * 1000);
 const failureDelay = 5 * 1000;
 // Fetches the Robux balance of the currently authenticated user.
 const getRobuxBalance = (userId) => {
@@ -1280,11 +1438,11 @@ const loadRobuxBalance = async (userId) => {
     const response = await fetch(`https://economy.roblox.com/v1/users/${userId}/currency`);
     // If we fail to send the request, delay the response to ensure we don't spam the API.
     if (response.status === 401) {
-        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(failureDelay);
         throw 'User is unauthenticated';
     }
     else if (!response.ok) {
-        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(failureDelay);
         throw 'Failed to load Robux balance';
     }
     const result = await response.json();
@@ -1577,14 +1735,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/wait */ "./src/js/utils/wait.ts");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 /* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
 
 
 
 const messageDestination = 'friendsService.getFriendRequestCount';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 30 * 1000);
 const failureDelay = 5 * 1000;
 // Fetches the inbound friend request count for the currently authenticated user.
 const getFriendRequestCount = (userId) => {
@@ -1596,11 +1754,11 @@ const loadFriendRequestCount = async (userId) => {
     const response = await fetch(`https://friends.roblox.com/v1/user/friend-requests/count`);
     // If we fail to send the request, delay the response to ensure we don't spam the API.
     if (response.status === 401) {
-        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(failureDelay);
         throw 'User is unauthenticated';
     }
     else if (!response.ok) {
-        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(failureDelay);
         throw 'Failed to load friend request count';
     }
     const result = await response.json();
@@ -2047,14 +2205,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/wait */ "./src/js/utils/wait.ts");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 /* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
 
 
 
 const messageDestination = 'inventoryService.getLimitedInventory';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 5 * 60 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 5 * 60 * 1000);
 // Fetches the limited inventory for the specified user.
 const getLimitedInventory = (userId) => {
     return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
@@ -2070,7 +2228,7 @@ const loadLimitedInventory = async (userId) => {
         const response = await fetch(`https://inventory.roblox.com/v1/users/${userId}/assets/collectibles?limit=100&cursor=${nextPageCursor}`);
         if (response.status === 429) {
             // Throttled. Wait a few seconds, and try again.
-            await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(5000);
+            await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(5000);
             continue;
         }
         else if (response.status === 403) {
@@ -2667,26 +2825,26 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/batch */ "./node_modules/@tix-factory/batch/dist/index.js");
-/* harmony import */ var _enums_presenceType__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../enums/presenceType */ "./src/js/enums/presenceType.ts");
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
 
 
 const getPresenceType = (presenceType) => {
     switch (presenceType) {
         case 1:
-            return _enums_presenceType__WEBPACK_IMPORTED_MODULE_1__["default"].Online;
+            return roblox__WEBPACK_IMPORTED_MODULE_1__.PresenceType.Online;
         case 2:
-            return _enums_presenceType__WEBPACK_IMPORTED_MODULE_1__["default"].Experience;
+            return roblox__WEBPACK_IMPORTED_MODULE_1__.PresenceType.Experience;
         case 3:
-            return _enums_presenceType__WEBPACK_IMPORTED_MODULE_1__["default"].Studio;
+            return roblox__WEBPACK_IMPORTED_MODULE_1__.PresenceType.Studio;
         default:
-            return _enums_presenceType__WEBPACK_IMPORTED_MODULE_1__["default"].Offline;
+            return roblox__WEBPACK_IMPORTED_MODULE_1__.PresenceType.Offline;
     }
 };
 const getLocationName = (presenceType, name) => {
     if (!name) {
         return '';
     }
-    if (presenceType === _enums_presenceType__WEBPACK_IMPORTED_MODULE_1__["default"].Studio) {
+    if (presenceType === roblox__WEBPACK_IMPORTED_MODULE_1__.PresenceType.Studio) {
         return name.replace(/^Studio\s+-\s*/, '');
     }
     return name;
@@ -2719,8 +2877,8 @@ class PresenceBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODULE
             if (presence) {
                 const presenceType = getPresenceType(presence.userPresenceType);
                 if (presence.placeId &&
-                    (presenceType === _enums_presenceType__WEBPACK_IMPORTED_MODULE_1__["default"].Experience ||
-                        presenceType === _enums_presenceType__WEBPACK_IMPORTED_MODULE_1__["default"].Studio)) {
+                    (presenceType === roblox__WEBPACK_IMPORTED_MODULE_1__.PresenceType.Experience ||
+                        presenceType === roblox__WEBPACK_IMPORTED_MODULE_1__.PresenceType.Studio)) {
                     item.resolve({
                         type: presenceType,
                         location: {
@@ -2739,7 +2897,7 @@ class PresenceBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODULE
             }
             else {
                 item.resolve({
-                    type: _enums_presenceType__WEBPACK_IMPORTED_MODULE_1__["default"].Offline,
+                    type: roblox__WEBPACK_IMPORTED_MODULE_1__.PresenceType.Offline,
                 });
             }
         });
@@ -2798,14 +2956,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/wait */ "./src/js/utils/wait.ts");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 /* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
 
 
 
 const messageDestination = 'privateMessagesService.getUnreadMessageCount';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 30 * 1000);
 const failureDelay = 5 * 1000;
 // Fetches the unread private message count for the currently authenticated user.
 const getUnreadMessageCount = (userId) => {
@@ -2817,11 +2975,11 @@ const loadUnreadMessageCount = async (userId) => {
     const response = await fetch(`https://privatemessages.roblox.com/v1/messages/unread/count`);
     // If we fail to send the request, delay the response to ensure we don't spam the API.
     if (response.status === 401) {
-        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(failureDelay);
         throw 'User is unauthenticated';
     }
     else if (!response.ok) {
-        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(failureDelay);
         throw 'Failed to load unread private message count';
     }
     const result = await response.json();
@@ -2972,7 +3130,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/batch */ "./node_modules/@tix-factory/batch/dist/index.js");
-/* harmony import */ var _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../enums/thumbnailState */ "./src/js/enums/thumbnailState.ts");
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
 
 
 class ThumbnailBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__.Batch {
@@ -3010,14 +3168,14 @@ class ThumbnailBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODUL
                 const thumbnailState = thumbnail.state;
                 item.resolve({
                     state: thumbnailState,
-                    imageUrl: thumbnailState === _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_1__["default"].Completed
+                    imageUrl: thumbnailState === roblox__WEBPACK_IMPORTED_MODULE_1__.ThumbnailState.Completed
                         ? thumbnail.imageUrl
                         : '',
                 });
             }
             else {
                 item.resolve({
-                    state: _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_1__["default"].Error,
+                    state: roblox__WEBPACK_IMPORTED_MODULE_1__.ThumbnailState.Error,
                     imageUrl: '',
                 });
             }
@@ -3046,83 +3204,81 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getGamePassIcon": () => (/* binding */ getGamePassIcon),
 /* harmony export */   "getGroupIcon": () => (/* binding */ getGroupIcon)
 /* harmony export */ });
-/* harmony import */ var _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../enums/thumbnailState */ "./src/js/enums/thumbnailState.ts");
-/* harmony import */ var _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../enums/thumbnailType */ "./src/js/enums/thumbnailType.ts");
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
-/* harmony import */ var _batchProcessor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./batchProcessor */ "./src/js/services/thumbnails/batchProcessor.ts");
-
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _batchProcessor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./batchProcessor */ "./src/js/services/thumbnails/batchProcessor.ts");
 
 
 
 
 const messageDestination = 'thumbnailsService.getAvatarHeadshotThumbnail';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__["default"](messageDestination, 5 * 60 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 5 * 60 * 1000);
 // Fetches an avatar headshot thumbnail, for the given user ID.
 const getAvatarHeadshotThumbnail = (userId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].AvatarHeadShot,
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.AvatarHeadShot,
         targetId: userId,
     });
 };
 // Fetches an asset thumbnail, for the given asset ID.
 const getAssetThumbnail = (assetId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].Asset,
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.Asset,
         targetId: assetId,
     });
 };
 // Fetches a group icon.
 const getGroupIcon = (groupId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GroupIcon,
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GroupIcon,
         targetId: groupId,
     });
 };
 // Fetches a game pass icon.
 const getGamePassIcon = (gamePassId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GamePass,
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GamePass,
         targetId: gamePassId,
     });
 };
 // Fetches a developer product icon.
 const getDeveloperProductIcon = (gamePassId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].DeveloperProduct,
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.DeveloperProduct,
         targetId: gamePassId,
     });
 };
 // Fetches a game icon.
 const getGameIcon = (gamePassId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GameIcon,
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GameIcon,
         targetId: gamePassId,
     });
 };
 // Gets the default size for the thumbnail, by type.
 const getThumbnailSize = (thumbnailType) => {
     switch (thumbnailType) {
-        case _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GamePass:
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GamePass:
             return '150x150';
-        case _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GameIcon:
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GameIcon:
             return '256x256';
         default:
             return '420x420';
     }
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_3__.addListener)(messageDestination, async (message) => {
+(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination, async (message) => {
     const cacheKey = `${message.type}:${message.targetId}`;
     // Check the cache
     const thumbnail = await cache.getOrAdd(cacheKey, () => 
     // Queue up the fetch request, when not in the cache
-    _batchProcessor__WEBPACK_IMPORTED_MODULE_4__["default"].enqueue({
+    _batchProcessor__WEBPACK_IMPORTED_MODULE_3__["default"].enqueue({
         type: message.type,
         targetId: message.targetId,
         size: getThumbnailSize(message.type),
     }));
-    if (thumbnail.state !== _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_0__["default"].Completed) {
+    if (thumbnail.state !== roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailState.Completed) {
         setTimeout(() => {
             // If the thumbnail isn't complete, evict it from the cache early.
             cache.evict(cacheKey);
@@ -3154,14 +3310,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/wait */ "./src/js/utils/wait.ts");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 /* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
 
 
 
 const messageDestination = 'tradesService.getTradeCount';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 30 * 1000);
 const failureDelay = 5 * 1000;
 // Fetches the unread private message count for the currently authenticated user.
 const getTradeCount = (tradeStatusType) => {
@@ -3175,11 +3331,11 @@ const loadTradeCount = async (tradeStatusType) => {
     const response = await fetch(`https://trades.roblox.com/v1/trades/${tradeStatusType}/count`);
     // If we fail to send the request, delay the response to ensure we don't spam the API.
     if (response.status === 401) {
-        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(failureDelay);
         throw 'User is unauthenticated';
     }
     else if (!response.ok) {
-        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(failureDelay);
         throw `Failed to load ${tradeStatusType} trade count`;
     }
     const result = await response.json();
@@ -3735,77 +3891,6 @@ if (_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
     }
     // Otherwise, we have to send a message out and try some nonsense.
     await (0,_services_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { protocolUrl });
-});
-
-
-/***/ }),
-
-/***/ "./src/js/utils/linkify.ts":
-/*!*********************************!*\
-  !*** ./src/js/utils/linkify.ts ***!
-  \*********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getCatalogLink": () => (/* binding */ getCatalogLink),
-/* harmony export */   "getIdFromUrl": () => (/* binding */ getIdFromUrl),
-/* harmony export */   "getLibraryLink": () => (/* binding */ getLibraryLink),
-/* harmony export */   "getPlaceLink": () => (/* binding */ getPlaceLink),
-/* harmony export */   "getUserProfileLink": () => (/* binding */ getUserProfileLink)
-/* harmony export */ });
-const getSEOLink = (id, name, path) => {
-    if (!name) {
-        name = 'redirect';
-    }
-    else {
-        name =
-            name
-                .replace(/'/g, '')
-                .replace(/\W+/g, '-')
-                .replace(/^-+/, '')
-                .replace(/-+$/, '') || 'redirect';
-    }
-    return new URL(`https://www.roblox.com/${path}/${id}/${name}`);
-};
-const getCatalogLink = (assetId, assetName) => {
-    return getSEOLink(assetId, assetName, 'catalog');
-};
-const getLibraryLink = (assetId, assetName) => {
-    return getSEOLink(assetId, assetName, 'library');
-};
-const getPlaceLink = (placeId, placeName) => {
-    return getSEOLink(placeId, placeName, 'games');
-};
-const getUserProfileLink = (userId) => {
-    return getSEOLink(userId, 'profile', 'users');
-};
-const getIdFromUrl = (url) => {
-    const match = url.pathname.match(/^\/(badges|games|game-pass|groups|catalog|library|users)\/(\d+)\/?/i) || [];
-    // Returns NaN if the URL doesn't match.
-    return Number(match[2]);
-};
-
-
-
-/***/ }),
-
-/***/ "./src/js/utils/wait.ts":
-/*!******************************!*\
-  !*** ./src/js/utils/wait.ts ***!
-  \******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((time) => {
-    return new Promise((resolve, reject) => {
-        setTimeout(resolve, time);
-    });
 });
 
 

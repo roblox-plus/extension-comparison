@@ -2,28 +2,10 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/js/constants/index.ts":
-/*!***********************************!*\
-  !*** ./src/js/constants/index.ts ***!
-  \***********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "isBackgroundPage": () => (/* binding */ isBackgroundPage),
-/* harmony export */   "manifest": () => (/* binding */ manifest)
-/* harmony export */ });
-const manifest = chrome.runtime.getManifest();
-const isBackgroundPage = chrome.runtime.getURL(manifest.background?.page || '') === location.href;
-
-
-
-/***/ }),
-
-/***/ "./src/js/enums/assetType.ts":
-/*!***********************************!*\
-  !*** ./src/js/enums/assetType.ts ***!
-  \***********************************/
+/***/ "./libs/roblox/dist/enums/asset-type.js":
+/*!**********************************************!*\
+  !*** ./libs/roblox/dist/enums/asset-type.js ***!
+  \**********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -112,10 +94,37 @@ var AssetType;
 
 /***/ }),
 
-/***/ "./src/js/enums/thumbnailState.ts":
-/*!****************************************!*\
-  !*** ./src/js/enums/thumbnailState.ts ***!
-  \****************************************/
+/***/ "./libs/roblox/dist/enums/presence-type.js":
+/*!*************************************************!*\
+  !*** ./libs/roblox/dist/enums/presence-type.js ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// The types of user presence.
+var PresenceType;
+(function (PresenceType) {
+    // The user is offline.
+    PresenceType["Offline"] = "Offline";
+    // The user is online.
+    PresenceType["Online"] = "Online";
+    // The user is currently in an experience.
+    PresenceType["Experience"] = "Experience";
+    // The user is currently in Roblox Studio.
+    PresenceType["Studio"] = "Studio";
+})(PresenceType || (PresenceType = {}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PresenceType);
+
+
+/***/ }),
+
+/***/ "./libs/roblox/dist/enums/thumbnail-state.js":
+/*!***************************************************!*\
+  !*** ./libs/roblox/dist/enums/thumbnail-state.js ***!
+  \***************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -143,10 +152,10 @@ var ThumbnailState;
 
 /***/ }),
 
-/***/ "./src/js/enums/thumbnailType.ts":
-/*!***************************************!*\
-  !*** ./src/js/enums/thumbnailType.ts ***!
-  \***************************************/
+/***/ "./libs/roblox/dist/enums/thumbnail-type.js":
+/*!**************************************************!*\
+  !*** ./libs/roblox/dist/enums/thumbnail-type.js ***!
+  \**************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -174,6 +183,138 @@ var ThumbnailType;
 
 /***/ }),
 
+/***/ "./libs/roblox/dist/enums/trade-status-type.js":
+/*!*****************************************************!*\
+  !*** ./libs/roblox/dist/enums/trade-status-type.js ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var TradeStatusType;
+(function (TradeStatusType) {
+    TradeStatusType["Inbound"] = "Inbound";
+    TradeStatusType["Outbound"] = "Outbound";
+    TradeStatusType["Completed"] = "Completed";
+    TradeStatusType["Inactive"] = "Inactive";
+})(TradeStatusType || (TradeStatusType = {}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TradeStatusType);
+
+
+/***/ }),
+
+/***/ "./libs/roblox/dist/index.js":
+/*!***********************************!*\
+  !*** ./libs/roblox/dist/index.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "AssetType": () => (/* reexport safe */ _enums_asset_type__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   "PresenceType": () => (/* reexport safe */ _enums_presence_type__WEBPACK_IMPORTED_MODULE_1__["default"]),
+/* harmony export */   "ThumbnailState": () => (/* reexport safe */ _enums_thumbnail_state__WEBPACK_IMPORTED_MODULE_2__["default"]),
+/* harmony export */   "ThumbnailType": () => (/* reexport safe */ _enums_thumbnail_type__WEBPACK_IMPORTED_MODULE_3__["default"]),
+/* harmony export */   "TradeStatusType": () => (/* reexport safe */ _enums_trade_status_type__WEBPACK_IMPORTED_MODULE_4__["default"]),
+/* harmony export */   "getCatalogLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getCatalogLink),
+/* harmony export */   "getGamePassLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getGamePassLink),
+/* harmony export */   "getIdFromUrl": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getIdFromUrl),
+/* harmony export */   "getLibraryLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getLibraryLink),
+/* harmony export */   "getPlaceLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getPlaceLink),
+/* harmony export */   "getUserProfileLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getUserProfileLink)
+/* harmony export */ });
+/* harmony import */ var _enums_asset_type__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./enums/asset-type */ "./libs/roblox/dist/enums/asset-type.js");
+/* harmony import */ var _enums_presence_type__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./enums/presence-type */ "./libs/roblox/dist/enums/presence-type.js");
+/* harmony import */ var _enums_thumbnail_state__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./enums/thumbnail-state */ "./libs/roblox/dist/enums/thumbnail-state.js");
+/* harmony import */ var _enums_thumbnail_type__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./enums/thumbnail-type */ "./libs/roblox/dist/enums/thumbnail-type.js");
+/* harmony import */ var _enums_trade_status_type__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./enums/trade-status-type */ "./libs/roblox/dist/enums/trade-status-type.js");
+/* harmony import */ var _utils_linkify__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils/linkify */ "./libs/roblox/dist/utils/linkify.js");
+// Export enums
+
+
+
+
+
+// Export utils
+
+
+
+/***/ }),
+
+/***/ "./libs/roblox/dist/utils/linkify.js":
+/*!*******************************************!*\
+  !*** ./libs/roblox/dist/utils/linkify.js ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getCatalogLink": () => (/* binding */ getCatalogLink),
+/* harmony export */   "getGamePassLink": () => (/* binding */ getGamePassLink),
+/* harmony export */   "getIdFromUrl": () => (/* binding */ getIdFromUrl),
+/* harmony export */   "getLibraryLink": () => (/* binding */ getLibraryLink),
+/* harmony export */   "getPlaceLink": () => (/* binding */ getPlaceLink),
+/* harmony export */   "getUserProfileLink": () => (/* binding */ getUserProfileLink)
+/* harmony export */ });
+const getSEOLink = (id, name, path) => {
+    if (!name) {
+        name = 'redirect';
+    }
+    else {
+        name =
+            name
+                .replace(/'/g, '')
+                .replace(/\W+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '') || 'redirect';
+    }
+    return new URL(`https://www.roblox.com/${path}/${id}/${name}`);
+};
+const getGamePassLink = (gamePassId, gamePassName) => {
+    return getSEOLink(gamePassId, gamePassName, 'game-pass');
+};
+const getCatalogLink = (assetId, assetName) => {
+    return getSEOLink(assetId, assetName, 'catalog');
+};
+const getLibraryLink = (assetId, assetName) => {
+    return getSEOLink(assetId, assetName, 'library');
+};
+const getPlaceLink = (placeId, placeName) => {
+    return getSEOLink(placeId, placeName, 'games');
+};
+const getUserProfileLink = (userId) => {
+    return getSEOLink(userId, 'profile', 'users');
+};
+const getIdFromUrl = (url) => {
+    const match = url.pathname.match(/^\/(badges|games|game-pass|groups|catalog|library|users)\/(\d+)\/?/i) || [];
+    // Returns NaN if the URL doesn't match.
+    return Number(match[2]);
+};
+
+
+
+/***/ }),
+
+/***/ "./src/js/constants/index.ts":
+/*!***********************************!*\
+  !*** ./src/js/constants/index.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "isBackgroundPage": () => (/* binding */ isBackgroundPage),
+/* harmony export */   "manifest": () => (/* binding */ manifest)
+/* harmony export */ });
+const manifest = chrome.runtime.getManifest();
+const isBackgroundPage = chrome.runtime.getURL(manifest.background?.page || '') === location.href;
+
+
+
+/***/ }),
+
 /***/ "./src/js/pages/roblox-plus/transactions/index.ts":
 /*!********************************************************!*\
   !*** ./src/js/pages/roblox-plus/transactions/index.ts ***!
@@ -181,11 +322,9 @@ var ThumbnailType;
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _enums_assetType__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../enums/assetType */ "./src/js/enums/assetType.ts");
-/* harmony import */ var _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../enums/thumbnailState */ "./src/js/enums/thumbnailState.ts");
-/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
-/* harmony import */ var _services_transactions__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../services/transactions */ "./src/js/services/transactions/index.ts");
-
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
+/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
+/* harmony import */ var _services_transactions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/transactions */ "./src/js/services/transactions/index.ts");
 
 
 
@@ -206,7 +345,7 @@ window.addEventListener('message', (event) => {
         console.log('Received request to download transactions', event.data.targetType, targetId, startDate, endDate);
         switch (event.data.targetType) {
             case 'User':
-                (0,_services_transactions__WEBPACK_IMPORTED_MODULE_3__.emailUserTransactionSales)(targetId, startDate, endDate)
+                (0,_services_transactions__WEBPACK_IMPORTED_MODULE_2__.emailUserTransactionSales)(targetId, startDate, endDate)
                     .then(() => {
                     respond(true, 'Please check your email for your transactions, then come back to this page to upload the CSV.');
                 })
@@ -216,7 +355,7 @@ window.addEventListener('message', (event) => {
                 });
                 return;
             case 'Group':
-                (0,_services_transactions__WEBPACK_IMPORTED_MODULE_3__.emailGroupTransactionSales)(targetId, startDate, endDate)
+                (0,_services_transactions__WEBPACK_IMPORTED_MODULE_2__.emailGroupTransactionSales)(targetId, startDate, endDate)
                     .then(() => {
                     respond(true, 'Please check your email for your group transactions, then come back to this page to upload the CSV.');
                 })
@@ -245,7 +384,7 @@ setInterval(() => {
             return;
         }
         const thumbnailLoaded = (thumbnail) => {
-            if (thumbnail.state !== _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_1__["default"].Completed) {
+            if (thumbnail.state !== roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailState.Completed) {
                 return;
             }
             const img = document.createElement('img');
@@ -256,21 +395,203 @@ setInterval(() => {
             console.warn('Failed to load image for transaction card', itemType, itemId, err);
         };
         if (itemType === 'Game Pass') {
-            (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_2__.getGamePassIcon)(itemId).then(thumbnailLoaded).catch(thumbnailFailed);
+            (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_1__.getGamePassIcon)(itemId).then(thumbnailLoaded).catch(thumbnailFailed);
         }
         else if (itemType === 'Developer Product') {
-            (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_2__.getDeveloperProductIcon)(itemId)
+            (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_1__.getDeveloperProductIcon)(itemId)
                 .then(thumbnailLoaded)
                 .catch(thumbnailFailed);
         }
         else if (itemType === 'Private Server Product') {
-            (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_2__.getGameIcon)(itemId).then(thumbnailLoaded).catch(thumbnailFailed);
+            (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_1__.getGameIcon)(itemId).then(thumbnailLoaded).catch(thumbnailFailed);
         }
-        else if (Object.keys(_enums_assetType__WEBPACK_IMPORTED_MODULE_0__["default"]).includes(itemType)) {
-            (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_2__.getAssetThumbnail)(itemId).then(thumbnailLoaded).catch(thumbnailFailed);
+        else if (Object.keys(roblox__WEBPACK_IMPORTED_MODULE_0__.AssetType).includes(itemType)) {
+            (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_1__.getAssetThumbnail)(itemId).then(thumbnailLoaded).catch(thumbnailFailed);
         }
     });
 }, 500);
+
+
+/***/ }),
+
+/***/ "./src/js/pages/roblox-plus/user-info/index.ts":
+/*!*****************************************************!*\
+  !*** ./src/js/pages/roblox-plus/user-info/index.ts ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "load": () => (/* reexport safe */ _load__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   "populate": () => (/* reexport safe */ _populate__WEBPACK_IMPORTED_MODULE_1__["default"])
+/* harmony export */ });
+/* harmony import */ var _load__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./load */ "./src/js/pages/roblox-plus/user-info/load.ts");
+/* harmony import */ var _populate__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./populate */ "./src/js/pages/roblox-plus/user-info/populate.ts");
+
+
+
+
+
+/***/ }),
+
+/***/ "./src/js/pages/roblox-plus/user-info/load.ts":
+/*!****************************************************!*\
+  !*** ./src/js/pages/roblox-plus/user-info/load.ts ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
+/* harmony import */ var _services_groups__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/groups */ "./src/js/services/groups/index.ts");
+/* harmony import */ var _services_premium__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/premium */ "./src/js/services/premium/index.ts");
+/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
+/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../services/users */ "./src/js/services/users/index.ts");
+
+
+
+
+
+// Loads a detailed group object.
+const loadDetailedGroup = async (group) => {
+    const detailedGroup = Object.assign({
+        thumbnail: {
+            imageUrl: '',
+            state: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailState.Error,
+        },
+    }, group);
+    try {
+        detailedGroup.thumbnail = await (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_3__.getGroupIcon)(group.id);
+    }
+    catch (e) {
+        console.warn('Failed to load thumbnail for group', group, e);
+    }
+    return detailedGroup;
+};
+// Loads all the information about the user that should be injected into the page.
+const load = async () => {
+    const user = await (0,_services_users__WEBPACK_IMPORTED_MODULE_4__.getAuthenticatedUser)();
+    if (!user) {
+        return null;
+    }
+    const userInfo = {
+        user,
+        premiumExpiration: undefined,
+        thumbnail: {
+            imageUrl: '',
+            state: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailState.Error,
+        },
+        groups: {
+            list: [],
+            creatorList: [],
+            primary: null,
+        },
+    };
+    try {
+        userInfo.thumbnail = await (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_3__.getAvatarHeadshotThumbnail)(user.id);
+    }
+    catch (err) {
+        console.warn('Failed to load user thumbnail', user, err);
+    }
+    try {
+        userInfo.premiumExpiration = await (0,_services_premium__WEBPACK_IMPORTED_MODULE_2__.getPremiumExpirationDate)(user.id);
+    }
+    catch (err) {
+        console.warn('Failed to load user premium status', user, err);
+    }
+    try {
+        const groupList = await (0,_services_groups__WEBPACK_IMPORTED_MODULE_1__.getUserGroups)(user.id);
+        userInfo.groups.list = await Promise.all(groupList.map(loadDetailedGroup));
+        const primaryGroup = await (0,_services_groups__WEBPACK_IMPORTED_MODULE_1__.getUserPrimaryGroup)(user.id);
+        if (primaryGroup) {
+            userInfo.groups.primary = await loadDetailedGroup(primaryGroup);
+        }
+        const creatorGroups = await (0,_services_groups__WEBPACK_IMPORTED_MODULE_1__.getCreatorGroups)(user.id);
+        userInfo.groups.creatorList = await Promise.all(creatorGroups.map(loadDetailedGroup));
+    }
+    catch (err) {
+        console.warn('Failed to load groups for user', user, err);
+    }
+    return userInfo;
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (load);
+
+
+/***/ }),
+
+/***/ "./src/js/pages/roblox-plus/user-info/populate.ts":
+/*!********************************************************!*\
+  !*** ./src/js/pages/roblox-plus/user-info/populate.ts ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
+
+// Creates an individual element containing the group information.
+const createGroupMeta = (group, creatorGroupIds, primaryGroupId) => {
+    const groupMeta = document.createElement('meta');
+    groupMeta.dataset.groupId = `${group.id}`;
+    groupMeta.dataset.groupName = group.name;
+    groupMeta.dataset.groupManager = `${creatorGroupIds.includes(group.id)}`;
+    groupMeta.dataset.groupPrimary = `${primaryGroupId === group.id}`;
+    if (group.thumbnail.state === roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailState.Completed) {
+        groupMeta.dataset.groupIcon = group.thumbnail.imageUrl;
+    }
+    return groupMeta;
+};
+// Creates the container which is popualted with all the groups.
+const createGroupsContainer = (userInfo) => {
+    const groupsContainer = document.createElement('div');
+    groupsContainer.setAttribute('id', 'rplus-groups');
+    groupsContainer.style.display = 'hidden';
+    const creatorGroupIds = userInfo.groups.creatorList.map((g) => g.id);
+    userInfo.groups.list.forEach((group) => {
+        groupsContainer.append(createGroupMeta(group, creatorGroupIds, userInfo.groups.primary?.id));
+    });
+    return groupsContainer;
+};
+// Populate all the information into the DOM.
+const populate = (userInfo) => {
+    const data = {};
+    try {
+        if (!userInfo) {
+            data.userId = '0';
+            data.userThumbnailState = roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailState.Blocked;
+            return;
+        }
+        // Populate group information
+        document.body.append(createGroupsContainer(userInfo));
+        // Inject in premium status
+        if (userInfo.premiumExpiration === null) {
+            data.userPremiumExpiration = 'null';
+        }
+        else if (userInfo.premiumExpiration) {
+            data.userPremiumExpiration = userInfo.premiumExpiration.toISOString();
+        }
+        // Inject in user data
+        data.userId = `${userInfo.user.id}`;
+        data.userName = userInfo.user.name;
+        data.userDisplayName = userInfo.user.displayName;
+        // HACK: Inject in thumbnail last, the app waits for the thumbnail state to be loaded in before doing anything.
+        data.userThumbnailImage = userInfo.thumbnail.imageUrl;
+        data.userThumbnailState = userInfo.thumbnail.state;
+    }
+    catch (err) {
+        console.error('Failed to load page data from extension', err);
+    }
+    finally {
+        Object.keys(data).forEach((key) => {
+            document.body.dataset[key] = data[key];
+        });
+    }
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (populate);
 
 
 /***/ }),
@@ -811,7 +1132,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/batch */ "./node_modules/@tix-factory/batch/dist/index.js");
-/* harmony import */ var _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../enums/thumbnailState */ "./src/js/enums/thumbnailState.ts");
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
 
 
 class ThumbnailBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__.Batch {
@@ -849,14 +1170,14 @@ class ThumbnailBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODUL
                 const thumbnailState = thumbnail.state;
                 item.resolve({
                     state: thumbnailState,
-                    imageUrl: thumbnailState === _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_1__["default"].Completed
+                    imageUrl: thumbnailState === roblox__WEBPACK_IMPORTED_MODULE_1__.ThumbnailState.Completed
                         ? thumbnail.imageUrl
                         : '',
                 });
             }
             else {
                 item.resolve({
-                    state: _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_1__["default"].Error,
+                    state: roblox__WEBPACK_IMPORTED_MODULE_1__.ThumbnailState.Error,
                     imageUrl: '',
                 });
             }
@@ -884,83 +1205,81 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getGamePassIcon": () => (/* binding */ getGamePassIcon),
 /* harmony export */   "getGroupIcon": () => (/* binding */ getGroupIcon)
 /* harmony export */ });
-/* harmony import */ var _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../enums/thumbnailState */ "./src/js/enums/thumbnailState.ts");
-/* harmony import */ var _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../enums/thumbnailType */ "./src/js/enums/thumbnailType.ts");
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
-/* harmony import */ var _batchProcessor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./batchProcessor */ "./src/js/services/thumbnails/batchProcessor.ts");
-
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _batchProcessor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./batchProcessor */ "./src/js/services/thumbnails/batchProcessor.ts");
 
 
 
 
 const messageDestination = 'thumbnailsService.getAvatarHeadshotThumbnail';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__["default"](messageDestination, 5 * 60 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 5 * 60 * 1000);
 // Fetches an avatar headshot thumbnail, for the given user ID.
 const getAvatarHeadshotThumbnail = (userId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].AvatarHeadShot,
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.AvatarHeadShot,
         targetId: userId,
     });
 };
 // Fetches an asset thumbnail, for the given asset ID.
 const getAssetThumbnail = (assetId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].Asset,
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.Asset,
         targetId: assetId,
     });
 };
 // Fetches a group icon.
 const getGroupIcon = (groupId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GroupIcon,
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GroupIcon,
         targetId: groupId,
     });
 };
 // Fetches a game pass icon.
 const getGamePassIcon = (gamePassId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GamePass,
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GamePass,
         targetId: gamePassId,
     });
 };
 // Fetches a developer product icon.
 const getDeveloperProductIcon = (gamePassId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].DeveloperProduct,
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.DeveloperProduct,
         targetId: gamePassId,
     });
 };
 // Fetches a game icon.
 const getGameIcon = (gamePassId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GameIcon,
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GameIcon,
         targetId: gamePassId,
     });
 };
 // Gets the default size for the thumbnail, by type.
 const getThumbnailSize = (thumbnailType) => {
     switch (thumbnailType) {
-        case _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GamePass:
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GamePass:
             return '150x150';
-        case _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GameIcon:
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GameIcon:
             return '256x256';
         default:
             return '420x420';
     }
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_3__.addListener)(messageDestination, async (message) => {
+(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination, async (message) => {
     const cacheKey = `${message.type}:${message.targetId}`;
     // Check the cache
     const thumbnail = await cache.getOrAdd(cacheKey, () => 
     // Queue up the fetch request, when not in the cache
-    _batchProcessor__WEBPACK_IMPORTED_MODULE_4__["default"].enqueue({
+    _batchProcessor__WEBPACK_IMPORTED_MODULE_3__["default"].enqueue({
         type: message.type,
         targetId: message.targetId,
         size: getThumbnailSize(message.type),
     }));
-    if (thumbnail.state !== _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_0__["default"].Completed) {
+    if (thumbnail.state !== roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailState.Completed) {
         setTimeout(() => {
             // If the thumbnail isn't complete, evict it from the cache early.
             cache.evict(cacheKey);
@@ -1839,16 +2158,8 @@ var __webpack_exports__ = {};
   !*** ./src/js/pages/roblox-plus/index.ts ***!
   \*******************************************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../enums/thumbnailState */ "./src/js/enums/thumbnailState.ts");
-/* harmony import */ var _services_groups__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../services/groups */ "./src/js/services/groups/index.ts");
-/* harmony import */ var _services_premium__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../services/premium */ "./src/js/services/premium/index.ts");
-/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
-/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../services/users */ "./src/js/services/users/index.ts");
-/* harmony import */ var _transactions__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./transactions */ "./src/js/pages/roblox-plus/transactions/index.ts");
-
-
-
-
+/* harmony import */ var _user_info__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./user-info */ "./src/js/pages/roblox-plus/user-info/index.ts");
+/* harmony import */ var _transactions__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./transactions */ "./src/js/pages/roblox-plus/transactions/index.ts");
 
 
 const load = async () => {
@@ -1858,66 +2169,8 @@ const load = async () => {
         return;
     }
     document.body.setAttribute('data-extension-id', chrome.runtime.id);
-    try {
-        const user = await (0,_services_users__WEBPACK_IMPORTED_MODULE_4__.getAuthenticatedUser)();
-        if (!user) {
-            document.body.setAttribute('data-user-id', '0');
-            document.body.setAttribute('data-user-thumbnail-state', _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_0__["default"].Blocked);
-            return;
-        }
-        try {
-            const primaryGroup = await (0,_services_groups__WEBPACK_IMPORTED_MODULE_1__.getUserPrimaryGroup)(user.id);
-            const userGroups = await (0,_services_groups__WEBPACK_IMPORTED_MODULE_1__.getUserGroups)(user.id);
-            const creatorGroups = await (0,_services_groups__WEBPACK_IMPORTED_MODULE_1__.getCreatorGroups)(user.id);
-            const creatorGroupIds = creatorGroups.map((g) => g.id);
-            const groupsContainer = document.createElement('div');
-            groupsContainer.setAttribute('id', 'rplus-groups');
-            groupsContainer.style.display = 'hidden';
-            userGroups.forEach(async (group) => {
-                const groupMeta = document.createElement('meta');
-                groupMeta.setAttribute('data-group-id', `${group.id}`);
-                groupMeta.setAttribute('data-group-name', group.name);
-                groupMeta.setAttribute('data-group-manager', `${creatorGroupIds.includes(group.id)}`);
-                groupMeta.setAttribute('data-group-primary', `${primaryGroup?.id === group.id}`);
-                groupsContainer.append(groupMeta);
-                try {
-                    const groupIcon = await (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_3__.getGroupIcon)(group.id);
-                    if (groupIcon.state === _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_0__["default"].Completed) {
-                        groupMeta.setAttribute('data-group-icon', groupIcon.imageUrl);
-                    }
-                }
-                catch (e) {
-                    console.warn('Failed to load group icon', group, e);
-                }
-            });
-            document.body.append(groupsContainer);
-        }
-        catch (e) {
-            console.warn('Failed to load creator groups', e);
-        }
-        try {
-            const premiumExpiration = await (0,_services_premium__WEBPACK_IMPORTED_MODULE_2__.getPremiumExpirationDate)(user.id);
-            if (premiumExpiration === null) {
-                document.body.setAttribute('data-user-premium-expiration', 'null');
-            }
-            else if (premiumExpiration) {
-                document.body.setAttribute('data-user-premium-expiration', premiumExpiration.toISOString());
-            }
-        }
-        catch (e) {
-            document.body.setAttribute('data-user-premium-expiration', 'error');
-            console.error('Failed to check user premium subscription', e);
-        }
-        document.body.setAttribute('data-user-id', `${user.id}`);
-        document.body.setAttribute('data-user-name', user.name);
-        document.body.setAttribute('data-user-display-name', user.displayName);
-        const thumbnail = await (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_3__.getAvatarHeadshotThumbnail)(user.id);
-        document.body.setAttribute('data-user-thumbnail-image', thumbnail.imageUrl);
-        document.body.setAttribute('data-user-thumbnail-state', thumbnail.state);
-    }
-    catch (err) {
-        console.error('Failed to load page data from extension', err);
-    }
+    const userInfo = await (0,_user_info__WEBPACK_IMPORTED_MODULE_0__.load)();
+    (0,_user_info__WEBPACK_IMPORTED_MODULE_0__.populate)(userInfo);
 };
 load();
 

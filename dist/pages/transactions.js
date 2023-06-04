@@ -1,6 +1,72 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./libs/extension-utils/dist/enums/loading-state.js":
+/*!**********************************************************!*\
+  !*** ./libs/extension-utils/dist/enums/loading-state.js ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// A generic loading state enum.
+var LoadingState;
+(function (LoadingState) {
+    LoadingState["Loading"] = "Loading";
+    LoadingState["Success"] = "Success";
+    LoadingState["Error"] = "Error";
+})(LoadingState || (LoadingState = {}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (LoadingState);
+
+
+/***/ }),
+
+/***/ "./libs/extension-utils/dist/index.js":
+/*!********************************************!*\
+  !*** ./libs/extension-utils/dist/index.js ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "LoadingState": () => (/* reexport safe */ _enums_loading_state__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   "wait": () => (/* reexport safe */ _utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])
+/* harmony export */ });
+/* harmony import */ var _enums_loading_state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./enums/loading-state */ "./libs/extension-utils/dist/enums/loading-state.js");
+/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/wait */ "./libs/extension-utils/dist/utils/wait.js");
+// Export enums
+
+// Export utils
+
+
+
+/***/ }),
+
+/***/ "./libs/extension-utils/dist/utils/wait.js":
+/*!*************************************************!*\
+  !*** ./libs/extension-utils/dist/utils/wait.js ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+const wait = (time) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(resolve, time);
+    });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (wait);
+
+
+/***/ }),
+
 /***/ "./node_modules/db.js/dist/db.min.js":
 /*!*******************************************!*\
   !*** ./node_modules/db.js/dist/db.min.js ***!
@@ -35341,28 +35407,6 @@ const isBackgroundPage = chrome.runtime.getURL(manifest.background?.page || '') 
 
 /***/ }),
 
-/***/ "./src/js/enums/loadingState.ts":
-/*!**************************************!*\
-  !*** ./src/js/enums/loadingState.ts ***!
-  \**************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-var LoadingState;
-(function (LoadingState) {
-    LoadingState["Loading"] = "Loading";
-    LoadingState["Success"] = "Success";
-    LoadingState["Error"] = "Error";
-})(LoadingState || (LoadingState = {}));
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (LoadingState);
-
-
-/***/ }),
-
 /***/ "./src/js/pages/transactions/robux-history/app.tsx":
 /*!*********************************************************!*\
   !*** ./src/js/pages/transactions/robux-history/app.tsx ***!
@@ -35414,7 +35458,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _services_currency__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/currency */ "./src/js/services/currency/index.ts");
-/* harmony import */ var _enums_loadingState__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../enums/loadingState */ "./src/js/enums/loadingState.ts");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
 /* harmony import */ var highcharts_react_official__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! highcharts-react-official */ "./node_modules/highcharts-react-official/dist/highcharts-react.min.js");
 /* harmony import */ var highcharts_react_official__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(highcharts_react_official__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var highcharts__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! highcharts */ "./node_modules/highcharts/highcharts.js");
@@ -35427,7 +35471,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function Chart({ userId, startDate, endDate }) {
     const [robuxHistory, setRobuxHistory] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
-    const [loadingState, setLoadingState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(_enums_loadingState__WEBPACK_IMPORTED_MODULE_3__["default"].Loading);
+    const [loadingState, setLoadingState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_3__.LoadingState.Loading);
     const chartData = (0,react__WEBPACK_IMPORTED_MODULE_1__.useMemo)(() => {
         // Translate the loaded Robux history, merging the data points, hourly.
         const translatedRobuxHistory = [];
@@ -35497,20 +35541,20 @@ function Chart({ userId, startDate, endDate }) {
         return result;
     }, [robuxHistory, loadingState, startDate, endDate]);
     (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-        setLoadingState(_enums_loadingState__WEBPACK_IMPORTED_MODULE_3__["default"].Loading);
+        setLoadingState(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_3__.LoadingState.Loading);
         (0,_services_currency__WEBPACK_IMPORTED_MODULE_2__.getUserRobuxHistory)(userId, startDate, endDate)
             .then((loadedHistory) => {
             setRobuxHistory(loadedHistory);
-            setLoadingState(_enums_loadingState__WEBPACK_IMPORTED_MODULE_3__["default"].Success);
+            setLoadingState(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_3__.LoadingState.Success);
         })
             .catch((err) => {
             console.error('Failed to load Robux history', err);
         });
     }, [userId, startDate, endDate]);
-    if (loadingState === _enums_loadingState__WEBPACK_IMPORTED_MODULE_3__["default"].Loading) {
+    if (loadingState === _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_3__.LoadingState.Loading) {
         return (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "spinner spinner-default" });
     }
-    if (loadingState === _enums_loadingState__WEBPACK_IMPORTED_MODULE_3__["default"].Error) {
+    if (loadingState === _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_3__.LoadingState.Error) {
         return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "section-content-off", children: "Failed to load Robux history, refresh the page to try again." }));
     }
     return (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(highcharts_react_official__WEBPACK_IMPORTED_MODULE_4__.HighchartsReact, { highcharts: (highcharts__WEBPACK_IMPORTED_MODULE_5___default()), options: chartData });
@@ -35600,8 +35644,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/wait */ "./src/js/utils/wait.ts");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 /* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
 /* harmony import */ var _history__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./history */ "./src/js/services/currency/history.ts");
 
@@ -35609,7 +35653,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const messageDestination = 'currencyService.getRobuxBalance';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 30 * 1000);
 const failureDelay = 5 * 1000;
 // Fetches the Robux balance of the currently authenticated user.
 const getRobuxBalance = (userId) => {
@@ -35620,11 +35664,11 @@ const loadRobuxBalance = async (userId) => {
     const response = await fetch(`https://economy.roblox.com/v1/users/${userId}/currency`);
     // If we fail to send the request, delay the response to ensure we don't spam the API.
     if (response.status === 401) {
-        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(failureDelay);
         throw 'User is unauthenticated';
     }
     else if (!response.ok) {
-        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(failureDelay);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(failureDelay);
         throw 'Failed to load Robux balance';
     }
     const result = await response.json();
@@ -36345,26 +36389,6 @@ class ExpirableDictionary {
     }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ExpirableDictionary);
-
-
-/***/ }),
-
-/***/ "./src/js/utils/wait.ts":
-/*!******************************!*\
-  !*** ./src/js/utils/wait.ts ***!
-  \******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((time) => {
-    return new Promise((resolve, reject) => {
-        setTimeout(resolve, time);
-    });
-});
 
 
 /***/ })

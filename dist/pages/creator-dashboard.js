@@ -1,6 +1,72 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./libs/extension-utils/dist/enums/loading-state.js":
+/*!**********************************************************!*\
+  !*** ./libs/extension-utils/dist/enums/loading-state.js ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// A generic loading state enum.
+var LoadingState;
+(function (LoadingState) {
+    LoadingState["Loading"] = "Loading";
+    LoadingState["Success"] = "Success";
+    LoadingState["Error"] = "Error";
+})(LoadingState || (LoadingState = {}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (LoadingState);
+
+
+/***/ }),
+
+/***/ "./libs/extension-utils/dist/index.js":
+/*!********************************************!*\
+  !*** ./libs/extension-utils/dist/index.js ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "LoadingState": () => (/* reexport safe */ _enums_loading_state__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   "wait": () => (/* reexport safe */ _utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])
+/* harmony export */ });
+/* harmony import */ var _enums_loading_state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./enums/loading-state */ "./libs/extension-utils/dist/enums/loading-state.js");
+/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/wait */ "./libs/extension-utils/dist/utils/wait.js");
+// Export enums
+
+// Export utils
+
+
+
+/***/ }),
+
+/***/ "./libs/extension-utils/dist/utils/wait.js":
+/*!*************************************************!*\
+  !*** ./libs/extension-utils/dist/utils/wait.js ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+const wait = (time) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(resolve, time);
+    });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (wait);
+
+
+/***/ }),
+
 /***/ "./node_modules/@emotion/cache/dist/emotion-cache.browser.esm.js":
 /*!***********************************************************************!*\
   !*** ./node_modules/@emotion/cache/dist/emotion-cache.browser.esm.js ***!
@@ -47742,28 +47808,6 @@ const isBackgroundPage = chrome.runtime.getURL(manifest.background?.page || '') 
 
 /***/ }),
 
-/***/ "./src/js/enums/loadingState.ts":
-/*!**************************************!*\
-  !*** ./src/js/enums/loadingState.ts ***!
-  \**************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-var LoadingState;
-(function (LoadingState) {
-    LoadingState["Loading"] = "Loading";
-    LoadingState["Success"] = "Success";
-    LoadingState["Error"] = "Error";
-})(LoadingState || (LoadingState = {}));
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (LoadingState);
-
-
-/***/ }),
-
 /***/ "./src/js/enums/premiumPayoutType.ts":
 /*!*******************************************!*\
   !*** ./src/js/enums/premiumPayoutType.ts ***!
@@ -47870,7 +47914,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _useDate__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./useDate */ "./src/js/pages/creator-dashboard/developer-stats/premium-payouts/useDate.tsx");
 /* harmony import */ var _usePremiumPayouts__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./usePremiumPayouts */ "./src/js/pages/creator-dashboard/developer-stats/premium-payouts/usePremiumPayouts.tsx");
 /* harmony import */ var _enums_premiumPayoutType__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../../enums/premiumPayoutType */ "./src/js/enums/premiumPayoutType.ts");
-/* harmony import */ var _enums_loadingState__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../../enums/loadingState */ "./src/js/enums/loadingState.ts");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
 
 
 
@@ -47895,10 +47939,10 @@ function PremiumPayoutsSummary({ container, universeId, }) {
             mode: 'dark',
         },
     });
-    if (loadingState === _enums_loadingState__WEBPACK_IMPORTED_MODULE_5__["default"].Loading) {
+    if (loadingState === _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_5__.LoadingState.Loading) {
         return (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_7__["default"], {});
     }
-    if (loadingState === _enums_loadingState__WEBPACK_IMPORTED_MODULE_5__["default"].Error) {
+    if (loadingState === _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_5__.LoadingState.Error) {
         return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_8__["default"], { severity: "error", children: "Failed to load premium payout summary." }));
     }
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)((react__WEBPACK_IMPORTED_MODULE_1___default().StrictMode), { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_styles__WEBPACK_IMPORTED_MODULE_9__["default"], { theme: theme, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_10__["default"], { variant: "h5", children: "Summary" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("br", {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_10__["default"], { variant: "body2", children: "Math has been done for you, these are the numbers added up from the premium payouts chart (above). This is a Roblox+ feature." }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_11__["default"], { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_12__["default"], { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_14__["default"], { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_10__["default"], { children: "Category" }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_14__["default"], { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_10__["default"], { children: "Amount" }) })] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_15__["default"], { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_14__["default"], { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_10__["default"], { children: "Actual Robux Earned" }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_14__["default"], { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_10__["default"], { children: doMath(premiumPayouts.filter((p) => p.payoutType === _enums_premiumPayoutType__WEBPACK_IMPORTED_MODULE_4__["default"].Actual)) }) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_14__["default"], { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_10__["default"], { children: "Projected Robux" }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_14__["default"], { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_10__["default"], { children: doMath(premiumPayouts.filter((p) => p.payoutType === _enums_premiumPayoutType__WEBPACK_IMPORTED_MODULE_4__["default"].Projected)) }) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_14__["default"], { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_10__["default"], { children: "Estimated Total" }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_14__["default"], { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_10__["default"], { children: doMath(premiumPayouts) }) })] })] })] })] }) }));
@@ -47990,30 +48034,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _services_premium_payouts__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../services/premium-payouts */ "./src/js/services/premium-payouts/index.ts");
-/* harmony import */ var _enums_loadingState__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../enums/loadingState */ "./src/js/enums/loadingState.ts");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
 
 
 
 function usePremiumPayouts(universeId, startDate, endDate) {
-    const [loadingState, setLoadingState] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(_enums_loadingState__WEBPACK_IMPORTED_MODULE_2__["default"].Loading);
+    const [loadingState, setLoadingState] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_2__.LoadingState.Loading);
     const [premiumPayouts, setPremiumPayouts] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         if (startDate && endDate) {
-            setLoadingState(_enums_loadingState__WEBPACK_IMPORTED_MODULE_2__["default"].Loading);
+            setLoadingState(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_2__.LoadingState.Loading);
             (0,_services_premium_payouts__WEBPACK_IMPORTED_MODULE_1__.getPremiumPayoutsSummary)(universeId, startDate, endDate)
                 .then((payouts) => {
                 setPremiumPayouts(payouts);
-                setLoadingState(_enums_loadingState__WEBPACK_IMPORTED_MODULE_2__["default"].Success);
+                setLoadingState(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_2__.LoadingState.Success);
             })
                 .catch((err) => {
                 setPremiumPayouts([]);
-                setLoadingState(_enums_loadingState__WEBPACK_IMPORTED_MODULE_2__["default"].Error);
+                setLoadingState(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_2__.LoadingState.Error);
                 console.warn('Failed to load premium payouts for universe', universeId, startDate, endDate, err);
             });
         }
         else {
             setPremiumPayouts([]);
-            setLoadingState(_enums_loadingState__WEBPACK_IMPORTED_MODULE_2__["default"].Error);
+            setLoadingState(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_2__.LoadingState.Error);
         }
     }, [universeId, startDate, endDate]);
     return [loadingState, premiumPayouts];

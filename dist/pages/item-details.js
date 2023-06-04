@@ -2,6 +2,364 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./libs/extension-utils/dist/enums/loading-state.js":
+/*!**********************************************************!*\
+  !*** ./libs/extension-utils/dist/enums/loading-state.js ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// A generic loading state enum.
+var LoadingState;
+(function (LoadingState) {
+    LoadingState["Loading"] = "Loading";
+    LoadingState["Success"] = "Success";
+    LoadingState["Error"] = "Error";
+})(LoadingState || (LoadingState = {}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (LoadingState);
+
+
+/***/ }),
+
+/***/ "./libs/extension-utils/dist/index.js":
+/*!********************************************!*\
+  !*** ./libs/extension-utils/dist/index.js ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "LoadingState": () => (/* reexport safe */ _enums_loading_state__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   "wait": () => (/* reexport safe */ _utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])
+/* harmony export */ });
+/* harmony import */ var _enums_loading_state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./enums/loading-state */ "./libs/extension-utils/dist/enums/loading-state.js");
+/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/wait */ "./libs/extension-utils/dist/utils/wait.js");
+// Export enums
+
+// Export utils
+
+
+
+/***/ }),
+
+/***/ "./libs/extension-utils/dist/utils/wait.js":
+/*!*************************************************!*\
+  !*** ./libs/extension-utils/dist/utils/wait.js ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+const wait = (time) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(resolve, time);
+    });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (wait);
+
+
+/***/ }),
+
+/***/ "./libs/roblox/dist/enums/asset-type.js":
+/*!**********************************************!*\
+  !*** ./libs/roblox/dist/enums/asset-type.js ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var AssetType;
+(function (AssetType) {
+    AssetType[AssetType["Image"] = 1] = "Image";
+    AssetType[AssetType["TShirt"] = 2] = "TShirt";
+    AssetType[AssetType["Audio"] = 3] = "Audio";
+    AssetType[AssetType["Mesh"] = 4] = "Mesh";
+    AssetType[AssetType["Lua"] = 5] = "Lua";
+    AssetType[AssetType["Html"] = 6] = "Html";
+    AssetType[AssetType["Text"] = 7] = "Text";
+    AssetType[AssetType["Hat"] = 8] = "Hat";
+    AssetType[AssetType["Place"] = 9] = "Place";
+    AssetType[AssetType["Model"] = 10] = "Model";
+    AssetType[AssetType["Shirt"] = 11] = "Shirt";
+    AssetType[AssetType["Pants"] = 12] = "Pants";
+    AssetType[AssetType["Decal"] = 13] = "Decal";
+    AssetType[AssetType["Avatar"] = 16] = "Avatar";
+    AssetType[AssetType["Head"] = 17] = "Head";
+    AssetType[AssetType["Face"] = 18] = "Face";
+    AssetType[AssetType["Gear"] = 19] = "Gear";
+    AssetType[AssetType["Badge"] = 21] = "Badge";
+    AssetType[AssetType["GroupEmblem"] = 22] = "GroupEmblem";
+    AssetType[AssetType["Animation"] = 24] = "Animation";
+    AssetType[AssetType["Arms"] = 25] = "Arms";
+    AssetType[AssetType["Legs"] = 26] = "Legs";
+    AssetType[AssetType["Torso"] = 27] = "Torso";
+    AssetType[AssetType["RightArm"] = 28] = "RightArm";
+    AssetType[AssetType["LeftArm"] = 29] = "LeftArm";
+    AssetType[AssetType["LeftLeg"] = 30] = "LeftLeg";
+    AssetType[AssetType["RightLeg"] = 31] = "RightLeg";
+    AssetType[AssetType["Package"] = 32] = "Package";
+    AssetType[AssetType["YouTubeVideo"] = 33] = "YouTubeVideo";
+    AssetType[AssetType["GamePass"] = 34] = "GamePass";
+    AssetType[AssetType["App"] = 35] = "App";
+    AssetType[AssetType["Code"] = 37] = "Code";
+    AssetType[AssetType["Plugin"] = 38] = "Plugin";
+    AssetType[AssetType["SolidModel"] = 39] = "SolidModel";
+    AssetType[AssetType["MeshPart"] = 40] = "MeshPart";
+    AssetType[AssetType["HairAccessory"] = 41] = "HairAccessory";
+    AssetType[AssetType["FaceAccessory"] = 42] = "FaceAccessory";
+    AssetType[AssetType["NeckAccessory"] = 43] = "NeckAccessory";
+    AssetType[AssetType["ShoulderAccessory"] = 44] = "ShoulderAccessory";
+    AssetType[AssetType["FrontAccessory"] = 45] = "FrontAccessory";
+    AssetType[AssetType["BackAccessory"] = 46] = "BackAccessory";
+    AssetType[AssetType["WaistAccessory"] = 47] = "WaistAccessory";
+    AssetType[AssetType["ClimbAnimation"] = 48] = "ClimbAnimation";
+    AssetType[AssetType["DeathAnimation"] = 49] = "DeathAnimation";
+    AssetType[AssetType["FallAnimation"] = 50] = "FallAnimation";
+    AssetType[AssetType["IdleAnimation"] = 51] = "IdleAnimation";
+    AssetType[AssetType["JumpAnimation"] = 52] = "JumpAnimation";
+    AssetType[AssetType["RunAnimation"] = 53] = "RunAnimation";
+    AssetType[AssetType["SwimAnimation"] = 54] = "SwimAnimation";
+    AssetType[AssetType["WalkAnimation"] = 55] = "WalkAnimation";
+    AssetType[AssetType["PoseAnimation"] = 56] = "PoseAnimation";
+    AssetType[AssetType["EarAccessory"] = 57] = "EarAccessory";
+    AssetType[AssetType["EyeAccessory"] = 58] = "EyeAccessory";
+    AssetType[AssetType["LocalizationTableManifest"] = 59] = "LocalizationTableManifest";
+    AssetType[AssetType["LocalizationTableTranslation"] = 60] = "LocalizationTableTranslation";
+    AssetType[AssetType["Emote"] = 61] = "Emote";
+    AssetType[AssetType["Video"] = 62] = "Video";
+    AssetType[AssetType["TexturePack"] = 63] = "TexturePack";
+    AssetType[AssetType["TShirtAccessory"] = 64] = "TShirtAccessory";
+    AssetType[AssetType["ShirtAccessory"] = 65] = "ShirtAccessory";
+    AssetType[AssetType["PantsAccessory"] = 66] = "PantsAccessory";
+    AssetType[AssetType["JacketAccessory"] = 67] = "JacketAccessory";
+    AssetType[AssetType["SweaterAccessory"] = 68] = "SweaterAccessory";
+    AssetType[AssetType["ShortsAccessory"] = 69] = "ShortsAccessory";
+    AssetType[AssetType["LeftShoeAccessory"] = 70] = "LeftShoeAccessory";
+    AssetType[AssetType["RightShoeAccessory"] = 71] = "RightShoeAccessory";
+    AssetType[AssetType["DressSkirtAccessory"] = 72] = "DressSkirtAccessory";
+    AssetType[AssetType["FontFamily"] = 73] = "FontFamily";
+    AssetType[AssetType["FontFace"] = 74] = "FontFace";
+    AssetType[AssetType["MeshHiddenSurfaceRemoval"] = 75] = "MeshHiddenSurfaceRemoval";
+    AssetType[AssetType["EyebrowAccessory"] = 76] = "EyebrowAccessory";
+    AssetType[AssetType["EyelashAccessory"] = 77] = "EyelashAccessory";
+    AssetType[AssetType["MoodAnimation"] = 78] = "MoodAnimation";
+    AssetType[AssetType["DynamicHead"] = 79] = "DynamicHead";
+})(AssetType || (AssetType = {}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AssetType);
+
+
+/***/ }),
+
+/***/ "./libs/roblox/dist/enums/presence-type.js":
+/*!*************************************************!*\
+  !*** ./libs/roblox/dist/enums/presence-type.js ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// The types of user presence.
+var PresenceType;
+(function (PresenceType) {
+    // The user is offline.
+    PresenceType["Offline"] = "Offline";
+    // The user is online.
+    PresenceType["Online"] = "Online";
+    // The user is currently in an experience.
+    PresenceType["Experience"] = "Experience";
+    // The user is currently in Roblox Studio.
+    PresenceType["Studio"] = "Studio";
+})(PresenceType || (PresenceType = {}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PresenceType);
+
+
+/***/ }),
+
+/***/ "./libs/roblox/dist/enums/thumbnail-state.js":
+/*!***************************************************!*\
+  !*** ./libs/roblox/dist/enums/thumbnail-state.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// Possible states for a thumbnail to be in.
+var ThumbnailState;
+(function (ThumbnailState) {
+    // The thumbnail had an unexpected error trying to load.
+    ThumbnailState["Error"] = "Error";
+    // The thumbnailed loaded successfully.
+    ThumbnailState["Completed"] = "Completed";
+    // The thumbnail is currently in review.
+    ThumbnailState["InReview"] = "InReview";
+    // The thumbnail is pending, and should be retried.
+    ThumbnailState["Pending"] = "Pending";
+    // The thumbnail is blocked.
+    ThumbnailState["Blocked"] = "Blocked";
+    // The thumbnail is temporarily unavailable.
+    ThumbnailState["TemporarilyUnavailable"] = "TemporarilyUnavailable";
+})(ThumbnailState || (ThumbnailState = {}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ThumbnailState);
+
+
+/***/ }),
+
+/***/ "./libs/roblox/dist/enums/thumbnail-type.js":
+/*!**************************************************!*\
+  !*** ./libs/roblox/dist/enums/thumbnail-type.js ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// The types of thumbnails that can be requested.
+var ThumbnailType;
+(function (ThumbnailType) {
+    // An avatar head shot thumbnail.
+    ThumbnailType["AvatarHeadShot"] = "AvatarHeadShot";
+    // The thumbnail for an asset.
+    ThumbnailType["Asset"] = "Asset";
+    // The icon for a group.
+    ThumbnailType["GroupIcon"] = "GroupIcon";
+    // The icon for a game pass.
+    ThumbnailType["GamePass"] = "GamePass";
+    // The icon for a developer product.
+    ThumbnailType["DeveloperProduct"] = "DeveloperProduct";
+    // The icon for a game.
+    ThumbnailType["GameIcon"] = "GameIcon";
+})(ThumbnailType || (ThumbnailType = {}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ThumbnailType);
+
+
+/***/ }),
+
+/***/ "./libs/roblox/dist/enums/trade-status-type.js":
+/*!*****************************************************!*\
+  !*** ./libs/roblox/dist/enums/trade-status-type.js ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var TradeStatusType;
+(function (TradeStatusType) {
+    TradeStatusType["Inbound"] = "Inbound";
+    TradeStatusType["Outbound"] = "Outbound";
+    TradeStatusType["Completed"] = "Completed";
+    TradeStatusType["Inactive"] = "Inactive";
+})(TradeStatusType || (TradeStatusType = {}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TradeStatusType);
+
+
+/***/ }),
+
+/***/ "./libs/roblox/dist/index.js":
+/*!***********************************!*\
+  !*** ./libs/roblox/dist/index.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "AssetType": () => (/* reexport safe */ _enums_asset_type__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   "PresenceType": () => (/* reexport safe */ _enums_presence_type__WEBPACK_IMPORTED_MODULE_1__["default"]),
+/* harmony export */   "ThumbnailState": () => (/* reexport safe */ _enums_thumbnail_state__WEBPACK_IMPORTED_MODULE_2__["default"]),
+/* harmony export */   "ThumbnailType": () => (/* reexport safe */ _enums_thumbnail_type__WEBPACK_IMPORTED_MODULE_3__["default"]),
+/* harmony export */   "TradeStatusType": () => (/* reexport safe */ _enums_trade_status_type__WEBPACK_IMPORTED_MODULE_4__["default"]),
+/* harmony export */   "getCatalogLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getCatalogLink),
+/* harmony export */   "getGamePassLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getGamePassLink),
+/* harmony export */   "getIdFromUrl": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getIdFromUrl),
+/* harmony export */   "getLibraryLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getLibraryLink),
+/* harmony export */   "getPlaceLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getPlaceLink),
+/* harmony export */   "getUserProfileLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getUserProfileLink)
+/* harmony export */ });
+/* harmony import */ var _enums_asset_type__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./enums/asset-type */ "./libs/roblox/dist/enums/asset-type.js");
+/* harmony import */ var _enums_presence_type__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./enums/presence-type */ "./libs/roblox/dist/enums/presence-type.js");
+/* harmony import */ var _enums_thumbnail_state__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./enums/thumbnail-state */ "./libs/roblox/dist/enums/thumbnail-state.js");
+/* harmony import */ var _enums_thumbnail_type__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./enums/thumbnail-type */ "./libs/roblox/dist/enums/thumbnail-type.js");
+/* harmony import */ var _enums_trade_status_type__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./enums/trade-status-type */ "./libs/roblox/dist/enums/trade-status-type.js");
+/* harmony import */ var _utils_linkify__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils/linkify */ "./libs/roblox/dist/utils/linkify.js");
+// Export enums
+
+
+
+
+
+// Export utils
+
+
+
+/***/ }),
+
+/***/ "./libs/roblox/dist/utils/linkify.js":
+/*!*******************************************!*\
+  !*** ./libs/roblox/dist/utils/linkify.js ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getCatalogLink": () => (/* binding */ getCatalogLink),
+/* harmony export */   "getGamePassLink": () => (/* binding */ getGamePassLink),
+/* harmony export */   "getIdFromUrl": () => (/* binding */ getIdFromUrl),
+/* harmony export */   "getLibraryLink": () => (/* binding */ getLibraryLink),
+/* harmony export */   "getPlaceLink": () => (/* binding */ getPlaceLink),
+/* harmony export */   "getUserProfileLink": () => (/* binding */ getUserProfileLink)
+/* harmony export */ });
+const getSEOLink = (id, name, path) => {
+    if (!name) {
+        name = 'redirect';
+    }
+    else {
+        name =
+            name
+                .replace(/'/g, '')
+                .replace(/\W+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '') || 'redirect';
+    }
+    return new URL(`https://www.roblox.com/${path}/${id}/${name}`);
+};
+const getGamePassLink = (gamePassId, gamePassName) => {
+    return getSEOLink(gamePassId, gamePassName, 'game-pass');
+};
+const getCatalogLink = (assetId, assetName) => {
+    return getSEOLink(assetId, assetName, 'catalog');
+};
+const getLibraryLink = (assetId, assetName) => {
+    return getSEOLink(assetId, assetName, 'library');
+};
+const getPlaceLink = (placeId, placeName) => {
+    return getSEOLink(placeId, placeName, 'games');
+};
+const getUserProfileLink = (userId) => {
+    return getSEOLink(userId, 'profile', 'users');
+};
+const getIdFromUrl = (url) => {
+    const match = url.pathname.match(/^\/(badges|games|game-pass|groups|catalog|library|users)\/(\d+)\/?/i) || [];
+    // Returns NaN if the URL doesn't match.
+    return Number(match[2]);
+};
+
+
+
+/***/ }),
+
 /***/ "./src/css/pages/item-details.scss":
 /*!*****************************************!*\
   !*** ./src/css/pages/item-details.scss ***!
@@ -34738,11 +35096,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _utils_linkify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/linkify */ "./src/js/utils/linkify.ts");
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
 /* harmony import */ var _services_assets__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../services/assets */ "./src/js/services/assets/index.ts");
 /* harmony import */ var _thumbnail__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../thumbnail */ "./src/js/components/thumbnail/index.tsx");
-/* harmony import */ var _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../enums/thumbnailType */ "./src/js/enums/thumbnailType.ts");
-
 
 
 
@@ -34763,7 +35119,7 @@ function AssetItemCard({ assetId }) {
     if (!assetDetails) {
         return (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react__WEBPACK_IMPORTED_MODULE_1__.Fragment, {});
     }
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "list-item item-card", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "item-card-container", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("a", { href: (0,_utils_linkify__WEBPACK_IMPORTED_MODULE_2__.getLibraryLink)(assetDetails.id, assetDetails.name).href, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "item-card-link", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "item-card-thumb-container", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { className: "thumbnail-2d-container", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_thumbnail__WEBPACK_IMPORTED_MODULE_4__["default"], { type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_5__["default"].Asset, targetId: assetDetails.id }) }) }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "item-card-caption", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "item-card-name-link", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "item-card-name", title: assetDetails.name, children: assetDetails.name }) }) })] }) }) }));
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "list-item item-card", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "item-card-container", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("a", { href: (0,roblox__WEBPACK_IMPORTED_MODULE_2__.getLibraryLink)(assetDetails.id, assetDetails.name).href, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "item-card-link", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "item-card-thumb-container", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { className: "thumbnail-2d-container", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_thumbnail__WEBPACK_IMPORTED_MODULE_4__["default"], { type: roblox__WEBPACK_IMPORTED_MODULE_2__.ThumbnailType.Asset, targetId: assetDetails.id }) }) }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "item-card-caption", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "item-card-name-link", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "item-card-name", title: assetDetails.name, children: assetDetails.name }) }) })] }) }) }));
 }
 
 
@@ -34839,10 +35195,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../enums/thumbnailState */ "./src/js/enums/thumbnailState.ts");
-/* harmony import */ var _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../enums/thumbnailType */ "./src/js/enums/thumbnailType.ts");
-/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
-
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
+/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
 
 
 
@@ -34850,28 +35204,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__({ targetId, type }) {
     const [thumbnail, setThumbnail] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)({
         imageUrl: '',
-        state: _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_2__["default"].Pending,
+        state: roblox__WEBPACK_IMPORTED_MODULE_2__.ThumbnailState.Pending,
     });
     const setError = (error) => {
         console.error('Failed to load thumbnail', type, targetId, error);
         setThumbnail({
             imageUrl: '',
-            state: _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_2__["default"].Error,
+            state: roblox__WEBPACK_IMPORTED_MODULE_2__.ThumbnailState.Error,
         });
     };
     (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
         switch (type) {
-            case _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_3__["default"].AvatarHeadShot:
-                (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_4__.getAvatarHeadshotThumbnail)(targetId).then(setThumbnail).catch(setError);
+            case roblox__WEBPACK_IMPORTED_MODULE_2__.ThumbnailType.AvatarHeadShot:
+                (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_3__.getAvatarHeadshotThumbnail)(targetId).then(setThumbnail).catch(setError);
                 return;
-            case _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_3__["default"].Asset:
-                (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_4__.getAssetThumbnail)(targetId).then(setThumbnail).catch(setError);
+            case roblox__WEBPACK_IMPORTED_MODULE_2__.ThumbnailType.Asset:
+                (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_3__.getAssetThumbnail)(targetId).then(setThumbnail).catch(setError);
                 return;
             default:
                 setError('unrecognized thumbnail type');
         }
     }, [targetId, type]);
-    if (thumbnail.state !== _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_2__["default"].Completed) {
+    if (thumbnail.state !== roblox__WEBPACK_IMPORTED_MODULE_2__.ThumbnailState.Completed) {
         return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { className: `roblox-plus-thumbnail-image roblox-plus-placeholder-thumbnail-${type.toLowerCase()}` }));
     }
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("img", { className: "roblox-plus-thumbnail-image", src: thumbnail.imageUrl }));
@@ -34898,181 +35252,6 @@ const isBackgroundPage = chrome.runtime.getURL(manifest.background?.page || '') 
 
 /***/ }),
 
-/***/ "./src/js/enums/assetType.ts":
-/*!***********************************!*\
-  !*** ./src/js/enums/assetType.ts ***!
-  \***********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-var AssetType;
-(function (AssetType) {
-    AssetType[AssetType["Image"] = 1] = "Image";
-    AssetType[AssetType["TShirt"] = 2] = "TShirt";
-    AssetType[AssetType["Audio"] = 3] = "Audio";
-    AssetType[AssetType["Mesh"] = 4] = "Mesh";
-    AssetType[AssetType["Lua"] = 5] = "Lua";
-    AssetType[AssetType["Html"] = 6] = "Html";
-    AssetType[AssetType["Text"] = 7] = "Text";
-    AssetType[AssetType["Hat"] = 8] = "Hat";
-    AssetType[AssetType["Place"] = 9] = "Place";
-    AssetType[AssetType["Model"] = 10] = "Model";
-    AssetType[AssetType["Shirt"] = 11] = "Shirt";
-    AssetType[AssetType["Pants"] = 12] = "Pants";
-    AssetType[AssetType["Decal"] = 13] = "Decal";
-    AssetType[AssetType["Avatar"] = 16] = "Avatar";
-    AssetType[AssetType["Head"] = 17] = "Head";
-    AssetType[AssetType["Face"] = 18] = "Face";
-    AssetType[AssetType["Gear"] = 19] = "Gear";
-    AssetType[AssetType["Badge"] = 21] = "Badge";
-    AssetType[AssetType["GroupEmblem"] = 22] = "GroupEmblem";
-    AssetType[AssetType["Animation"] = 24] = "Animation";
-    AssetType[AssetType["Arms"] = 25] = "Arms";
-    AssetType[AssetType["Legs"] = 26] = "Legs";
-    AssetType[AssetType["Torso"] = 27] = "Torso";
-    AssetType[AssetType["RightArm"] = 28] = "RightArm";
-    AssetType[AssetType["LeftArm"] = 29] = "LeftArm";
-    AssetType[AssetType["LeftLeg"] = 30] = "LeftLeg";
-    AssetType[AssetType["RightLeg"] = 31] = "RightLeg";
-    AssetType[AssetType["Package"] = 32] = "Package";
-    AssetType[AssetType["YouTubeVideo"] = 33] = "YouTubeVideo";
-    AssetType[AssetType["GamePass"] = 34] = "GamePass";
-    AssetType[AssetType["App"] = 35] = "App";
-    AssetType[AssetType["Code"] = 37] = "Code";
-    AssetType[AssetType["Plugin"] = 38] = "Plugin";
-    AssetType[AssetType["SolidModel"] = 39] = "SolidModel";
-    AssetType[AssetType["MeshPart"] = 40] = "MeshPart";
-    AssetType[AssetType["HairAccessory"] = 41] = "HairAccessory";
-    AssetType[AssetType["FaceAccessory"] = 42] = "FaceAccessory";
-    AssetType[AssetType["NeckAccessory"] = 43] = "NeckAccessory";
-    AssetType[AssetType["ShoulderAccessory"] = 44] = "ShoulderAccessory";
-    AssetType[AssetType["FrontAccessory"] = 45] = "FrontAccessory";
-    AssetType[AssetType["BackAccessory"] = 46] = "BackAccessory";
-    AssetType[AssetType["WaistAccessory"] = 47] = "WaistAccessory";
-    AssetType[AssetType["ClimbAnimation"] = 48] = "ClimbAnimation";
-    AssetType[AssetType["DeathAnimation"] = 49] = "DeathAnimation";
-    AssetType[AssetType["FallAnimation"] = 50] = "FallAnimation";
-    AssetType[AssetType["IdleAnimation"] = 51] = "IdleAnimation";
-    AssetType[AssetType["JumpAnimation"] = 52] = "JumpAnimation";
-    AssetType[AssetType["RunAnimation"] = 53] = "RunAnimation";
-    AssetType[AssetType["SwimAnimation"] = 54] = "SwimAnimation";
-    AssetType[AssetType["WalkAnimation"] = 55] = "WalkAnimation";
-    AssetType[AssetType["PoseAnimation"] = 56] = "PoseAnimation";
-    AssetType[AssetType["EarAccessory"] = 57] = "EarAccessory";
-    AssetType[AssetType["EyeAccessory"] = 58] = "EyeAccessory";
-    AssetType[AssetType["LocalizationTableManifest"] = 59] = "LocalizationTableManifest";
-    AssetType[AssetType["LocalizationTableTranslation"] = 60] = "LocalizationTableTranslation";
-    AssetType[AssetType["Emote"] = 61] = "Emote";
-    AssetType[AssetType["Video"] = 62] = "Video";
-    AssetType[AssetType["TexturePack"] = 63] = "TexturePack";
-    AssetType[AssetType["TShirtAccessory"] = 64] = "TShirtAccessory";
-    AssetType[AssetType["ShirtAccessory"] = 65] = "ShirtAccessory";
-    AssetType[AssetType["PantsAccessory"] = 66] = "PantsAccessory";
-    AssetType[AssetType["JacketAccessory"] = 67] = "JacketAccessory";
-    AssetType[AssetType["SweaterAccessory"] = 68] = "SweaterAccessory";
-    AssetType[AssetType["ShortsAccessory"] = 69] = "ShortsAccessory";
-    AssetType[AssetType["LeftShoeAccessory"] = 70] = "LeftShoeAccessory";
-    AssetType[AssetType["RightShoeAccessory"] = 71] = "RightShoeAccessory";
-    AssetType[AssetType["DressSkirtAccessory"] = 72] = "DressSkirtAccessory";
-    AssetType[AssetType["FontFamily"] = 73] = "FontFamily";
-    AssetType[AssetType["FontFace"] = 74] = "FontFace";
-    AssetType[AssetType["MeshHiddenSurfaceRemoval"] = 75] = "MeshHiddenSurfaceRemoval";
-    AssetType[AssetType["EyebrowAccessory"] = 76] = "EyebrowAccessory";
-    AssetType[AssetType["EyelashAccessory"] = 77] = "EyelashAccessory";
-    AssetType[AssetType["MoodAnimation"] = 78] = "MoodAnimation";
-    AssetType[AssetType["DynamicHead"] = 79] = "DynamicHead";
-})(AssetType || (AssetType = {}));
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AssetType);
-
-
-/***/ }),
-
-/***/ "./src/js/enums/loadingState.ts":
-/*!**************************************!*\
-  !*** ./src/js/enums/loadingState.ts ***!
-  \**************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-var LoadingState;
-(function (LoadingState) {
-    LoadingState["Loading"] = "Loading";
-    LoadingState["Success"] = "Success";
-    LoadingState["Error"] = "Error";
-})(LoadingState || (LoadingState = {}));
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (LoadingState);
-
-
-/***/ }),
-
-/***/ "./src/js/enums/thumbnailState.ts":
-/*!****************************************!*\
-  !*** ./src/js/enums/thumbnailState.ts ***!
-  \****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-// Possible states for a thumbnail to be in.
-var ThumbnailState;
-(function (ThumbnailState) {
-    // The thumbnail had an unexpected error trying to load.
-    ThumbnailState["Error"] = "Error";
-    // The thumbnailed loaded successfully.
-    ThumbnailState["Completed"] = "Completed";
-    // The thumbnail is currently in review.
-    ThumbnailState["InReview"] = "InReview";
-    // The thumbnail is pending, and should be retried.
-    ThumbnailState["Pending"] = "Pending";
-    // The thumbnail is blocked.
-    ThumbnailState["Blocked"] = "Blocked";
-    // The thumbnail is temporarily unavailable.
-    ThumbnailState["TemporarilyUnavailable"] = "TemporarilyUnavailable";
-})(ThumbnailState || (ThumbnailState = {}));
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ThumbnailState);
-
-
-/***/ }),
-
-/***/ "./src/js/enums/thumbnailType.ts":
-/*!***************************************!*\
-  !*** ./src/js/enums/thumbnailType.ts ***!
-  \***************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-// The types of thumbnails that can be requested.
-var ThumbnailType;
-(function (ThumbnailType) {
-    // An avatar head shot thumbnail.
-    ThumbnailType["AvatarHeadShot"] = "AvatarHeadShot";
-    // The thumbnail for an asset.
-    ThumbnailType["Asset"] = "Asset";
-    // The icon for a group.
-    ThumbnailType["GroupIcon"] = "GroupIcon";
-    // The icon for a game pass.
-    ThumbnailType["GamePass"] = "GamePass";
-    // The icon for a developer product.
-    ThumbnailType["DeveloperProduct"] = "DeveloperProduct";
-    // The icon for a game.
-    ThumbnailType["GameIcon"] = "GameIcon";
-})(ThumbnailType || (ThumbnailType = {}));
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ThumbnailType);
-
-
-/***/ }),
-
 /***/ "./src/js/pages/item-details/asset-dependencies/index.tsx":
 /*!****************************************************************!*\
   !*** ./src/js/pages/item-details/asset-dependencies/index.tsx ***!
@@ -35087,10 +35266,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _enums_loadingState__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../enums/loadingState */ "./src/js/enums/loadingState.ts");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
 /* harmony import */ var _services_assets__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../services/assets */ "./src/js/services/assets/index.ts");
 /* harmony import */ var _list__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./list */ "./src/js/pages/item-details/asset-dependencies/list.tsx");
-/* harmony import */ var _enums_assetType__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../enums/assetType */ "./src/js/enums/assetType.ts");
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
 
 
 
@@ -35098,27 +35277,27 @@ __webpack_require__.r(__webpack_exports__);
 
 
 // These don't have dependencies, don't even try.
-const disabledAssetTypes = [_enums_assetType__WEBPACK_IMPORTED_MODULE_5__["default"].Image, _enums_assetType__WEBPACK_IMPORTED_MODULE_5__["default"].Mesh, _enums_assetType__WEBPACK_IMPORTED_MODULE_5__["default"].Audio];
+const disabledAssetTypes = [roblox__WEBPACK_IMPORTED_MODULE_5__.AssetType.Image, roblox__WEBPACK_IMPORTED_MODULE_5__.AssetType.Mesh, roblox__WEBPACK_IMPORTED_MODULE_5__.AssetType.Audio];
 
 function AssetDependencies({ assetId }) {
     const [assetDependencies, setAssetDependencies] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
-    const [loadingState, setLoadingState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(_enums_loadingState__WEBPACK_IMPORTED_MODULE_2__["default"].Loading);
+    const [loadingState, setLoadingState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_2__.LoadingState.Loading);
     (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-        setLoadingState(_enums_loadingState__WEBPACK_IMPORTED_MODULE_2__["default"].Loading);
+        setLoadingState(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_2__.LoadingState.Loading);
         (0,_services_assets__WEBPACK_IMPORTED_MODULE_3__.getAssetDependencies)(assetId)
             .then((dependencies) => {
             setAssetDependencies(dependencies);
-            setLoadingState(_enums_loadingState__WEBPACK_IMPORTED_MODULE_2__["default"].Success);
+            setLoadingState(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_2__.LoadingState.Success);
         })
             .catch((err) => {
             console.error('Failed to load asset dependencies', err);
-            setLoadingState(_enums_loadingState__WEBPACK_IMPORTED_MODULE_2__["default"].Error);
+            setLoadingState(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_2__.LoadingState.Error);
         });
     }, [assetId]);
-    if (loadingState === _enums_loadingState__WEBPACK_IMPORTED_MODULE_2__["default"].Loading) {
+    if (loadingState === _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_2__.LoadingState.Loading) {
         return (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "spinner spinner-default" });
     }
-    if (loadingState === _enums_loadingState__WEBPACK_IMPORTED_MODULE_2__["default"].Error) {
+    if (loadingState === _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_2__.LoadingState.Error) {
         return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "section-content-off", children: "Failed to load asset dependencies, please refresh to try again." }));
     }
     if (assetDependencies.length < 1) {
@@ -35263,7 +35442,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "initializeContextMenu": () => (/* binding */ addContextMenuOptions)
 /* harmony export */ });
-/* harmony import */ var _enums_assetType__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../enums/assetType */ "./src/js/enums/assetType.ts");
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
 /* harmony import */ var _utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/authenticatedUser */ "./src/js/utils/authenticatedUser.ts");
 /* harmony import */ var _avatar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./avatar */ "./src/js/pages/item-details/avatar.ts");
 /* harmony import */ var _details__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./details */ "./src/js/pages/item-details/details.ts");
@@ -35288,7 +35467,7 @@ const createContextMenuButton = (contextMenu, label) => {
 const addContextMenuOptions = async (contextMenu) => {
     // If the item is an owned avatar asset, attempt to add the wear + remove button to the context menu, when it opens.
     if ((0,_details__WEBPACK_IMPORTED_MODULE_3__.isOwnedAvatarAsset)() &&
-        _details__WEBPACK_IMPORTED_MODULE_3__.assetType !== _enums_assetType__WEBPACK_IMPORTED_MODULE_0__["default"].Emote &&
+        _details__WEBPACK_IMPORTED_MODULE_3__.assetType !== roblox__WEBPACK_IMPORTED_MODULE_0__.AssetType.Emote &&
         !isNaN(_details__WEBPACK_IMPORTED_MODULE_3__.assetId) &&
         _utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_1__["default"]) {
         (0,_avatar__WEBPACK_IMPORTED_MODULE_2__.initializeContextMenu)((text) => createContextMenuButton(contextMenu, text));
@@ -35325,8 +35504,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "isOwnedStudioItem": () => (/* binding */ isOwnedStudioItem),
 /* harmony export */   "parseCreatorId": () => (/* binding */ parseCreatorId)
 /* harmony export */ });
-/* harmony import */ var _utils_linkify__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/linkify */ "./src/js/utils/linkify.ts");
-/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/wait */ "./src/js/utils/wait.ts");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
 
 
 const itemContainer = document.querySelector('#item-container');
@@ -35336,7 +35515,7 @@ const parseCreatorId = () => {
         .querySelector('.item-name-container a.text-name')
         ?.getAttribute('href');
     if (creatorUrl) {
-        return (0,_utils_linkify__WEBPACK_IMPORTED_MODULE_0__.getIdFromUrl)(new URL(creatorUrl));
+        return (0,roblox__WEBPACK_IMPORTED_MODULE_1__.getIdFromUrl)(new URL(creatorUrl));
     }
     return NaN;
 };
@@ -35346,7 +35525,7 @@ const waitForCreatorId = async () => {
         if (creatorId) {
             return creatorId;
         }
-        await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(500);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(500);
     }
 };
 const getDetails = () => {
@@ -35391,7 +35570,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "createDownloadLink": () => (/* binding */ createDownloadLink)
 /* harmony export */ });
-/* harmony import */ var _enums_assetType__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../enums/assetType */ "./src/js/enums/assetType.ts");
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
 /* harmony import */ var _services_assets__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../services/assets */ "./src/js/services/assets/index.ts");
 /* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../services/localization */ "./src/js/services/localization/index.ts");
 /* harmony import */ var _details__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./details */ "./src/js/pages/item-details/details.ts");
@@ -35413,8 +35592,8 @@ const createDownloadLink = async () => {
 };
 if ((0,_details__WEBPACK_IMPORTED_MODULE_3__.parseCreatorId)() === 1) {
     switch (_details__WEBPACK_IMPORTED_MODULE_3__.assetType) {
-        case _enums_assetType__WEBPACK_IMPORTED_MODULE_0__["default"].Image:
-        case _enums_assetType__WEBPACK_IMPORTED_MODULE_0__["default"].Mesh:
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.AssetType.Image:
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.AssetType.Mesh:
             const actionButton = document.querySelector('.price-container .action-button>button');
             if (
             // if we found the button
@@ -35457,15 +35636,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ AssetOwners)
 /* harmony export */ });
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/inventory */ "./src/js/services/inventory/index.ts");
-/* harmony import */ var _enums_loadingState__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../enums/loadingState */ "./src/js/enums/loadingState.ts");
-/* harmony import */ var _utils_linkify__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../utils/linkify */ "./src/js/utils/linkify.ts");
-/* harmony import */ var _components_thumbnail__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../components/thumbnail */ "./src/js/components/thumbnail/index.tsx");
-/* harmony import */ var _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../enums/thumbnailType */ "./src/js/enums/thumbnailType.ts");
-/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../services/localization */ "./src/js/services/localization/index.ts");
-
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
+/* harmony import */ var _components_thumbnail__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../components/thumbnail */ "./src/js/components/thumbnail/index.tsx");
+/* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../services/inventory */ "./src/js/services/inventory/index.ts");
+/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../services/localization */ "./src/js/services/localization/index.ts");
 
 
 
@@ -35474,32 +35651,32 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function AssetOwners({ assetId }) {
-    const [loadingState, setLoadingState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(_enums_loadingState__WEBPACK_IMPORTED_MODULE_3__["default"].Loading);
-    const [isAscending, setIsAscending] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
-    const [hidePrivateInventories, setHidePrivateInventories] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
-    const [ownershipRecords, setOwnershipRecords] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
-    const [cursor, setCursor] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)('');
-    const [nextCursor, setNextCursor] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)('');
-    const [seeMoreText, setSeeMoreText] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)('See More');
-    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-        (0,_services_localization__WEBPACK_IMPORTED_MODULE_7__.getTranslationResource)('Feature.PrivateSales', 'Label.SeeMore')
+    const [loadingState, setLoadingState] = (0,react__WEBPACK_IMPORTED_MODULE_2__.useState)(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.LoadingState.Loading);
+    const [isAscending, setIsAscending] = (0,react__WEBPACK_IMPORTED_MODULE_2__.useState)(true);
+    const [hidePrivateInventories, setHidePrivateInventories] = (0,react__WEBPACK_IMPORTED_MODULE_2__.useState)(true);
+    const [ownershipRecords, setOwnershipRecords] = (0,react__WEBPACK_IMPORTED_MODULE_2__.useState)([]);
+    const [cursor, setCursor] = (0,react__WEBPACK_IMPORTED_MODULE_2__.useState)('');
+    const [nextCursor, setNextCursor] = (0,react__WEBPACK_IMPORTED_MODULE_2__.useState)('');
+    const [seeMoreText, setSeeMoreText] = (0,react__WEBPACK_IMPORTED_MODULE_2__.useState)('See More');
+    (0,react__WEBPACK_IMPORTED_MODULE_2__.useEffect)(() => {
+        (0,_services_localization__WEBPACK_IMPORTED_MODULE_6__.getTranslationResource)('Feature.PrivateSales', 'Label.SeeMore')
             .then(setSeeMoreText)
             .catch((err) => {
             console.warn('Failed to load translated text for see more owners button.', err);
         });
     }, []);
-    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-        setLoadingState(_enums_loadingState__WEBPACK_IMPORTED_MODULE_3__["default"].Loading);
+    (0,react__WEBPACK_IMPORTED_MODULE_2__.useEffect)(() => {
+        setLoadingState(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.LoadingState.Loading);
         setNextCursor('');
-        (0,_services_inventory__WEBPACK_IMPORTED_MODULE_2__.getAssetOwners)(assetId, cursor, isAscending)
+        (0,_services_inventory__WEBPACK_IMPORTED_MODULE_5__.getAssetOwners)(assetId, cursor, isAscending)
             .then((r) => {
             setOwnershipRecords(ownershipRecords.concat(r.data));
             setNextCursor(r.nextPageCursor);
-            setLoadingState(_enums_loadingState__WEBPACK_IMPORTED_MODULE_3__["default"].Success);
+            setLoadingState(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.LoadingState.Success);
         })
             .catch((err) => {
             console.error('Failed to load asset ownership records', err);
-            setLoadingState(_enums_loadingState__WEBPACK_IMPORTED_MODULE_3__["default"].Error);
+            setLoadingState(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.LoadingState.Error);
         });
     }, [assetId, isAscending, cursor, setLoadingState]);
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "container-list rplus-owners-list", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "container-header", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h2", { children: "Owners" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { className: "rplus-hide-private-inventories", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { id: "rplus-hide-private-inventories", type: "checkbox", checked: hidePrivateInventories, onChange: (e) => setHidePrivateInventories(e.target.checked) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("label", { htmlFor: "rplus-hide-private-inventories", children: "Hide private inventories" })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { className: "btn-control-sm", onClick: () => {
@@ -35510,12 +35687,12 @@ function AssetOwners({ assetId }) {
                     .filter((r) => r.user || !hidePrivateInventories)
                     .map((r) => {
                     const profileLink = r.user
-                        ? (0,_utils_linkify__WEBPACK_IMPORTED_MODULE_4__.getUserProfileLink)(r.user.id).href
+                        ? (0,roblox__WEBPACK_IMPORTED_MODULE_3__.getUserProfileLink)(r.user.id).href
                         : '';
-                    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { className: "list-item", children: [r.user ? ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", { href: profileLink, className: "list-header", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { className: "thumbnail-2d-container avatar-headshot-md", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_thumbnail__WEBPACK_IMPORTED_MODULE_5__["default"], { type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_6__["default"].AvatarHeadShot, targetId: r.user.id }) }) })) : ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "list-header", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { className: "thumbnail-2d-container avatar-headshot-md", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "icon-broken" }) }) })), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { children: [r.user ? ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", { href: profileLink, className: "text-name username", children: r.user.displayName })) : ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { children: "Private Inventory" })), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { className: "separator", children: "-" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", { className: "font-caption-body serial-number", children: ["Serial", ' ', r.serialNumber
+                    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { className: "list-item", children: [r.user ? ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", { href: profileLink, className: "list-header", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { className: "thumbnail-2d-container avatar-headshot-md", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_components_thumbnail__WEBPACK_IMPORTED_MODULE_4__["default"], { type: roblox__WEBPACK_IMPORTED_MODULE_3__.ThumbnailType.AvatarHeadShot, targetId: r.user.id }) }) })) : ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "list-header", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { className: "thumbnail-2d-container avatar-headshot-md", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "icon-broken" }) }) })), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { children: [r.user ? ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", { href: profileLink, className: "text-name username", children: r.user.displayName })) : ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { children: "Private Inventory" })), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { className: "separator", children: "-" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", { className: "font-caption-body serial-number", children: ["Serial", ' ', r.serialNumber
                                                 ? `#${r.serialNumber.toLocaleString()}`
                                                 : 'N/A'] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("br", {}), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", { className: "font-caption-body", children: ["Owner since ", r.updated.toLocaleString()] })] })] }, r.id));
-                }) }), loadingState === _enums_loadingState__WEBPACK_IMPORTED_MODULE_3__["default"].Error ? ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "section-content-off", children: "Failed to load ownership records." })) : null, loadingState === _enums_loadingState__WEBPACK_IMPORTED_MODULE_3__["default"].Loading ? ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "spinner spinner-default" })) : null, nextCursor ? ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { className: "btn-control-md", onClick: () => setCursor(nextCursor), children: seeMoreText })) : null] }));
+                }) }), loadingState === _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.LoadingState.Error ? ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "section-content-off", children: "Failed to load ownership records." })) : null, loadingState === _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.LoadingState.Loading ? ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { className: "spinner spinner-default" })) : null, nextCursor ? ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("button", { className: "btn-control-md", onClick: () => setCursor(nextCursor), children: seeMoreText })) : null] }));
 }
 
 
@@ -36069,7 +36246,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "removeItem": () => (/* binding */ removeItem),
 /* harmony export */   "wearItem": () => (/* binding */ wearItem)
 /* harmony export */ });
-/* harmony import */ var _enums_assetType__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../enums/assetType */ "./src/js/enums/assetType.ts");
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
 /* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
 /* harmony import */ var _get_avatar_asset_rules__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./get-avatar-asset-rules */ "./src/js/services/avatar/get-avatar-asset-rules.ts");
 
@@ -36092,7 +36269,7 @@ const getAvatarAssets = async (userId) => {
         assets.push({
             id: emote.assetId,
             name: emote.assetName,
-            assetType: _enums_assetType__WEBPACK_IMPORTED_MODULE_0__["default"].Emote,
+            assetType: roblox__WEBPACK_IMPORTED_MODULE_0__.AssetType.Emote,
         });
     });
     return assets;
@@ -36104,7 +36281,7 @@ const wearItem = async (assetId, authenticatedUserId) => {
         method: 'POST',
         body: JSON.stringify({
             assetIds: [assetId].concat(currentAssets
-                .filter((a) => a.assetType !== _enums_assetType__WEBPACK_IMPORTED_MODULE_0__["default"].Emote)
+                .filter((a) => a.assetType !== roblox__WEBPACK_IMPORTED_MODULE_0__.AssetType.Emote)
                 .map((a) => a.id)),
         }),
     });
@@ -36220,14 +36397,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/wait */ "./src/js/utils/wait.ts");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 /* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
 
 
 
 const messageDestination = 'inventoryService.getLimitedInventory';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 5 * 60 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 5 * 60 * 1000);
 // Fetches the limited inventory for the specified user.
 const getLimitedInventory = (userId) => {
     return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
@@ -36243,7 +36420,7 @@ const loadLimitedInventory = async (userId) => {
         const response = await fetch(`https://inventory.roblox.com/v1/users/${userId}/assets/collectibles?limit=100&cursor=${nextPageCursor}`);
         if (response.status === 429) {
             // Throttled. Wait a few seconds, and try again.
-            await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])(5000);
+            await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(5000);
             continue;
         }
         else if (response.status === 403) {
@@ -36717,7 +36894,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/batch */ "./node_modules/@tix-factory/batch/dist/index.js");
-/* harmony import */ var _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../enums/thumbnailState */ "./src/js/enums/thumbnailState.ts");
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
 
 
 class ThumbnailBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__.Batch {
@@ -36755,14 +36932,14 @@ class ThumbnailBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODUL
                 const thumbnailState = thumbnail.state;
                 item.resolve({
                     state: thumbnailState,
-                    imageUrl: thumbnailState === _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_1__["default"].Completed
+                    imageUrl: thumbnailState === roblox__WEBPACK_IMPORTED_MODULE_1__.ThumbnailState.Completed
                         ? thumbnail.imageUrl
                         : '',
                 });
             }
             else {
                 item.resolve({
-                    state: _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_1__["default"].Error,
+                    state: roblox__WEBPACK_IMPORTED_MODULE_1__.ThumbnailState.Error,
                     imageUrl: '',
                 });
             }
@@ -36790,83 +36967,81 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getGamePassIcon": () => (/* binding */ getGamePassIcon),
 /* harmony export */   "getGroupIcon": () => (/* binding */ getGroupIcon)
 /* harmony export */ });
-/* harmony import */ var _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../enums/thumbnailState */ "./src/js/enums/thumbnailState.ts");
-/* harmony import */ var _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../enums/thumbnailType */ "./src/js/enums/thumbnailType.ts");
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
-/* harmony import */ var _batchProcessor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./batchProcessor */ "./src/js/services/thumbnails/batchProcessor.ts");
-
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _batchProcessor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./batchProcessor */ "./src/js/services/thumbnails/batchProcessor.ts");
 
 
 
 
 const messageDestination = 'thumbnailsService.getAvatarHeadshotThumbnail';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__["default"](messageDestination, 5 * 60 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 5 * 60 * 1000);
 // Fetches an avatar headshot thumbnail, for the given user ID.
 const getAvatarHeadshotThumbnail = (userId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].AvatarHeadShot,
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.AvatarHeadShot,
         targetId: userId,
     });
 };
 // Fetches an asset thumbnail, for the given asset ID.
 const getAssetThumbnail = (assetId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].Asset,
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.Asset,
         targetId: assetId,
     });
 };
 // Fetches a group icon.
 const getGroupIcon = (groupId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GroupIcon,
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GroupIcon,
         targetId: groupId,
     });
 };
 // Fetches a game pass icon.
 const getGamePassIcon = (gamePassId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GamePass,
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GamePass,
         targetId: gamePassId,
     });
 };
 // Fetches a developer product icon.
 const getDeveloperProductIcon = (gamePassId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].DeveloperProduct,
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.DeveloperProduct,
         targetId: gamePassId,
     });
 };
 // Fetches a game icon.
 const getGameIcon = (gamePassId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
-        type: _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GameIcon,
+    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GameIcon,
         targetId: gamePassId,
     });
 };
 // Gets the default size for the thumbnail, by type.
 const getThumbnailSize = (thumbnailType) => {
     switch (thumbnailType) {
-        case _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GamePass:
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GamePass:
             return '150x150';
-        case _enums_thumbnailType__WEBPACK_IMPORTED_MODULE_1__["default"].GameIcon:
+        case roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GameIcon:
             return '256x256';
         default:
             return '420x420';
     }
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_3__.addListener)(messageDestination, async (message) => {
+(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination, async (message) => {
     const cacheKey = `${message.type}:${message.targetId}`;
     // Check the cache
     const thumbnail = await cache.getOrAdd(cacheKey, () => 
     // Queue up the fetch request, when not in the cache
-    _batchProcessor__WEBPACK_IMPORTED_MODULE_4__["default"].enqueue({
+    _batchProcessor__WEBPACK_IMPORTED_MODULE_3__["default"].enqueue({
         type: message.type,
         targetId: message.targetId,
         size: getThumbnailSize(message.type),
     }));
-    if (thumbnail.state !== _enums_thumbnailState__WEBPACK_IMPORTED_MODULE_0__["default"].Completed) {
+    if (thumbnail.state !== roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailState.Completed) {
         setTimeout(() => {
             // If the thumbnail isn't complete, evict it from the cache early.
             cache.evict(cacheKey);
@@ -37209,75 +37384,6 @@ class ExpirableDictionary {
     }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ExpirableDictionary);
-
-
-/***/ }),
-
-/***/ "./src/js/utils/linkify.ts":
-/*!*********************************!*\
-  !*** ./src/js/utils/linkify.ts ***!
-  \*********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getCatalogLink": () => (/* binding */ getCatalogLink),
-/* harmony export */   "getIdFromUrl": () => (/* binding */ getIdFromUrl),
-/* harmony export */   "getLibraryLink": () => (/* binding */ getLibraryLink),
-/* harmony export */   "getPlaceLink": () => (/* binding */ getPlaceLink),
-/* harmony export */   "getUserProfileLink": () => (/* binding */ getUserProfileLink)
-/* harmony export */ });
-const getSEOLink = (id, name, path) => {
-    if (!name) {
-        name = 'redirect';
-    }
-    else {
-        name =
-            name
-                .replace(/'/g, '')
-                .replace(/\W+/g, '-')
-                .replace(/^-+/, '')
-                .replace(/-+$/, '') || 'redirect';
-    }
-    return new URL(`https://www.roblox.com/${path}/${id}/${name}`);
-};
-const getCatalogLink = (assetId, assetName) => {
-    return getSEOLink(assetId, assetName, 'catalog');
-};
-const getLibraryLink = (assetId, assetName) => {
-    return getSEOLink(assetId, assetName, 'library');
-};
-const getPlaceLink = (placeId, placeName) => {
-    return getSEOLink(placeId, placeName, 'games');
-};
-const getUserProfileLink = (userId) => {
-    return getSEOLink(userId, 'profile', 'users');
-};
-const getIdFromUrl = (url) => {
-    const match = url.pathname.match(/^\/(badges|games|game-pass|groups|catalog|library|users)\/(\d+)\/?/i) || [];
-    // Returns NaN if the URL doesn't match.
-    return Number(match[2]);
-};
-
-
-
-/***/ }),
-
-/***/ "./src/js/utils/wait.ts":
-/*!******************************!*\
-  !*** ./src/js/utils/wait.ts ***!
-  \******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((time) => {
-    return new Promise((resolve, reject) => {
-        setTimeout(resolve, time);
-    });
-});
 
 
 /***/ }),
@@ -37793,15 +37899,15 @@ var __webpack_exports__ = {};
   !*** ./src/js/pages/item-details/index.ts ***!
   \********************************************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _css_pages_item_details_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../css/pages/item-details.scss */ "./src/css/pages/item-details.scss");
-/* harmony import */ var _services_assets__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../services/assets */ "./src/js/services/assets/index.ts");
-/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../services/localization */ "./src/js/services/localization/index.ts");
-/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../services/settings */ "./src/js/services/settings/index.ts");
-/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/wait */ "./src/js/utils/wait.ts");
-/* harmony import */ var _details__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./details */ "./src/js/pages/item-details/details.ts");
-/* harmony import */ var _stats__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./stats */ "./src/js/pages/item-details/stats.ts");
-/* harmony import */ var _calculate_rap_after_sale__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./calculate-rap-after-sale */ "./src/js/pages/item-details/calculate-rap-after-sale.ts");
-/* harmony import */ var _context_menu__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./context-menu */ "./src/js/pages/item-details/context-menu.ts");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _css_pages_item_details_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../css/pages/item-details.scss */ "./src/css/pages/item-details.scss");
+/* harmony import */ var _services_assets__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../services/assets */ "./src/js/services/assets/index.ts");
+/* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../services/localization */ "./src/js/services/localization/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _calculate_rap_after_sale__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./calculate-rap-after-sale */ "./src/js/pages/item-details/calculate-rap-after-sale.ts");
+/* harmony import */ var _context_menu__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./context-menu */ "./src/js/pages/item-details/context-menu.ts");
+/* harmony import */ var _details__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./details */ "./src/js/pages/item-details/details.ts");
+/* harmony import */ var _stats__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./stats */ "./src/js/pages/item-details/stats.ts");
 /* harmony import */ var _tabs__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./tabs */ "./src/js/pages/item-details/tabs/index.tsx");
 
 
@@ -37814,24 +37920,24 @@ __webpack_require__.r(__webpack_exports__);
 
 
 // Add sales counter onto the page.
-if (_details__WEBPACK_IMPORTED_MODULE_5__.isOwnCreatedItem && !_details__WEBPACK_IMPORTED_MODULE_5__.isLimited) {
-    (0,_services_settings__WEBPACK_IMPORTED_MODULE_3__.getToggleSettingValue)('itemSalesCounter')
+if (_details__WEBPACK_IMPORTED_MODULE_7__.isOwnCreatedItem && !_details__WEBPACK_IMPORTED_MODULE_7__.isLimited) {
+    (0,_services_settings__WEBPACK_IMPORTED_MODULE_4__.getToggleSettingValue)('itemSalesCounter')
         .then(async (enabled) => {
         if (!enabled) {
             return;
         }
         while (!document.getElementById('item-details')) {
             // Wait until the item details container is loaded.
-            await (0,_utils_wait__WEBPACK_IMPORTED_MODULE_4__["default"])(250);
+            await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(250);
         }
-        (0,_services_assets__WEBPACK_IMPORTED_MODULE_1__.getAssetSalesCount)(_details__WEBPACK_IMPORTED_MODULE_5__.assetId)
+        (0,_services_assets__WEBPACK_IMPORTED_MODULE_2__.getAssetSalesCount)(_details__WEBPACK_IMPORTED_MODULE_7__.assetId)
             .then(async (saleCount) => {
             if (isNaN(saleCount)) {
                 return;
             }
             try {
-                const salesLabel = await (0,_services_localization__WEBPACK_IMPORTED_MODULE_2__.getTranslationResource)('CreatorDashboard.Creations', 'Heading.Sales');
-                (0,_stats__WEBPACK_IMPORTED_MODULE_6__.createStat)(salesLabel, saleCount.toLocaleString());
+                const salesLabel = await (0,_services_localization__WEBPACK_IMPORTED_MODULE_3__.getTranslationResource)('CreatorDashboard.Creations', 'Heading.Sales');
+                (0,_stats__WEBPACK_IMPORTED_MODULE_8__.createStat)(salesLabel, saleCount.toLocaleString());
             }
             catch (e) {
                 console.error('Failed to render sales label', e);
@@ -37846,7 +37952,7 @@ if (_details__WEBPACK_IMPORTED_MODULE_5__.isOwnCreatedItem && !_details__WEBPACK
     });
 }
 // Add features for limited items.
-if (_details__WEBPACK_IMPORTED_MODULE_5__.isLimited) {
+if (_details__WEBPACK_IMPORTED_MODULE_7__.isLimited) {
     setInterval(() => {
         const currentAveragePrice = Number(document
             .getElementById('item-average-price')
@@ -37865,7 +37971,7 @@ if (_details__WEBPACK_IMPORTED_MODULE_5__.isLimited) {
             if (!price) {
                 return;
             }
-            const rapAfterSale = (0,_calculate_rap_after_sale__WEBPACK_IMPORTED_MODULE_7__["default"])(currentAveragePrice, price);
+            const rapAfterSale = (0,_calculate_rap_after_sale__WEBPACK_IMPORTED_MODULE_5__["default"])(currentAveragePrice, price);
             priceContainer.setAttribute('title', `If this sells, the average price of the item should be approximately R\$${rapAfterSale.toLocaleString()}`);
         });
     }, 1000);
@@ -37888,7 +37994,7 @@ window.addEventListener('DOMNodeInserted', async (event) => {
         const contextMenu = event.target.parentElement.querySelector('ul.dropdown-menu');
         if (contextMenu instanceof HTMLElement) {
             try {
-                await (0,_context_menu__WEBPACK_IMPORTED_MODULE_8__.initializeContextMenu)(contextMenu);
+                await (0,_context_menu__WEBPACK_IMPORTED_MODULE_6__.initializeContextMenu)(contextMenu);
             }
             catch (e) {
                 console.warn('Unexpected error opening context menu', e);
