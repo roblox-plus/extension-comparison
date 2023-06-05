@@ -1,6 +1,426 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./libs/extension-messaging/dist/constants.js":
+/*!****************************************************!*\
+  !*** ./libs/extension-messaging/dist/constants.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "version": () => (/* binding */ version)
+/* harmony export */ });
+// An identifier that tells us which version of the messaging service we're using,
+// to ensure we don't try to process a message not intended for us.
+const version = 2.5;
+
+
+
+/***/ }),
+
+/***/ "./libs/extension-messaging/dist/index.js":
+/*!************************************************!*\
+  !*** ./libs/extension-messaging/dist/index.js ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "addListener": () => (/* binding */ addListener),
+/* harmony export */   "getWorkerTab": () => (/* reexport safe */ _tabs__WEBPACK_IMPORTED_MODULE_2__.getWorkerTab),
+/* harmony export */   "sendMessage": () => (/* binding */ sendMessage),
+/* harmony export */   "sendMessageToTab": () => (/* reexport safe */ _tabs__WEBPACK_IMPORTED_MODULE_2__.sendMessageToTab)
+/* harmony export */ });
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./constants */ "./libs/extension-messaging/dist/constants.js");
+/* harmony import */ var _tabs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./tabs */ "./libs/extension-messaging/dist/tabs.js");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+// All the listeners, set in the background page.
+const listeners = {};
+// Keep track of all the listeners that accept external calls.
+const externalListeners = {};
+const externalResponseHandlers = {};
+// Send a message to a destination, and get back the result.
+const sendMessage = (destination, message, external) => __awaiter(void 0, void 0, void 0, function* () {
+    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+        var _a;
+        const serializedMessage = JSON.stringify(message);
+        if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
+            // Message is from the background page, to the background page.
+            try {
+                if (listeners[destination]) {
+                    const message = JSON.parse(serializedMessage);
+                    const result = yield listeners[destination](message);
+                    console.debug(`Local listener response for '${destination}':`, result, message);
+                    const data = result.data === undefined ? undefined : JSON.parse(result.data);
+                    if (result.success) {
+                        resolve(data);
+                    }
+                    else {
+                        reject(data);
+                    }
+                }
+                else {
+                    reject(`No message listener: ${destination}`);
+                }
+            }
+            catch (e) {
+                reject(e);
+            }
+        }
+        else if (chrome === null || chrome === void 0 ? void 0 : chrome.runtime) {
+            // Message is being sent from the content script
+            const outboundMessage = JSON.stringify({
+                version: _constants__WEBPACK_IMPORTED_MODULE_1__.version,
+                destination,
+                external,
+                message: serializedMessage,
+            });
+            console.debug(`Sending message to '${destination}'`, serializedMessage);
+            chrome.runtime.sendMessage(outboundMessage, (result) => {
+                if (result === undefined) {
+                    reject(`Unexpected message result (undefined), suggests no listener in background page.\n\tDestination: ${destination}`);
+                    return;
+                }
+                const data = result.data === undefined ? undefined : JSON.parse(result.data);
+                if (result.success) {
+                    resolve(data);
+                }
+                else {
+                    reject(data);
+                }
+            });
+        }
+        else if ((_a = document.body) === null || _a === void 0 ? void 0 : _a.dataset.extensionId) {
+            // Message is being sent by the native browser tab.
+            const messageId = crypto.randomUUID();
+            const timeout = setTimeout(() => {
+                if (externalResponseHandlers[messageId]) {
+                    delete externalResponseHandlers[messageId];
+                    reject(`Message timed out trying to contact extension`);
+                }
+            }, 15 * 1000);
+            externalResponseHandlers[messageId] = {
+                resolve: (result) => {
+                    clearTimeout(timeout);
+                    delete externalResponseHandlers[messageId];
+                    resolve(result);
+                },
+                reject: (error) => {
+                    clearTimeout(timeout);
+                    delete externalResponseHandlers[messageId];
+                    reject(error);
+                },
+            };
+            window.postMessage({
+                version: _constants__WEBPACK_IMPORTED_MODULE_1__.version,
+                extensionId: document.body.dataset.extensionId,
+                destination,
+                message,
+                messageId,
+            });
+        }
+        else {
+            reject(`Could not find a way to transport the message to the extension.`);
+        }
+    }));
+});
+// Listen for messages at a specific destination.
+const addListener = (destination, listener, options = {
+    levelOfParallelism: -1,
+}) => {
+    if (listeners[destination]) {
+        throw new Error(`${destination} already has message listener attached`);
+    }
+    const processMessage = (message) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            console.debug(`Processing message for '${destination}'`, message);
+            const result = yield listener(message);
+            const response = {
+                success: true,
+                data: JSON.stringify(result),
+            };
+            console.debug(`Successful message result from '${destination}':`, response, message);
+            return response;
+        }
+        catch (err) {
+            const response = {
+                success: false,
+                data: JSON.stringify(err),
+            };
+            console.debug(`Failed message result from '${destination}':`, response, message, err);
+            return response;
+        }
+    });
+    listeners[destination] = (message) => {
+        if (options.levelOfParallelism !== 1) {
+            return processMessage(message);
+        }
+        return new Promise((resolve, reject) => {
+            // https://stackoverflow.com/a/73482349/1663648
+            navigator.locks
+                .request(`messageService:${destination}`, () => __awaiter(void 0, void 0, void 0, function* () {
+                try {
+                    const result = yield processMessage(message);
+                    resolve(result);
+                }
+                catch (e) {
+                    reject(e);
+                }
+            }))
+                .catch(reject);
+        });
+    };
+    if (options.allowExternalConnections) {
+        externalListeners[destination] = true;
+    }
+};
+// If we're currently in the background page, listen for messages.
+if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
+    chrome.runtime.onMessage.addListener((rawMessage, sender, sendResponse) => {
+        if (typeof rawMessage !== 'string') {
+            // Not for us.
+            return;
+        }
+        const fullMessage = JSON.parse(rawMessage);
+        if (fullMessage.version !== _constants__WEBPACK_IMPORTED_MODULE_1__.version ||
+            !fullMessage.destination ||
+            !fullMessage.message) {
+            // Not for us.
+            return;
+        }
+        if (fullMessage.external && !externalListeners[fullMessage.destination]) {
+            sendResponse({
+                success: false,
+                data: JSON.stringify('Listener does not accept external callers.'),
+            });
+            return;
+        }
+        const listener = listeners[fullMessage.destination];
+        if (!listener) {
+            sendResponse({
+                success: false,
+                data: JSON.stringify(`Could not route message to destination: ${fullMessage.destination}`),
+            });
+            return;
+        }
+        const message = JSON.parse(fullMessage.message);
+        listener(message)
+            .then(sendResponse)
+            .catch((err) => {
+            console.error('Listener is never expected to throw.', err, rawMessage, fullMessage);
+            sendResponse({
+                success: false,
+                data: JSON.stringify('Listener threw unhandled exception (see background page for error).'),
+            });
+        });
+        // Required for asynchronous callbacks
+        // https://stackoverflow.com/a/20077854/1663648
+        return true;
+    });
+}
+else if (chrome === null || chrome === void 0 ? void 0 : chrome.runtime) {
+    console.debug(`Not attaching listener for messages, because we're not in the background.`);
+    if (!window.messageServiceConnection) {
+        const port = (window.messageServiceConnection = chrome.runtime.connect(chrome.runtime.id, {
+            name: 'messageService',
+        }));
+        port.onMessage.addListener((rawMessage) => {
+            if (typeof rawMessage !== 'string') {
+                // Not for us.
+                return;
+            }
+            const fullMessage = JSON.parse(rawMessage);
+            if (fullMessage.version !== _constants__WEBPACK_IMPORTED_MODULE_1__.version ||
+                !fullMessage.destination ||
+                !fullMessage.message) {
+                // Not for us.
+                return;
+            }
+            const listener = listeners[fullMessage.destination];
+            if (!listener) {
+                // No listener in this tab for this message.
+                return;
+            }
+            // We don't really have a way to communicate the response back to the service worker.
+            // So we just... do nothing with it.
+            const message = JSON.parse(fullMessage.message);
+            listener(message).catch((err) => {
+                console.error('Unhandled error processing message in tab', fullMessage, err);
+            });
+        });
+    }
+    // chrome.runtime is available, and we got a message from the window
+    // this could be a tab trying to get information from the extension
+    window.addEventListener('message', (messageEvent) => __awaiter(void 0, void 0, void 0, function* () {
+        const { extensionId, messageId, destination, message } = messageEvent.data;
+        if (extensionId !== chrome.runtime.id ||
+            !messageId ||
+            !destination ||
+            !message) {
+            // They didn't want to contact us.
+            // Or if they did, they didn't have the required fields.
+            return;
+        }
+        if (messageEvent.data.version !== _constants__WEBPACK_IMPORTED_MODULE_1__.version) {
+            // They did want to contact us, but there was a version mismatch.
+            // We can't handle this message.
+            window.postMessage({
+                extensionId,
+                messageId,
+                success: false,
+                data: `Extension message receiver is incompatible with message sender`,
+            });
+            return;
+        }
+        console.debug('Received message for', destination, message);
+        try {
+            const response = yield sendMessage(destination, message, true);
+            // Success! Now go tell the client they got everything they wanted.
+            window.postMessage({
+                extensionId,
+                messageId,
+                success: true,
+                data: response,
+            });
+        }
+        catch (e) {
+            console.debug('Failed to send message to', destination, e);
+            // :coffin:
+            window.postMessage({
+                extensionId,
+                messageId,
+                success: false,
+                data: e,
+            });
+        }
+    }));
+}
+else {
+    // Not a background page, and not a content script.
+    // This could be a page where we want to listen for calls from the tab.
+    window.addEventListener('message', (messageEvent) => {
+        const { extensionId, messageId, success, data } = messageEvent.data;
+        if (extensionId !== document.body.dataset.extensionId ||
+            !messageId ||
+            typeof success !== 'boolean') {
+            // Not for us.
+            return;
+        }
+        // Check to see if we have a handler waiting for this message response...
+        const responseHandler = externalResponseHandlers[messageId];
+        if (!responseHandler) {
+            console.warn('We got a response back for a message we no longer have a handler for.', extensionId, messageId, success, data);
+            return;
+        }
+        // Yay! Tell the krustomer we have their data, from the extension.
+        console.debug('We received a response for', messageId, success, data);
+        if (success) {
+            responseHandler.resolve(data);
+        }
+        else {
+            responseHandler.reject(data);
+        }
+    });
+}
+
+
+
+
+/***/ }),
+
+/***/ "./libs/extension-messaging/dist/tabs.js":
+/*!***********************************************!*\
+  !*** ./libs/extension-messaging/dist/tabs.js ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getWorkerTab": () => (/* binding */ getWorkerTab),
+/* harmony export */   "sendMessageToTab": () => (/* binding */ sendMessageToTab)
+/* harmony export */ });
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./constants */ "./libs/extension-messaging/dist/constants.js");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+// All the tabs actively connected to the message service.
+const tabs = {};
+// Sends a message to a tab.
+const sendMessageToTab = (destination, message, tab) => __awaiter(void 0, void 0, void 0, function* () {
+    const serializedMessage = JSON.stringify(message);
+    const outboundMessage = JSON.stringify({
+        version: _constants__WEBPACK_IMPORTED_MODULE_1__.version,
+        destination,
+        message: serializedMessage,
+    });
+    console.debug(`Sending message to '${destination}' in tab`, serializedMessage, tab);
+    tab.postMessage(outboundMessage);
+});
+// Fetches a tab that we can send a message to, for work processing.
+const getWorkerTab = () => {
+    const keys = Object.keys(tabs);
+    return keys.length > 0 ? tabs[keys[0]] : undefined;
+};
+if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
+    chrome.runtime.onConnect.addListener((port) => {
+        const id = crypto.randomUUID();
+        console.debug('Tab connected', id, port);
+        tabs[id] = port;
+        port.onDisconnect.addListener(() => {
+            console.debug('Disconnecting tab', id, port);
+            delete tabs[id];
+        });
+    });
+}
+
+
+
+/***/ }),
+
+/***/ "./libs/extension-utils/dist/constants/index.js":
+/*!******************************************************!*\
+  !*** ./libs/extension-utils/dist/constants/index.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "isBackgroundPage": () => (/* binding */ isBackgroundPage),
+/* harmony export */   "manifest": () => (/* binding */ manifest)
+/* harmony export */ });
+var _a, _b, _c;
+const manifest = (_a = chrome === null || chrome === void 0 ? void 0 : chrome.runtime) === null || _a === void 0 ? void 0 : _a.getManifest();
+const isBackgroundPage = ((_b = chrome === null || chrome === void 0 ? void 0 : chrome.runtime) === null || _b === void 0 ? void 0 : _b.getURL(((_c = manifest === null || manifest === void 0 ? void 0 : manifest.background) === null || _c === void 0 ? void 0 : _c.page) || '')) === location.href;
+
+
+
+/***/ }),
+
 /***/ "./libs/extension-utils/dist/enums/loading-state.js":
 /*!**********************************************************!*\
   !*** ./libs/extension-utils/dist/enums/loading-state.js ***!
@@ -33,11 +453,16 @@ var LoadingState;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "LoadingState": () => (/* reexport safe */ _enums_loading_state__WEBPACK_IMPORTED_MODULE_0__["default"]),
-/* harmony export */   "wait": () => (/* reexport safe */ _utils_wait__WEBPACK_IMPORTED_MODULE_1__["default"])
+/* harmony export */   "LoadingState": () => (/* reexport safe */ _enums_loading_state__WEBPACK_IMPORTED_MODULE_1__["default"]),
+/* harmony export */   "isBackgroundPage": () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage),
+/* harmony export */   "manifest": () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.manifest),
+/* harmony export */   "wait": () => (/* reexport safe */ _utils_wait__WEBPACK_IMPORTED_MODULE_2__["default"])
 /* harmony export */ });
-/* harmony import */ var _enums_loading_state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./enums/loading-state */ "./libs/extension-utils/dist/enums/loading-state.js");
-/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/wait */ "./libs/extension-utils/dist/utils/wait.js");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./libs/extension-utils/dist/constants/index.js");
+/* harmony import */ var _enums_loading_state__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./enums/loading-state */ "./libs/extension-utils/dist/enums/loading-state.js");
+/* harmony import */ var _utils_wait__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils/wait */ "./libs/extension-utils/dist/utils/wait.js");
+// Export constants
+
 // Export enums
 
 // Export utils
@@ -377,25 +802,6 @@ const getIdFromUrl = (url) => {
 
 !function(a){if(true)module.exports=a();else { var b; }}(function(){var a;return function b(a,c,d){function e(g,h){if(!c[g]){if(!a[g]){var i=undefined;if(!h&&i)return require(g,!0);if(f)return f(g,!0);var j=new Error("Cannot find module '"+g+"'");throw j.code="MODULE_NOT_FOUND",j}var k=c[g]={exports:{}};a[g][0].call(k.exports,function(b){var c=a[g][1][b];return e(c?c:b)},k,k.exports,b,a,c,d)}return c[g].exports}for(var f=undefined,g=0;g<d.length;g++)e(d[g]);return e}({1:[function(b,c,d){"use strict";function e(a){if(Array.isArray(a)){for(var b=0,c=Array(a.length);b<a.length;b++)c[b]=a[b];return c}return Array.from(a)}var f=function(){function a(a,b){var c=[],d=!0,e=!1,f=void 0;try{for(var g,h=a[Symbol.iterator]();!(d=(g=h.next()).done)&&(c.push(g.value),!b||c.length!==b);d=!0);}catch(i){e=!0,f=i}finally{try{!d&&h["return"]&&h["return"]()}finally{if(e)throw f}}return c}return function(b,c){if(Array.isArray(b))return b;if(Symbol.iterator in Object(b))return a(b,c);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}(),g="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(a){return typeof a}:function(a){return a&&"function"==typeof Symbol&&a.constructor===Symbol?"symbol":typeof a};!function(b){function d(a){return a&&"object"===("undefined"==typeof a?"undefined":g(a))}function h(a){var b=Object.keys(a).sort();if(1===b.length){var c=b[0],d=a[c],e=void 0,f=void 0;switch(c){case"eq":e="only";break;case"gt":e="lowerBound",f=!0;break;case"lt":e="upperBound",f=!0;break;case"gte":e="lowerBound";break;case"lte":e="upperBound";break;default:throw new TypeError("`"+c+"` is not a valid key")}return[e,[d,f]]}var g=a[b[0]],h=a[b[1]],i=b.join("-");switch(i){case"gt-lt":case"gt-lte":case"gte-lt":case"gte-lte":return["bound",[g,h,"gt"===b[0],"lt"===b[1]]];default:throw new TypeError("`"+i+"` are conflicted keys")}}function i(a){if(a&&"object"===("undefined"==typeof a?"undefined":g(a))&&!(a instanceof j)){var b=h(a),c=f(b,2),d=c[0],i=c[1];return j[d].apply(j,e(i))}return a}var j=b.IDBKeyRange||b.webkitIDBKeyRange,k={readonly:"readonly",readwrite:"readwrite"},l=Object.prototype.hasOwnProperty,m=function(a){return a},n=b.indexedDB||b.webkitIndexedDB||b.mozIndexedDB||b.oIndexedDB||b.msIndexedDB||b.shimIndexedDB||function(){throw new Error("IndexedDB required")}(),o={},p=["abort","error","versionchange"],q=function(a,b,c,d){var f=this,i=null,l=function(d,f,h,l,m,n,o){return new Promise(function(p,q){var r=void 0;try{r=d?j[d].apply(j,e(f)):null}catch(s){return void q(s)}n=n||[],m=m||null;var t=[],u=0,v=[r],w=b.transaction(a,i?k.readwrite:k.readonly);w.onerror=function(a){return q(a)},w.onabort=function(a){return q(a)},w.oncomplete=function(){return p(t)};var x=w.objectStore(a),y="string"==typeof c?x.index(c):x;"count"!==h&&v.push(l||"next");var z=i?Object.keys(i):[],A=function(a){return z.forEach(function(b){var c=i[b];"function"==typeof c&&(c=c(a)),a[b]=c}),a};y[h].apply(y,v).onsuccess=function(a){var b=a.target.result;if("number"==typeof b)t=b;else if(b)if(null!==m&&m[0]>u)u=m[0],b.advance(m[0]);else if(null!==m&&u>=m[0]+m[1]);else{var c=function(){var a=!0,c="value"in b?b.value:b.key;try{n.forEach(function(b){a="function"==typeof b[0]?a&&b[0](c):a&&c[b[0]]===b[1]})}catch(d){return q(d),{v:void 0}}if(a){if(u++,i)try{c=A(c),b.update(c)}catch(d){return q(d),{v:void 0}}try{t.push(o(c))}catch(d){return q(d),{v:void 0}}}b["continue"]()}();if("object"===("undefined"==typeof c?"undefined":g(c)))return c.v}}})},n=function(a,b,c){var e=[],f="next",h="openCursor",j=null,k=m,n=!1,o=d||c,p=function(){return o?Promise.reject(o):l(a,b,h,n?f+"unique":f,j,e,k)},q=function(){return f=null,h="count",{execute:p}},r=function(){return h="openKeyCursor",{desc:u,distinct:v,execute:p,filter:t,limit:s,map:x}},s=function(a,b){return j=b?[a,b]:[0,a],o=j.some(function(a){return"number"!=typeof a})?new Error("limit() arguments must be numeric"):o,{desc:u,distinct:v,filter:t,keys:r,execute:p,map:x,modify:w}},t=function y(a,b){return e.push([a,b]),{desc:u,distinct:v,execute:p,filter:y,keys:r,limit:s,map:x,modify:w}},u=function(){return f="prev",{distinct:v,execute:p,filter:t,keys:r,limit:s,map:x,modify:w}},v=function(){return n=!0,{count:q,desc:u,execute:p,filter:t,keys:r,limit:s,map:x,modify:w}},w=function(a){return i=a&&"object"===("undefined"==typeof a?"undefined":g(a))?a:null,{execute:p}},x=function(a){return k=a,{count:q,desc:u,distinct:v,execute:p,filter:t,keys:r,limit:s,modify:w}};return{count:q,desc:u,distinct:v,execute:p,filter:t,keys:r,limit:s,map:x,modify:w}};["only","bound","upperBound","lowerBound"].forEach(function(a){f[a]=function(){return n(a,arguments)}}),this.range=function(a){var b=void 0,c=[null,null];try{c=h(a)}catch(d){b=d}return n.apply(void 0,e(c).concat([b]))},this.filter=function(){var a=n(null,null);return a.filter.apply(a,arguments)},this.all=function(){return this.filter()}},r=function(a,b,c,e){var f=this,g=!1;if(this.getIndexedDB=function(){return a},this.isClosed=function(){return g},this.query=function(b,c){var d=g?new Error("Database has been closed"):null;return new q(b,a,c,d)},this.add=function(b){for(var c=arguments.length,e=Array(c>1?c-1:0),f=1;c>f;f++)e[f-1]=arguments[f];return new Promise(function(c,f){if(g)return void f(new Error("Database has been closed"));var h=e.reduce(function(a,b){return a.concat(b)},[]),j=a.transaction(b,k.readwrite);j.onerror=function(a){a.preventDefault(),f(a)},j.onabort=function(a){return f(a)},j.oncomplete=function(){return c(h)};var m=j.objectStore(b);h.some(function(a){var b=void 0,c=void 0;if(d(a)&&l.call(a,"item")&&(c=a.key,a=a.item,null!=c))try{c=i(c)}catch(e){return f(e),!0}try{b=null!=c?m.add(a,c):m.add(a)}catch(e){return f(e),!0}b.onsuccess=function(b){if(d(a)){var c=b.target,e=c.source.keyPath;null===e&&(e="__id__"),l.call(a,e)||Object.defineProperty(a,e,{value:c.result,enumerable:!0})}}})})},this.update=function(b){for(var c=arguments.length,e=Array(c>1?c-1:0),f=1;c>f;f++)e[f-1]=arguments[f];return new Promise(function(c,f){if(g)return void f(new Error("Database has been closed"));var h=e.reduce(function(a,b){return a.concat(b)},[]),j=a.transaction(b,k.readwrite);j.onerror=function(a){a.preventDefault(),f(a)},j.onabort=function(a){return f(a)},j.oncomplete=function(){return c(h)};var m=j.objectStore(b);h.some(function(a){var b=void 0,c=void 0;if(d(a)&&l.call(a,"item")&&(c=a.key,a=a.item,null!=c))try{c=i(c)}catch(e){return f(e),!0}try{b=null!=c?m.put(a,c):m.put(a)}catch(g){return f(g),!0}b.onsuccess=function(b){if(d(a)){var c=b.target,e=c.source.keyPath;null===e&&(e="__id__"),l.call(a,e)||Object.defineProperty(a,e,{value:c.result,enumerable:!0})}}})})},this.put=function(){return this.update.apply(this,arguments)},this.remove=function(b,c){return new Promise(function(d,e){if(g)return void e(new Error("Database has been closed"));try{c=i(c)}catch(f){return void e(f)}var h=a.transaction(b,k.readwrite);h.onerror=function(a){a.preventDefault(),e(a)},h.onabort=function(a){return e(a)},h.oncomplete=function(){return d(c)};var j=h.objectStore(b);try{j["delete"](c)}catch(l){e(l)}})},this["delete"]=function(){return this.remove.apply(this,arguments)},this.clear=function(b){return new Promise(function(c,d){if(g)return void d(new Error("Database has been closed"));var e=a.transaction(b,k.readwrite);e.onerror=function(a){return d(a)},e.onabort=function(a){return d(a)},e.oncomplete=function(){return c()};var f=e.objectStore(b);f.clear()})},this.close=function(){return new Promise(function(d,e){return g?void e(new Error("Database has been closed")):(a.close(),g=!0,delete o[b][c],void d())})},this.get=function(b,c){return new Promise(function(d,e){if(g)return void e(new Error("Database has been closed"));try{c=i(c)}catch(f){return void e(f)}var h=a.transaction(b);h.onerror=function(a){a.preventDefault(),e(a)},h.onabort=function(a){return e(a)};var j=h.objectStore(b),k=void 0;try{k=j.get(c)}catch(l){e(l)}k.onsuccess=function(a){return d(a.target.result)}})},this.count=function(b,c){return new Promise(function(d,e){if(g)return void e(new Error("Database has been closed"));try{c=i(c)}catch(f){return void e(f)}var h=a.transaction(b);h.onerror=function(a){a.preventDefault(),e(a)},h.onabort=function(a){return e(a)};var j=h.objectStore(b),k=void 0;try{k=null==c?j.count():j.count(c)}catch(l){e(l)}k.onsuccess=function(a){return d(a.target.result)}})},this.addEventListener=function(b,c){if(!p.includes(b))throw new Error("Unrecognized event type "+b);return"error"===b?void a.addEventListener(b,function(a){a.preventDefault(),c(a)}):void a.addEventListener(b,c)},this.removeEventListener=function(b,c){if(!p.includes(b))throw new Error("Unrecognized event type "+b);a.removeEventListener(b,c)},p.forEach(function(a){this[a]=function(b){return this.addEventListener(a,b),this}},this),!e){var h=void 0;return[].some.call(a.objectStoreNames,function(a){if(f[a])return h=new Error('The store name, "'+a+'", which you have attempted to load, conflicts with db.js method names."'),f.close(),!0;f[a]={};var b=Object.keys(f);b.filter(function(a){return![].concat(p,["close","addEventListener","removeEventListener"]).includes(a)}).map(function(b){return f[a][b]=function(){for(var c=arguments.length,d=Array(c),e=0;c>e;e++)d[e]=arguments[e];return f[b].apply(f,[a].concat(d))}})}),h}},s=function(a,b,c,d,e,f){if(c&&0!==c.length){for(var h=0;h<d.objectStoreNames.length;h++){var i=d.objectStoreNames[h];l.call(c,i)||d.deleteObjectStore(i)}var j=void 0;return Object.keys(c).some(function(a){var e=c[a],f=void 0;if(d.objectStoreNames.contains(a))f=b.transaction.objectStore(a);else try{f=d.createObjectStore(a,e.key)}catch(h){return j=h,!0}Object.keys(e.indexes||{}).some(function(a){try{f.index(a)}catch(b){var c=e.indexes[a];c=c&&"object"===("undefined"==typeof c?"undefined":g(c))?c:{};try{f.createIndex(a,c.keyPath||c.key||a,c)}catch(d){return j=d,!0}}})}),j}},t=function(a,b,c,d){var e=a.target.result;o[b][c]=e;var f=new r(e,b,c,d);return f instanceof Error?Promise.reject(f):Promise.resolve(f)},u={version:"0.15.0",open:function(a){var b=a.server,c=a.version||1,d=a.schema,e=a.noServerMethods;return o[b]||(o[b]={}),new Promise(function(a,f){if(o[b][c])t({target:{result:o[b][c]}},b,c,e).then(a,f);else{var h=function(){if("function"==typeof d)try{d=d()}catch(g){return f(g),{v:void 0}}var h=n.open(b,c);h.onsuccess=function(d){return t(d,b,c,e).then(a,f)},h.onerror=function(a){a.preventDefault(),f(a)},h.onupgradeneeded=function(a){var e=s(a,h,d,a.target.result,b,c);e&&f(e)},h.onblocked=function(a){var d=new Promise(function(a,d){h.onsuccess=function(f){t(f,b,c,e).then(a,d)},h.onerror=function(a){return d(a)}});a.resume=d,f(a)}}();if("object"===("undefined"==typeof h?"undefined":g(h)))return h.v}})},"delete":function(a){return new Promise(function(b,c){var d=n.deleteDatabase(a);d.onsuccess=function(a){return b(a)},d.onerror=function(a){return c(a)},d.onblocked=function(a){a=null===a.newVersion||"undefined"==typeof Proxy?a:new Proxy(a,{get:function(a,b){return"newVersion"===b?null:a[b]}});var b=new Promise(function(b,c){d.onsuccess=function(c){"newVersion"in c||(c.newVersion=a.newVersion),"oldVersion"in c||(c.oldVersion=a.oldVersion),b(c)},d.onerror=function(a){return c(a)}});a.resume=b,c(a)}})},cmp:function(a,b){return new Promise(function(c,d){try{c(n.cmp(a,b))}catch(e){d(e)}})}};"undefined"!=typeof c&&"undefined"!=typeof c.exports?c.exports=u:"function"==typeof a&&a.amd?a(function(){return u}):b.db=u}(self)},{}]},{},[1])(1)});
 //# sourceMappingURL=db.min.js.map
-
-/***/ }),
-
-/***/ "./src/js/constants/index.ts":
-/*!***********************************!*\
-  !*** ./src/js/constants/index.ts ***!
-  \***********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "isBackgroundPage": () => (/* binding */ isBackgroundPage),
-/* harmony export */   "manifest": () => (/* binding */ manifest)
-/* harmony export */ });
-const manifest = chrome.runtime.getManifest();
-const isBackgroundPage = chrome.runtime.getURL(manifest.background?.page || '') === location.href;
-
-
 
 /***/ }),
 
@@ -911,10 +1317,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/batch */ "./node_modules/@tix-factory/batch/dist/index.js");
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../constants */ "./src/js/constants/index.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
 
 
 
@@ -933,8 +1339,8 @@ class AssetContentsBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_M
     async process(items) {
         const requestHeaders = new Headers();
         requestHeaders.append('Roblox-Place-Id', '258257446');
-        requestHeaders.append('Roblox-Browser-Asset-Request', _constants__WEBPACK_IMPORTED_MODULE_3__.manifest.name);
-        const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_2__["default"])(new URL(`https://assetdelivery.roblox.com/v2/assets/batch`), {
+        requestHeaders.append('Roblox-Browser-Asset-Request', _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_2__.manifest.name);
+        const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_4__["default"])(new URL(`https://assetdelivery.roblox.com/v2/assets/batch`), {
             method: 'POST',
             headers: requestHeaders,
             body: JSON.stringify(items.map((batchItem) => {
@@ -964,16 +1370,16 @@ class AssetContentsBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_M
     }
 }
 const assetContentsProcessor = new AssetContentsBatchProcessor();
-const assetContentsCache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 10 * 60 * 1000);
+const assetContentsCache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_3__["default"](messageDestination, 10 * 60 * 1000);
 // Fetches the date when a badge was awarded to the specified user.
 const getAssetContentsUrl = async (assetId) => {
-    const url = await (0,_message__WEBPACK_IMPORTED_MODULE_4__.sendMessage)(messageDestination, {
+    const url = await (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, {
         assetId,
     });
     return url ? new URL(url) : undefined;
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_4__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
     // Check the cache
     return assetContentsCache.getOrAdd(assetContentsProcessor.getKey(message.assetId), () => {
         // Queue up the fetch request, when not in the cache
@@ -996,14 +1402,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 /* harmony import */ var _get_asset_contents_url__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./get-asset-contents-url */ "./src/js/services/assets/get-asset-contents-url.ts");
 
 
 
 const messageDestination = 'assetsService.getAssetDependencies';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 30 * 1000);
 const contentRegexes = [
     /"TextureI?d?".*=\s*(\d+)/gi,
     /"TextureI?d?".*rbxassetid:\/\/(\d+)/gi,
@@ -1015,7 +1421,7 @@ const contentRegexes = [
     /require\((\d+)\)/gi,
 ];
 const getAssetDependencies = async (assetId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { assetId });
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, { assetId });
 };
 const loadAssetDependencies = async (assetId) => {
     const assetIds = [];
@@ -1037,7 +1443,7 @@ const loadAssetDependencies = async (assetId) => {
     return assetIds;
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(`${message.assetId}`, () => 
     // Queue up the fetch request, when not in the cache
@@ -1061,14 +1467,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 
 
 const messageDestination = 'assetsService.getAssetDetails';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 5 * 60 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 5 * 60 * 1000);
 const getAssetDetails = async (assetId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { assetId });
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, { assetId });
 };
 const loadAssetDetails = async (assetId) => {
     const response = await fetch(`https://economy.roblox.com/v2/assets/${assetId}/details`);
@@ -1084,7 +1490,7 @@ const loadAssetDetails = async (assetId) => {
     };
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(`${message.assetId}`, () => 
     // Queue up the fetch request, when not in the cache
@@ -1108,14 +1514,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 
 
 const messageDestination = 'assetsService.getAssetSalesCount';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 30 * 1000);
 const getAssetSalesCount = async (assetId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { assetId });
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, { assetId });
 };
 const loadAssetSalesCount = async (assetId) => {
     const response = await fetch(`https://economy.roblox.com/v2/assets/${assetId}/details`);
@@ -1126,7 +1532,7 @@ const loadAssetSalesCount = async (assetId) => {
     return result.Sales || NaN;
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(`${message.assetId}`, () => 
     // Queue up the fetch request, when not in the cache
@@ -1183,12 +1589,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
 
 const messageDestination = 'avatarService.getAvatarRules';
 let avatarAssetRules = [];
 const getAvatarAssetRules = async () => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {});
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {});
 };
 const loadAvatarAssetRules = async () => {
     const response = await fetch(`https://avatar.roblox.com/v1/avatar-rules`);
@@ -1204,7 +1610,7 @@ const loadAvatarAssetRules = async () => {
     });
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, async () => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, async () => {
     if (avatarAssetRules.length > 0) {
         return avatarAssetRules;
     }
@@ -1375,25 +1781,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getBadgeAwardDate": () => (/* binding */ getBadgeAwardDate)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 /* harmony import */ var _batchProcessor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./batchProcessor */ "./src/js/services/badges/batchProcessor.ts");
 
 
 
 const messageDestination = 'badgesService.getBadgeAwardDate';
 const badgeAwardProcessor = new _batchProcessor__WEBPACK_IMPORTED_MODULE_2__["default"]();
-const badgeAwardCache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"]('badgesService', 60 * 1000);
+const badgeAwardCache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"]('badgesService', 60 * 1000);
 // Fetches the date when a badge was awarded to the specified user.
 const getBadgeAwardDate = async (userId, badgeId) => {
-    const date = await (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, {
+    const date = await (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {
         userId,
         badgeId,
     });
     return date ? new Date(date) : undefined;
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return badgeAwardCache.getOrAdd(badgeAwardProcessor.getKey(message), async () => {
         // Queue up the fetch request, when not in the cache
@@ -1418,31 +1824,31 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 /* harmony import */ var _history__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./history */ "./src/js/services/currency/history.ts");
 
 
 
 
 const messageDestination = 'currencyService.getRobuxBalance';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 30 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__["default"](messageDestination, 30 * 1000);
 const failureDelay = 5 * 1000;
 // Fetches the Robux balance of the currently authenticated user.
 const getRobuxBalance = (userId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, { userId });
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, { userId });
 };
 // Loads the Robux balance of the currently authenticated user.
 const loadRobuxBalance = async (userId) => {
     const response = await fetch(`https://economy.roblox.com/v1/users/${userId}/currency`);
     // If we fail to send the request, delay the response to ensure we don't spam the API.
     if (response.status === 401) {
-        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(failureDelay);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.wait)(failureDelay);
         throw 'User is unauthenticated';
     }
     else if (!response.ok) {
-        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(failureDelay);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.wait)(failureDelay);
         throw 'Failed to load Robux balance';
     }
     const result = await response.json();
@@ -1455,7 +1861,7 @@ const loadRobuxBalance = async (userId) => {
     return result.robux;
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(`${message.userId}`, () => 
     // Queue up the fetch request, when not in the cache
@@ -1480,18 +1886,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getUserRobuxHistory": () => (/* binding */ getUserRobuxHistory),
 /* harmony export */   "recordUserRobux": () => (/* binding */ recordUserRobux)
 /* harmony export */ });
-/* harmony import */ var db_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! db.js */ "./node_modules/db.js/dist/db.min.js");
-/* harmony import */ var db_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(db_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../constants */ "./src/js/constants/index.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var db_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! db.js */ "./node_modules/db.js/dist/db.min.js");
+/* harmony import */ var db_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(db_js__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _settings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../settings */ "./src/js/services/settings/index.ts");
 
 
 
 
 const messageDestination = 'currencyService.history.';
-if (_constants__WEBPACK_IMPORTED_MODULE_1__.isBackgroundPage) {
-    (0,db_js__WEBPACK_IMPORTED_MODULE_0__.open)({
+if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.isBackgroundPage) {
+    (0,db_js__WEBPACK_IMPORTED_MODULE_2__.open)({
         server: 'currencyBalances',
         version: 1,
         schema: {
@@ -1547,13 +1953,13 @@ const recordUserRobux = async (userId, robux) => {
     if (!enabled) {
         return;
     }
-    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination + 'recordUserRobux', {
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination + 'recordUserRobux', {
         userId,
         robux,
     });
 };
 const getUserRobuxHistory = async (userId, startDateTime, endDateTime) => {
-    const robuxHistory = await (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination + 'getUserRobuxHistory', {
+    const robuxHistory = await (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination + 'getUserRobuxHistory', {
         userId,
         startDateTime: startDateTime.getTime(),
         endDateTime: endDateTime.getTime(),
@@ -1565,7 +1971,7 @@ const getUserRobuxHistory = async (userId, startDateTime, endDateTime) => {
         };
     });
 };
-(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination + 'recordUserRobux', async (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination + 'recordUserRobux', async (message) => {
     const now = +new Date();
     const robuxDateTime = new Date(now - (now % 60000));
     await robuxHistoryDatabase.robuxHistory.update({
@@ -1577,7 +1983,7 @@ const getUserRobuxHistory = async (userId, startDateTime, endDateTime) => {
 }, {
     levelOfParallelism: 1,
 });
-(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination + 'getUserRobuxHistory', async (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination + 'getUserRobuxHistory', async (message) => {
     const history = await robuxHistoryDatabase.robuxHistory
         .query('robuxDate')
         .range({
@@ -1697,23 +2103,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 /* harmony import */ var _authenticatedUserFollowingProcessor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./authenticatedUserFollowingProcessor */ "./src/js/services/followings/authenticatedUserFollowingProcessor.ts");
 
 
 
 const messageDestination = 'followingsService.isAuthenticatedUserFollowing';
 const batchProcessor = new _authenticatedUserFollowingProcessor__WEBPACK_IMPORTED_MODULE_2__["default"]();
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 60 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 60 * 1000);
 // Checks if the authenticated user is following another user.
 const isAuthenticatedUserFollowing = (userId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, {
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {
         userId,
     });
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(`${message.userId}`, () => 
     // Queue up the fetch request, when not in the cache
@@ -1735,18 +2141,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 
 
 
 const messageDestination = 'friendsService.getFriendRequestCount';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 30 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__["default"](messageDestination, 30 * 1000);
 const failureDelay = 5 * 1000;
 // Fetches the inbound friend request count for the currently authenticated user.
 const getFriendRequestCount = (userId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, { userId });
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, { userId });
 };
 // Loads the inbound friend request count for the currently authenticated user.
 const loadFriendRequestCount = async (userId) => {
@@ -1754,18 +2160,18 @@ const loadFriendRequestCount = async (userId) => {
     const response = await fetch(`https://friends.roblox.com/v1/user/friend-requests/count`);
     // If we fail to send the request, delay the response to ensure we don't spam the API.
     if (response.status === 401) {
-        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(failureDelay);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.wait)(failureDelay);
         throw 'User is unauthenticated';
     }
     else if (!response.ok) {
-        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(failureDelay);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.wait)(failureDelay);
         throw 'Failed to load friend request count';
     }
     const result = await response.json();
     return result.count;
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(`${message.userId}`, () => 
     // Queue up the fetch request, when not in the cache
@@ -1789,15 +2195,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 
 
 const messageDestination = 'friendsService.getUserFriends';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 60 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 60 * 1000);
 // Fetches the list of friends for the user.
 const getUserFriends = (userId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, {
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {
         userId,
     });
 };
@@ -1817,7 +2223,7 @@ const loadUserFriends = async (userId) => {
     });
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(`${message.userId}`, () => 
     // Queue up the fetch request, when not in the cache
@@ -1886,14 +2292,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 
 
 const messageDestination = 'gamePassesService.getGamePassSaleCount';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 30 * 1000);
 const getGamePassSaleCount = async (gamePassId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { gamePassId });
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, { gamePassId });
 };
 const loadGamePassSales = async (gamePassId) => {
     const response = await fetch(`https://economy.roblox.com/v1/game-pass/${gamePassId}/game-pass-product-info`);
@@ -1904,7 +2310,7 @@ const loadGamePassSales = async (gamePassId) => {
     return result.Sales || NaN;
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(`${message.gamePassId}`, () => 
     // Queue up the fetch request, when not in the cache
@@ -1947,15 +2353,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 
 
 const messageDestination = 'groupsService.getCreatorGroups';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 30 * 1000);
 // Fetches the groups the user has access privileged roles in.
 const getCreatorGroups = (userId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { userId });
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, { userId });
 };
 // Loads the groups the user has access privileged roles in.
 const loadAuthenticatedUserCreatorGroups = async () => {
@@ -1975,13 +2381,14 @@ const loadAuthenticatedUserCreatorGroups = async () => {
     });
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(`${message.userId}`, () => 
     // Queue up the fetch request, when not in the cache
     loadAuthenticatedUserCreatorGroups());
 }, {
     levelOfParallelism: 1,
+    allowExternalConnections: true,
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getCreatorGroups);
 
@@ -1999,15 +2406,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 
 
 const messageDestination = 'groupsService.getUserGroups';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 30 * 1000);
 // Fetches the groups the user is a member of.
 const getUserGroups = (userId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { userId });
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, { userId });
 };
 // Loads the groups the user is a member of.
 const loadUserGroups = async (userId) => {
@@ -2024,13 +2431,14 @@ const loadUserGroups = async (userId) => {
     });
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(`${message.userId}`, () => 
     // Queue up the fetch request, when not in the cache
     loadUserGroups(message.userId));
 }, {
     levelOfParallelism: 1,
+    allowExternalConnections: true,
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getUserGroups);
 
@@ -2048,15 +2456,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 
 
 const messageDestination = 'groupsService.getUserPrimaryGroup';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 30 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 30 * 1000);
 // Fetches the groups the user is a member of.
 const getUserPrimaryGroup = (userId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { userId });
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, { userId });
 };
 // Loads the groups the user is a member of.
 const loadUserPrimaryGroup = async (userId) => {
@@ -2074,13 +2482,14 @@ const loadUserPrimaryGroup = async (userId) => {
     };
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(`${message.userId}`, () => 
     // Queue up the fetch request, when not in the cache
     loadUserPrimaryGroup(message.userId));
 }, {
     levelOfParallelism: 1,
+    allowExternalConnections: true,
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getUserPrimaryGroup);
 
@@ -2205,17 +2614,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 
 
 
 const messageDestination = 'inventoryService.getLimitedInventory';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 5 * 60 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__["default"](messageDestination, 5 * 60 * 1000);
 // Fetches the limited inventory for the specified user.
 const getLimitedInventory = (userId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {
         userId,
     });
 };
@@ -2228,7 +2637,7 @@ const loadLimitedInventory = async (userId) => {
         const response = await fetch(`https://inventory.roblox.com/v1/users/${userId}/assets/collectibles?limit=100&cursor=${nextPageCursor}`);
         if (response.status === 429) {
             // Throttled. Wait a few seconds, and try again.
-            await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(5000);
+            await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.wait)(5000);
             continue;
         }
         else if (response.status === 403) {
@@ -2260,7 +2669,7 @@ const loadLimitedInventory = async (userId) => {
     return limitedAssets;
 };
 // Listen for background messages
-(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(`${message.userId}`, () => 
     // Queue up the fetch request, when not in the cache
@@ -2285,7 +2694,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getTranslationResource": () => (/* binding */ getTranslationResource),
 /* harmony export */   "getTranslationResourceWithFallback": () => (/* binding */ getTranslationResourceWithFallback)
 /* harmony export */ });
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
 
 const englishLocale = 'en_us';
 const messageDestination = 'localizationService.getTranslationResources';
@@ -2315,7 +2724,7 @@ const getTranslationResources = async () => {
     if (translationResourceCache.length > 0) {
         return translationResourceCache;
     }
-    return (translationResourceCache = await (0,_message__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {}));
+    return (translationResourceCache = await (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {}));
 };
 // Fetches an individual translation resource.
 const getTranslationResource = async (namespace, key) => {
@@ -2340,7 +2749,7 @@ const getTranslationResourceWithFallback = async (namespace, key, defaultValue) 
     }
 };
 // Listener to ensure these always happen in the background, for strongest caching potential.
-(0,_message__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, async () => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, async () => {
     if (translationResourceCache.length > 0) {
         return translationResourceCache;
     }
@@ -2374,226 +2783,6 @@ globalThis.localizationService = { getTranslationResource, getTranslationResourc
 
 /***/ }),
 
-/***/ "./src/js/services/message/index.ts":
-/*!******************************************!*\
-  !*** ./src/js/services/message/index.ts ***!
-  \******************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "addListener": () => (/* binding */ addListener),
-/* harmony export */   "getWorkerTab": () => (/* binding */ getWorkerTab),
-/* harmony export */   "sendMessage": () => (/* binding */ sendMessage),
-/* harmony export */   "sendMessageToTab": () => (/* binding */ sendMessageToTab)
-/* harmony export */ });
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../constants */ "./src/js/constants/index.ts");
-
-// All the listeners, set in the background page.
-const listeners = {};
-// All the tabs actively connected to the message service.
-const tabs = {};
-// An identifier that tells us which version of the messaging service we're using,
-// to ensure we don't try to process a message not intended for us.
-const version = 2.5;
-// Send a message to a destination, and get back the result.
-const sendMessage = async (destination, message) => {
-    return new Promise(async (resolve, reject) => {
-        const serializedMessage = JSON.stringify(message);
-        if (_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
-            // Message is from the background page, to the background page.
-            try {
-                if (listeners[destination]) {
-                    const message = JSON.parse(serializedMessage);
-                    const result = await listeners[destination](message);
-                    console.debug(`Local listener response for '${destination}':`, result, message);
-                    const data = result.data === undefined ? undefined : JSON.parse(result.data);
-                    if (result.success) {
-                        resolve(data);
-                    }
-                    else {
-                        reject(data);
-                    }
-                }
-                else {
-                    reject(`No message listener: ${destination}`);
-                }
-            }
-            catch (e) {
-                reject(e);
-            }
-        }
-        else {
-            const outboundMessage = JSON.stringify({
-                version,
-                destination,
-                message: serializedMessage,
-            });
-            console.debug(`Sending message to '${destination}'`, serializedMessage);
-            chrome.runtime.sendMessage(outboundMessage, (result) => {
-                if (result === undefined) {
-                    reject(`Unexpected message result (undefined), suggests no listener in background page.\n\tDestination: ${destination}`);
-                    return;
-                }
-                const data = result.data === undefined ? undefined : JSON.parse(result.data);
-                if (result.success) {
-                    resolve(data);
-                }
-                else {
-                    reject(data);
-                }
-            });
-        }
-    });
-};
-// Fetches a tab that we can send a message to, for work processing.
-const getWorkerTab = () => {
-    const keys = Object.keys(tabs);
-    return keys.length > 0 ? tabs[keys[0]] : undefined;
-};
-// Sends a message to a tab.
-const sendMessageToTab = async (destination, message, tab) => {
-    const serializedMessage = JSON.stringify(message);
-    const outboundMessage = JSON.stringify({
-        version,
-        destination,
-        message: serializedMessage,
-    });
-    console.debug(`Sending message to '${destination}' in tab`, serializedMessage, tab);
-    tab.postMessage(outboundMessage);
-};
-// Listen for messages at a specific destination.
-const addListener = (destination, listener, options = {
-    levelOfParallelism: -1,
-}) => {
-    if (listeners[destination]) {
-        throw new Error(`${destination} already has message listener attached`);
-    }
-    const processMessage = async (message) => {
-        try {
-            console.debug(`Processing message for '${destination}'`, message);
-            const result = await listener(message);
-            const response = {
-                success: true,
-                data: JSON.stringify(result),
-            };
-            console.debug(`Successful message result from '${destination}':`, response, message);
-            return response;
-        }
-        catch (err) {
-            const response = {
-                success: false,
-                data: JSON.stringify(err),
-            };
-            console.debug(`Failed message result from '${destination}':`, response, message, err);
-            return response;
-        }
-    };
-    listeners[destination] = (message) => {
-        if (options.levelOfParallelism !== 1) {
-            return processMessage(message);
-        }
-        return new Promise((resolve, reject) => {
-            // https://stackoverflow.com/a/73482349/1663648
-            navigator.locks
-                .request(`messageService:${destination}`, async () => {
-                try {
-                    const result = await processMessage(message);
-                    resolve(result);
-                }
-                catch (e) {
-                    reject(e);
-                }
-            })
-                .catch(reject);
-        });
-    };
-};
-// If we're currently in the background page, listen for messages.
-if (_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
-    chrome.runtime.onMessage.addListener((rawMessage, sender, sendResponse) => {
-        if (typeof rawMessage !== 'string') {
-            // Not for us.
-            return;
-        }
-        const fullMessage = JSON.parse(rawMessage);
-        if (fullMessage.version !== version ||
-            !fullMessage.destination ||
-            !fullMessage.message) {
-            // Not for us.
-            return;
-        }
-        const listener = listeners[fullMessage.destination];
-        if (!listener) {
-            sendResponse({
-                success: false,
-                data: JSON.stringify(`Could not route message to destination: ${fullMessage.destination}`),
-            });
-            return;
-        }
-        const message = JSON.parse(fullMessage.message);
-        listener(message)
-            .then(sendResponse)
-            .catch((err) => {
-            console.error('Listener is never expected to throw.', err, rawMessage, fullMessage);
-            sendResponse({
-                success: false,
-                data: JSON.stringify('Listener threw unhandled exception (see background page for error).'),
-            });
-        });
-        // Required for asynchronous callbacks
-        // https://stackoverflow.com/a/20077854/1663648
-        return true;
-    });
-    chrome.runtime.onConnect.addListener((port) => {
-        const id = crypto.randomUUID();
-        console.debug('Tab connected', id, port);
-        tabs[id] = port;
-        port.onDisconnect.addListener(() => {
-            console.debug('Disconnecting tab', id, port);
-            delete tabs[id];
-        });
-    });
-}
-else {
-    console.debug(`Not attaching listener for messages, because we're not in the background.`);
-    if (!window.messageServiceConnection) {
-        const port = (window.messageServiceConnection = chrome.runtime.connect(chrome.runtime.id, {
-            name: 'messageService',
-        }));
-        port.onMessage.addListener((rawMessage) => {
-            if (typeof rawMessage !== 'string') {
-                // Not for us.
-                return;
-            }
-            const fullMessage = JSON.parse(rawMessage);
-            if (fullMessage.version !== version ||
-                !fullMessage.destination ||
-                !fullMessage.message) {
-                // Not for us.
-                return;
-            }
-            const listener = listeners[fullMessage.destination];
-            if (!listener) {
-                // No listener in this tab for this message.
-                return;
-            }
-            // We don't really have a way to communicate the response back to the service worker.
-            // So we just... do nothing with it.
-            const message = JSON.parse(fullMessage.message);
-            listener(message).catch((err) => {
-                console.error('Unhandled error processing message in tab', fullMessage, err);
-            });
-        });
-    }
-}
-globalThis.messageService = { sendMessage, addListener, getWorkerTab, sendMessageToTab };
-
-
-
-/***/ }),
-
 /***/ "./src/js/services/premium-payouts/getPremiumPayoutsSummary.ts":
 /*!*********************************************************************!*\
   !*** ./src/js/services/premium-payouts/getPremiumPayoutsSummary.ts ***!
@@ -2605,18 +2794,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 
 
 const messageDestination = 'premiumPayoutsService.getPremiumPayoutsSummary';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 60 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 60 * 1000);
 const serializeDate = (date) => {
     return `${date.getFullYear()}-${`${date.getMonth() + 1}`.padStart(2, '0')}-${`${date.getDate()}`.padStart(2, '0')}`;
 };
 // Fetches the Robux balance of the currently authenticated user.
 const getPremiumPayoutsSummary = (universeId, startDate, endDate) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, {
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {
         universeId,
         startDate: serializeDate(startDate),
         endDate: serializeDate(endDate),
@@ -2645,7 +2834,7 @@ const loadPremiumPayoutsSummary = async (universeId, startDate, endDate) => {
     return payouts;
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(`${message.universeId}_${message.startDate}_${message.endDate}`, () => 
     // Queue up the fetch request, when not in the cache
@@ -2688,16 +2877,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 
 
 const messageDestination = 'premiumService.getPremiumExpirationDate';
 const definitelyPremium = {};
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"](messageDestination, 60 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 60 * 1000);
 // Check whether or not a user has a Roblox+ Premium subscription.
 const getPremiumExpirationDate = async (userId) => {
-    const expiration = await (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, {
+    const expiration = await (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {
         userId,
     });
     if (!expiration) {
@@ -2770,13 +2959,14 @@ const loadPremiumMembership = async (userId) => {
     return '';
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(`${message.userId}`, () => 
     // Queue up the fetch request, when not in the cache
     loadPremiumMembership(message.userId));
 }, {
     levelOfParallelism: 1,
+    allowExternalConnections: true,
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getPremiumExpirationDate);
 
@@ -2919,21 +3109,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getUserPresence": () => (/* binding */ getUserPresence)
 /* harmony export */ });
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 /* harmony import */ var _batchProcessor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./batchProcessor */ "./src/js/services/presence/batchProcessor.ts");
 
 
 
 const messageDestination = 'presenceService.getUserPresence';
 const presenceProcessor = new _batchProcessor__WEBPACK_IMPORTED_MODULE_2__["default"]();
-const presenceCache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_0__["default"]('presenceService', 15 * 1000);
+const presenceCache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"]('presenceService', 15 * 1000);
 // Fetches the presence for a user.
 const getUserPresence = (userId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { userId });
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, { userId });
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return presenceCache.getOrAdd(`${message.userId}`, () => 
     // Queue up the fetch request, when not in the cache
@@ -2956,18 +3146,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 
 
 
 const messageDestination = 'privateMessagesService.getUnreadMessageCount';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 30 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__["default"](messageDestination, 30 * 1000);
 const failureDelay = 5 * 1000;
 // Fetches the unread private message count for the currently authenticated user.
 const getUnreadMessageCount = (userId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, { userId });
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, { userId });
 };
 // Loads the unread private message count for the authenticated user.
 const loadUnreadMessageCount = async (userId) => {
@@ -2975,18 +3165,18 @@ const loadUnreadMessageCount = async (userId) => {
     const response = await fetch(`https://privatemessages.roblox.com/v1/messages/unread/count`);
     // If we fail to send the request, delay the response to ensure we don't spam the API.
     if (response.status === 401) {
-        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(failureDelay);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.wait)(failureDelay);
         throw 'User is unauthenticated';
     }
     else if (!response.ok) {
-        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(failureDelay);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.wait)(failureDelay);
         throw 'Failed to load unread private message count';
     }
     const result = await response.json();
     return result.count;
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(`${message.userId}`, () => 
     // Queue up the fetch request, when not in the cache
@@ -3031,13 +3221,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getToggleSettingValue": () => (/* binding */ getToggleSettingValue),
 /* harmony export */   "setSettingValue": () => (/* binding */ setSettingValue)
 /* harmony export */ });
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
 
 // Destination to be used with messaging.
 const messageDestinationPrefix = 'settingsService';
 // Fetches a locally stored setting value by its key.
 const getSettingValue = (key) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(`${messageDestinationPrefix}.getSettingValue`, {
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(`${messageDestinationPrefix}.getSettingValue`, {
         key,
     });
 };
@@ -3048,7 +3238,7 @@ const getToggleSettingValue = async (key) => {
 };
 // Locally stores a setting value.
 const setSettingValue = (key, value) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(`${messageDestinationPrefix}.setSettingValue`, {
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(`${messageDestinationPrefix}.setSettingValue`, {
         key,
         value,
     });
@@ -3072,7 +3262,7 @@ const getValueFromLocalStorage = (key) => {
         return undefined;
     }
 };
-(0,_message__WEBPACK_IMPORTED_MODULE_0__.addListener)(`${messageDestinationPrefix}.getSettingValue`, ({ key }) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(`${messageDestinationPrefix}.getSettingValue`, ({ key }) => {
     return new Promise((resolve, reject) => {
         // chrome.storage APIs are callback-based until manifest V3.
         // Currently in migration phase, to migrate settings from localStorage -> chrome.storage.local
@@ -3091,8 +3281,11 @@ const getValueFromLocalStorage = (key) => {
             });
         }
     });
+}, {
+    levelOfParallelism: -1,
+    allowExternalConnections: true,
 });
-(0,_message__WEBPACK_IMPORTED_MODULE_0__.addListener)(`${messageDestinationPrefix}.setSettingValue`, ({ key, value }) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(`${messageDestinationPrefix}.setSettingValue`, ({ key, value }) => {
     return new Promise((resolve, reject) => {
         // chrome.storage APIs are callback-based until manifest V3.
         // Currently in migration phase, to migrate settings from localStorage -> chrome.storage.local
@@ -3111,6 +3304,9 @@ const getValueFromLocalStorage = (key) => {
             });
         }
     });
+}, {
+    levelOfParallelism: -1,
+    allowExternalConnections: true,
 });
 globalThis.settingsService = { getSettingValue, getToggleSettingValue, setSettingValue };
 
@@ -3204,71 +3400,71 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getGamePassIcon": () => (/* binding */ getGamePassIcon),
 /* harmony export */   "getGroupIcon": () => (/* binding */ getGroupIcon)
 /* harmony export */ });
-/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 /* harmony import */ var _batchProcessor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./batchProcessor */ "./src/js/services/thumbnails/batchProcessor.ts");
 
 
 
 
-const messageDestination = 'thumbnailsService.getAvatarHeadshotThumbnail';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 5 * 60 * 1000);
+const messageDestination = 'thumbnailsService.getThumbnail';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__["default"](messageDestination, 5 * 60 * 1000);
 // Fetches an avatar headshot thumbnail, for the given user ID.
 const getAvatarHeadshotThumbnail = (userId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
-        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.AvatarHeadShot,
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_1__.ThumbnailType.AvatarHeadShot,
         targetId: userId,
     });
 };
 // Fetches an asset thumbnail, for the given asset ID.
 const getAssetThumbnail = (assetId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
-        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.Asset,
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_1__.ThumbnailType.Asset,
         targetId: assetId,
     });
 };
 // Fetches a group icon.
 const getGroupIcon = (groupId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
-        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GroupIcon,
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_1__.ThumbnailType.GroupIcon,
         targetId: groupId,
     });
 };
 // Fetches a game pass icon.
 const getGamePassIcon = (gamePassId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
-        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GamePass,
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_1__.ThumbnailType.GamePass,
         targetId: gamePassId,
     });
 };
 // Fetches a developer product icon.
 const getDeveloperProductIcon = (gamePassId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
-        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.DeveloperProduct,
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_1__.ThumbnailType.DeveloperProduct,
         targetId: gamePassId,
     });
 };
 // Fetches a game icon.
 const getGameIcon = (gamePassId) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
-        type: roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GameIcon,
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {
+        type: roblox__WEBPACK_IMPORTED_MODULE_1__.ThumbnailType.GameIcon,
         targetId: gamePassId,
     });
 };
 // Gets the default size for the thumbnail, by type.
 const getThumbnailSize = (thumbnailType) => {
     switch (thumbnailType) {
-        case roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GamePass:
+        case roblox__WEBPACK_IMPORTED_MODULE_1__.ThumbnailType.GamePass:
             return '150x150';
-        case roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailType.GameIcon:
+        case roblox__WEBPACK_IMPORTED_MODULE_1__.ThumbnailType.GameIcon:
             return '256x256';
         default:
             return '420x420';
     }
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination, async (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, async (message) => {
     const cacheKey = `${message.type}:${message.targetId}`;
     // Check the cache
     const thumbnail = await cache.getOrAdd(cacheKey, () => 
@@ -3278,13 +3474,16 @@ const getThumbnailSize = (thumbnailType) => {
         targetId: message.targetId,
         size: getThumbnailSize(message.type),
     }));
-    if (thumbnail.state !== roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailState.Completed) {
+    if (thumbnail.state !== roblox__WEBPACK_IMPORTED_MODULE_1__.ThumbnailState.Completed) {
         setTimeout(() => {
             // If the thumbnail isn't complete, evict it from the cache early.
             cache.evict(cacheKey);
         }, 30 * 1000);
     }
     return thumbnail;
+}, {
+    levelOfParallelism: -1,
+    allowExternalConnections: true,
 });
 globalThis.thumbnailsService = {
     getAvatarHeadshotThumbnail,
@@ -3310,18 +3509,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
 
 
 
 const messageDestination = 'tradesService.getTradeCount';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 30 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__["default"](messageDestination, 30 * 1000);
 const failureDelay = 5 * 1000;
 // Fetches the unread private message count for the currently authenticated user.
 const getTradeCount = (tradeStatusType) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_2__.sendMessage)(messageDestination, {
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {
         tradeStatusType,
     });
 };
@@ -3331,18 +3530,18 @@ const loadTradeCount = async (tradeStatusType) => {
     const response = await fetch(`https://trades.roblox.com/v1/trades/${tradeStatusType}/count`);
     // If we fail to send the request, delay the response to ensure we don't spam the API.
     if (response.status === 401) {
-        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(failureDelay);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.wait)(failureDelay);
         throw 'User is unauthenticated';
     }
     else if (!response.ok) {
-        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.wait)(failureDelay);
+        await (0,_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.wait)(failureDelay);
         throw `Failed to load ${tradeStatusType} trade count`;
     }
     const result = await response.json();
     return result.count;
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_2__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(`${message.tradeStatusType}`, () => 
     // Queue up the fetch request, when not in the cache
@@ -3385,14 +3584,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
 
 
 const messageDestination = 'transactionsService.emailTransactions';
 // Fetches the groups the user has access privileged roles in.
 const emailTransactions = (targetType, targetId, transactionType, startDate, endDate) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, {
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {
         targetType,
         targetId,
         transactionType,
@@ -3402,7 +3601,7 @@ const emailTransactions = (targetType, targetId, transactionType, startDate, end
 };
 // Loads the groups the user has access privileged roles in.
 const doEmailTransactions = async (targetType, targetId, transactionType, startDate, endDate) => {
-    const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_0__["default"])(new URL(`https://economy.roblox.com/v2/sales/sales-report-download`), {
+    const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_1__["default"])(new URL(`https://economy.roblox.com/v2/sales/sales-report-download`), {
         method: 'POST',
         body: JSON.stringify({
             targetType,
@@ -3417,11 +3616,12 @@ const doEmailTransactions = async (targetType, targetId, transactionType, startD
     }
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
     // Check the cache
     return doEmailTransactions(message.targetType, message.targetId, message.transactionType, new Date(message.startDate), new Date(message.endDate));
 }, {
     levelOfParallelism: 1,
+    allowExternalConnections: true,
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (emailTransactions);
 
@@ -3464,9 +3664,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/batch */ "./node_modules/@tix-factory/batch/dist/index.js");
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
 
 
 
@@ -3482,7 +3682,7 @@ class UsersBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0_
         });
     }
     async process(items) {
-        const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_2__["default"])(new URL(`https://users.roblox.com/v1/users`), {
+        const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_3__["default"])(new URL(`https://users.roblox.com/v1/users`), {
             method: 'POST',
             body: JSON.stringify({
                 userIds: items.map((i) => i.key),
@@ -3512,15 +3712,15 @@ class UsersBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0_
     }
 }
 const batchProcessor = new UsersBatchProcessor();
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 2 * 60 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__["default"](messageDestination, 2 * 60 * 1000);
 // Fetches the date when a badge was awarded to the specified user.
 const getUserById = async (id) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, {
         id,
     });
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_3__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(batchProcessor.getKey(message.id), () => {
         // Queue up the fetch request, when not in the cache
@@ -3544,9 +3744,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _tix_factory_batch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/batch */ "./node_modules/@tix-factory/batch/dist/index.js");
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+/* harmony import */ var _utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/xsrfFetch */ "./src/js/utils/xsrfFetch.ts");
 
 
 
@@ -3562,7 +3762,7 @@ class UserNamesBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODUL
         });
     }
     async process(items) {
-        const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_2__["default"])(new URL(`https://users.roblox.com/v1/usernames/users`), {
+        const response = await (0,_utils_xsrfFetch__WEBPACK_IMPORTED_MODULE_3__["default"])(new URL(`https://users.roblox.com/v1/usernames/users`), {
             method: 'POST',
             body: JSON.stringify({
                 usernames: items.map((i) => i.key),
@@ -3592,15 +3792,15 @@ class UserNamesBatchProcessor extends _tix_factory_batch__WEBPACK_IMPORTED_MODUL
     }
 }
 const batchProcessor = new UserNamesBatchProcessor();
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 2 * 60 * 1000);
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_2__["default"](messageDestination, 2 * 60 * 1000);
 // Fetches the date when a badge was awarded to the specified user.
 const getUserByName = async (name) => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_3__.sendMessage)(messageDestination, {
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, {
         name: name.toLowerCase(),
     });
 };
 // Listen for messages sent to the service worker.
-(0,_message__WEBPACK_IMPORTED_MODULE_3__.addListener)(messageDestination, (message) => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => {
     // Check the cache
     return cache.getOrAdd(batchProcessor.getKey(message.name), () => {
         // Queue up the fetch request, when not in the cache
@@ -3623,14 +3823,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _message__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
 
 const messageDestination = 'usersService.getAuthenticatedUser';
 const cacheDuration = 60 * 1000;
 let authenticatedUser = undefined;
 // Fetches the currently authenticated user.
 const getAuthenticatedUser = () => {
-    return (0,_message__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {});
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {});
 };
 // Loads the currently authenticated user.
 const loadAuthenticatedUser = async () => {
@@ -3658,7 +3858,7 @@ const loadAuthenticatedUser = async () => {
         }, cacheDuration);
     }
 };
-(0,_message__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, () => loadAuthenticatedUser(), {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, () => loadAuthenticatedUser(), {
     levelOfParallelism: 1,
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getAuthenticatedUser);
@@ -3810,8 +4010,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../constants */ "./src/js/constants/index.ts");
-/* harmony import */ var _services_message__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/message */ "./src/js/services/message/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
 
 
 const messageDestination = 'launchProtocolUrl';
@@ -3820,7 +4020,7 @@ let previousTab = undefined;
 let protocolLauncherTab = undefined;
 // Attempt to launch the protocol URL in the current tab.
 const tryDirectLaunch = (protocolUrl) => {
-    if (!_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage && location) {
+    if (!_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.isBackgroundPage && location) {
         location.href = protocolUrl;
         return true;
     }
@@ -3833,12 +4033,12 @@ const launchProtocolUrl = (protocolUrl) => {
         // Nothing more to do.
         return Promise.resolve();
     }
-    const workerTab = (0,_services_message__WEBPACK_IMPORTED_MODULE_1__.getWorkerTab)();
+    const workerTab = (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.getWorkerTab)();
     if (workerTab) {
         // If we're in the background, and we have a tab that can process the protocol URL, use that instead.
         // This will ensure that when we use the protocol launcher to launch Roblox, that they have the highest
         // likihood of already having accepted the protocol launcher permission.
-        (0,_services_message__WEBPACK_IMPORTED_MODULE_1__.sendMessageToTab)(messageDestination, {
+        (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessageToTab)(messageDestination, {
             protocolUrl,
         }, workerTab);
         return Promise.resolve();
@@ -3869,7 +4069,7 @@ const launchProtocolUrl = (protocolUrl) => {
     });
     return Promise.resolve();
 };
-if (_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
+if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.isBackgroundPage) {
     chrome.tabs.onRemoved.addListener((tabId) => {
         // Return the user to the tab they were on before, when we're done launching the protocol URL.
         // chrome self-closes the protocol URL tab when opened.
@@ -3882,7 +4082,7 @@ if (_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
         protocolLauncherTab = undefined;
     });
 }
-(0,_services_message__WEBPACK_IMPORTED_MODULE_1__.addListener)(messageDestination, (message) => launchProtocolUrl(message.protocolUrl));
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => launchProtocolUrl(message.protocolUrl));
 // Launches a protocol URL, using the most user-friendly method.
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async (protocolUrl) => {
     if (tryDirectLaunch(protocolUrl)) {
@@ -3890,7 +4090,7 @@ if (_constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
         return;
     }
     // Otherwise, we have to send a message out and try some nonsense.
-    await (0,_services_message__WEBPACK_IMPORTED_MODULE_1__.sendMessage)(messageDestination, { protocolUrl });
+    await (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, { protocolUrl });
 });
 
 
@@ -4407,7 +4607,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "avatar": () => (/* reexport module object */ _services_avatar__WEBPACK_IMPORTED_MODULE_1__),
 /* harmony export */   "badges": () => (/* reexport module object */ _services_badges__WEBPACK_IMPORTED_MODULE_2__),
 /* harmony export */   "currency": () => (/* reexport module object */ _services_currency__WEBPACK_IMPORTED_MODULE_3__),
-/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_22__.executeNotifier),
+/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_21__.executeNotifier),
 /* harmony export */   "followings": () => (/* reexport module object */ _services_followings__WEBPACK_IMPORTED_MODULE_4__),
 /* harmony export */   "friends": () => (/* reexport module object */ _services_friends__WEBPACK_IMPORTED_MODULE_5__),
 /* harmony export */   "gameLaunch": () => (/* reexport module object */ _services_game_launch__WEBPACK_IMPORTED_MODULE_6__),
@@ -4415,16 +4615,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "groups": () => (/* reexport module object */ _services_groups__WEBPACK_IMPORTED_MODULE_8__),
 /* harmony export */   "inventory": () => (/* reexport module object */ _services_inventory__WEBPACK_IMPORTED_MODULE_9__),
 /* harmony export */   "localization": () => (/* reexport module object */ _services_localization__WEBPACK_IMPORTED_MODULE_10__),
-/* harmony export */   "message": () => (/* reexport module object */ _services_message__WEBPACK_IMPORTED_MODULE_11__),
-/* harmony export */   "premium": () => (/* reexport module object */ _services_premium__WEBPACK_IMPORTED_MODULE_12__),
-/* harmony export */   "premiumPayouts": () => (/* reexport module object */ _services_premium_payouts__WEBPACK_IMPORTED_MODULE_13__),
-/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_14__),
-/* harmony export */   "privateMessages": () => (/* reexport module object */ _services_private_messages__WEBPACK_IMPORTED_MODULE_15__),
-/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_16__),
-/* harmony export */   "thumbnails": () => (/* reexport module object */ _services_thumbnails__WEBPACK_IMPORTED_MODULE_17__),
-/* harmony export */   "trades": () => (/* reexport module object */ _services_trades__WEBPACK_IMPORTED_MODULE_18__),
-/* harmony export */   "transactions": () => (/* reexport module object */ _services_transactions__WEBPACK_IMPORTED_MODULE_19__),
-/* harmony export */   "users": () => (/* reexport module object */ _services_users__WEBPACK_IMPORTED_MODULE_20__)
+/* harmony export */   "premium": () => (/* reexport module object */ _services_premium__WEBPACK_IMPORTED_MODULE_11__),
+/* harmony export */   "premiumPayouts": () => (/* reexport module object */ _services_premium_payouts__WEBPACK_IMPORTED_MODULE_12__),
+/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_13__),
+/* harmony export */   "privateMessages": () => (/* reexport module object */ _services_private_messages__WEBPACK_IMPORTED_MODULE_14__),
+/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_15__),
+/* harmony export */   "thumbnails": () => (/* reexport module object */ _services_thumbnails__WEBPACK_IMPORTED_MODULE_16__),
+/* harmony export */   "trades": () => (/* reexport module object */ _services_trades__WEBPACK_IMPORTED_MODULE_17__),
+/* harmony export */   "transactions": () => (/* reexport module object */ _services_transactions__WEBPACK_IMPORTED_MODULE_18__),
+/* harmony export */   "users": () => (/* reexport module object */ _services_users__WEBPACK_IMPORTED_MODULE_19__)
 /* harmony export */ });
 /* harmony import */ var _services_assets__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/assets */ "./src/js/services/assets/index.ts");
 /* harmony import */ var _services_avatar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/avatar */ "./src/js/services/avatar/index.ts");
@@ -4437,19 +4636,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_groups__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../services/groups */ "./src/js/services/groups/index.ts");
 /* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../services/inventory */ "./src/js/services/inventory/index.ts");
 /* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../services/localization */ "./src/js/services/localization/index.ts");
-/* harmony import */ var _services_message__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../services/message */ "./src/js/services/message/index.ts");
-/* harmony import */ var _services_premium__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../services/premium */ "./src/js/services/premium/index.ts");
-/* harmony import */ var _services_premium_payouts__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../services/premium-payouts */ "./src/js/services/premium-payouts/index.ts");
-/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
-/* harmony import */ var _services_private_messages__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../services/private-messages */ "./src/js/services/private-messages/index.ts");
-/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
-/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
-/* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../services/trades */ "./src/js/services/trades/index.ts");
-/* harmony import */ var _services_transactions__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../services/transactions */ "./src/js/services/transactions/index.ts");
-/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../services/users */ "./src/js/services/users/index.ts");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../constants */ "./src/js/constants/index.ts");
-/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
-
+/* harmony import */ var _services_premium__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../services/premium */ "./src/js/services/premium/index.ts");
+/* harmony import */ var _services_premium_payouts__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../services/premium-payouts */ "./src/js/services/premium-payouts/index.ts");
+/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
+/* harmony import */ var _services_private_messages__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../services/private-messages */ "./src/js/services/private-messages/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
+/* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../services/trades */ "./src/js/services/trades/index.ts");
+/* harmony import */ var _services_transactions__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../services/transactions */ "./src/js/services/transactions/index.ts");
+/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../services/users */ "./src/js/services/users/index.ts");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
 
 
 
@@ -4473,11 +4670,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 chrome.browserAction.setTitle({
-    title: `${_constants__WEBPACK_IMPORTED_MODULE_21__.manifest.name} ${_constants__WEBPACK_IMPORTED_MODULE_21__.manifest.version}`,
+    title: `${_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_20__.manifest.name} ${_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_20__.manifest.version}`,
 });
 chrome.browserAction.onClicked.addListener(() => {
     chrome.tabs.create({
-        url: _constants__WEBPACK_IMPORTED_MODULE_21__.manifest.homepage_url,
+        url: _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_20__.manifest.homepage_url,
         active: true,
     });
 });
