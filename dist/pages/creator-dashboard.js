@@ -48244,9 +48244,11 @@ var PremiumPayoutType;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _premium_payouts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./premium-payouts */ "./src/js/pages/creator-dashboard/developer-stats/premium-payouts/index.tsx");
-/* harmony import */ var _services_premium__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/premium */ "./src/js/services/premium/index.ts");
+/* harmony import */ var _services_premium__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../services/premium */ "./src/js/services/premium/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
 /* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/users */ "./src/js/services/users/index.ts");
+/* harmony import */ var _premium_payouts__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./premium-payouts */ "./src/js/pages/creator-dashboard/developer-stats/premium-payouts/index.tsx");
+
 
 
 
@@ -48261,9 +48263,14 @@ setInterval(async () => {
                 // well this shouldn't be possible.. oh well
                 return;
             }
-            const isPremium = await (0,_services_premium__WEBPACK_IMPORTED_MODULE_1__.isPremiumUser)(authenticatedUser.id);
+            const isPremium = await (0,_services_premium__WEBPACK_IMPORTED_MODULE_0__.isPremiumUser)(authenticatedUser.id);
             if (!isPremium) {
                 // No premium, no feature.
+                return;
+            }
+            const enabled = await (0,_services_settings__WEBPACK_IMPORTED_MODULE_1__.getToggleSettingValue)('premiumPayoutsSummary');
+            if (!enabled) {
+                // Feature is not enabled, do nothing.
                 return;
             }
             // Thanks, I hate it.
@@ -48277,7 +48284,7 @@ setInterval(async () => {
                 // Ensure we don't double-initialize
                 tabContent.setAttribute('rplus', `${+new Date()}`);
                 mount?.unmount();
-                mount = (0,_premium_payouts__WEBPACK_IMPORTED_MODULE_0__["default"])(tabContent, universeId);
+                mount = (0,_premium_payouts__WEBPACK_IMPORTED_MODULE_3__["default"])(tabContent, universeId);
             }
         }
         else if (mount) {
@@ -48687,6 +48694,112 @@ const isPremiumUser = async (userId) => {
     return false;
 };
 globalThis.premiumService = { isPremiumUser, getPremiumExpirationDate: _getPremiumExpirationDate__WEBPACK_IMPORTED_MODULE_0__["default"] };
+
+
+
+/***/ }),
+
+/***/ "./src/js/services/settings/index.ts":
+/*!*******************************************!*\
+  !*** ./src/js/services/settings/index.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getSettingValue": () => (/* binding */ getSettingValue),
+/* harmony export */   "getToggleSettingValue": () => (/* binding */ getToggleSettingValue),
+/* harmony export */   "setSettingValue": () => (/* binding */ setSettingValue)
+/* harmony export */ });
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+
+// Destination to be used with messaging.
+const messageDestinationPrefix = 'settingsService';
+// Fetches a locally stored setting value by its key.
+const getSettingValue = (key) => {
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(`${messageDestinationPrefix}.getSettingValue`, {
+        key,
+    });
+};
+// Gets a boolean setting value, toggled to false by default.
+const getToggleSettingValue = async (key) => {
+    const value = await getSettingValue(key);
+    return !!value;
+};
+// Locally stores a setting value.
+const setSettingValue = (key, value) => {
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(`${messageDestinationPrefix}.setSettingValue`, {
+        key,
+        value,
+    });
+};
+const getValueFromLocalStorage = (key) => {
+    if (!localStorage.hasOwnProperty(key)) {
+        return undefined;
+    }
+    try {
+        const valueArray = JSON.parse(localStorage[key]);
+        if (Array.isArray(valueArray) && valueArray.length > 0) {
+            return valueArray[0];
+        }
+        console.warn(`Setting value in localStorage invalid: ${localStorage[key]} - removing it.`);
+        localStorage.removeItem(key);
+        return undefined;
+    }
+    catch (err) {
+        console.warn(`Failed to parse '${key}' value from localStorage - removing it.`, err);
+        localStorage.removeItem(key);
+        return undefined;
+    }
+};
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(`${messageDestinationPrefix}.getSettingValue`, ({ key }) => {
+    return new Promise((resolve, reject) => {
+        // chrome.storage APIs are callback-based until manifest V3.
+        // Currently in migration phase, to migrate settings from localStorage -> chrome.storage.local
+        const value = getValueFromLocalStorage(key);
+        if (value !== undefined) {
+            chrome.storage.local.set({
+                [key]: value,
+            }, () => {
+                localStorage.removeItem(key);
+                resolve(value);
+            });
+        }
+        else {
+            chrome.storage.local.get(key, (values) => {
+                resolve(values[key]);
+            });
+        }
+    });
+}, {
+    levelOfParallelism: -1,
+    allowExternalConnections: true,
+});
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(`${messageDestinationPrefix}.setSettingValue`, ({ key, value }) => {
+    return new Promise((resolve, reject) => {
+        // chrome.storage APIs are callback-based until manifest V3.
+        // Currently in migration phase, to migrate settings from localStorage -> chrome.storage.local
+        if (value === undefined) {
+            chrome.storage.local.remove(key, () => {
+                localStorage.removeItem(key);
+                resolve(undefined);
+            });
+        }
+        else {
+            chrome.storage.local.set({
+                [key]: value,
+            }, () => {
+                localStorage.removeItem(key);
+                resolve(undefined);
+            });
+        }
+    });
+}, {
+    levelOfParallelism: -1,
+    allowExternalConnections: true,
+});
+globalThis.settingsService = { getSettingValue, getToggleSettingValue, setSettingValue };
 
 
 

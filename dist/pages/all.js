@@ -716,6 +716,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "TradeStatusType": () => (/* reexport safe */ _enums_trade_status_type__WEBPACK_IMPORTED_MODULE_4__["default"]),
 /* harmony export */   "getCatalogLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getCatalogLink),
 /* harmony export */   "getGamePassLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getGamePassLink),
+/* harmony export */   "getGroupLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getGroupLink),
 /* harmony export */   "getIdFromUrl": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getIdFromUrl),
 /* harmony export */   "getLibraryLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getLibraryLink),
 /* harmony export */   "getPlaceLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getPlaceLink),
@@ -750,6 +751,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getCatalogLink": () => (/* binding */ getCatalogLink),
 /* harmony export */   "getGamePassLink": () => (/* binding */ getGamePassLink),
+/* harmony export */   "getGroupLink": () => (/* binding */ getGroupLink),
 /* harmony export */   "getIdFromUrl": () => (/* binding */ getIdFromUrl),
 /* harmony export */   "getLibraryLink": () => (/* binding */ getLibraryLink),
 /* harmony export */   "getPlaceLink": () => (/* binding */ getPlaceLink),
@@ -768,6 +770,9 @@ const getSEOLink = (id, name, path) => {
                 .replace(/-+$/, '') || 'redirect';
     }
     return new URL(`https://www.roblox.com/${path}/${id}/${name}`);
+};
+const getGroupLink = (groupId, groupName) => {
+    return getSEOLink(groupId, groupName, 'groups');
 };
 const getGamePassLink = (gamePassId, gamePassName) => {
     return getSEOLink(gamePassId, gamePassName, 'game-pass');
@@ -35760,10 +35765,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../services/trades */ "./src/js/services/trades/index.ts");
 /* harmony import */ var _utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../utils/authenticatedUser */ "./src/js/utils/authenticatedUser.ts");
 /* harmony import */ var _bubble__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./bubble */ "./src/js/pages/all/navigation/bubble.ts");
-/* harmony import */ var _links__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./links */ "./src/js/pages/all/navigation/links.ts");
-/* harmony import */ var _robux__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./robux */ "./src/js/pages/all/navigation/robux.ts");
-/* harmony import */ var _widget__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./widget */ "./src/js/pages/all/navigation/widget/index.tsx");
-
+/* harmony import */ var _robux__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./robux */ "./src/js/pages/all/navigation/robux.ts");
+/* harmony import */ var _widget__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./widget */ "./src/js/pages/all/navigation/widget/index.tsx");
 
 
 
@@ -35812,8 +35815,8 @@ const getTradeBubbleCount = async (refresh) => {
 setInterval(async () => {
     const shouldRefresh = await refreshEnabled();
     // Update the Robux count.
-    const robux = await (0,_robux__WEBPACK_IMPORTED_MODULE_9__.getRobux)(shouldRefresh);
-    (0,_robux__WEBPACK_IMPORTED_MODULE_9__.setRobux)(robux);
+    const robux = await (0,_robux__WEBPACK_IMPORTED_MODULE_8__.getRobux)(shouldRefresh);
+    (0,_robux__WEBPACK_IMPORTED_MODULE_8__.setRobux)(robux);
     // Update the friend request count.
     const friendRequests = await getFriendRequestBubbleCount(shouldRefresh);
     (0,_bubble__WEBPACK_IMPORTED_MODULE_7__.setBubbleValue)('nav-friends', friendRequests);
@@ -35823,20 +35826,6 @@ setInterval(async () => {
     // Update the trade count.
     const trades = await getTradeBubbleCount(shouldRefresh);
     (0,_bubble__WEBPACK_IMPORTED_MODULE_7__.setBubbleValue)('nav-trade', trades);
-    // Update navigation links.
-    const links = await (0,_links__WEBPACK_IMPORTED_MODULE_8__.getLinkOverrides)();
-    if (links.length === 2) {
-        // First element in the array is the third link in the navigation bar.
-        // Which is also the link that is second to last.
-        if (links[0].override) {
-            (0,_links__WEBPACK_IMPORTED_MODULE_8__.updateNavigationLink)(-2, links[0].text, links[0].href);
-        }
-        // Second element in the array is the fourth link in the navigation bar.
-        // Which is also the link that is also the last link in the navigation bar.
-        if (links[1].override) {
-            (0,_links__WEBPACK_IMPORTED_MODULE_8__.updateNavigationLink)(-1, links[1].text, links[1].href);
-        }
-    }
     // Control panel link.
     let controlPanelLink = document.querySelector('a#nav-rplus');
     if (!controlPanelLink && _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.manifest.homepage_url) {
@@ -35868,81 +35857,18 @@ setInterval(async () => {
     }
     const header = document.getElementById('header');
     const settingsButton = document.getElementById('navbar-settings');
-    let widgetButtonContainer = document.getElementById(_widget__WEBPACK_IMPORTED_MODULE_10__.button.id);
+    let widgetButtonContainer = document.getElementById(_widget__WEBPACK_IMPORTED_MODULE_9__.button.id);
     if (!widgetButtonContainer && settingsButton && header) {
-        settingsButton.append(_widget__WEBPACK_IMPORTED_MODULE_10__.button);
-        (0,_widget__WEBPACK_IMPORTED_MODULE_10__.render)(header);
+        settingsButton.append(_widget__WEBPACK_IMPORTED_MODULE_9__.button);
+        (0,_widget__WEBPACK_IMPORTED_MODULE_9__.render)(header);
     }
 }, 500);
 window.navigationBar = {
-    getRobux: _robux__WEBPACK_IMPORTED_MODULE_9__.getRobux,
-    setRobux: _robux__WEBPACK_IMPORTED_MODULE_9__.setRobux,
+    getRobux: _robux__WEBPACK_IMPORTED_MODULE_8__.getRobux,
+    setRobux: _robux__WEBPACK_IMPORTED_MODULE_8__.setRobux,
     getBubbleValue: _bubble__WEBPACK_IMPORTED_MODULE_7__.getBubbleValue,
     setBubbleValue: _bubble__WEBPACK_IMPORTED_MODULE_7__.setBubbleValue,
-    updateNavigationLink: _links__WEBPACK_IMPORTED_MODULE_8__.updateNavigationLink,
 };
-
-
-/***/ }),
-
-/***/ "./src/js/pages/all/navigation/links.ts":
-/*!**********************************************!*\
-  !*** ./src/js/pages/all/navigation/links.ts ***!
-  \**********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getLinkOverrides": () => (/* binding */ getLinkOverrides),
-/* harmony export */   "updateNavigationLink": () => (/* binding */ updateNavigationLink)
-/* harmony export */ });
-/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./src/js/pages/all/navigation/utils.ts");
-
-
-const getLinkOverrides = async () => {
-    try {
-        const setting = await (0,_services_settings__WEBPACK_IMPORTED_MODULE_0__.getSettingValue)('navigation');
-        if (setting.buttons) {
-            return setting.buttons.map((button) => {
-                if ((button.href === '/develop' && button.text === 'Create') ||
-                    (button.href.startsWith('/robux') && button.text === 'Robux')) {
-                    // default value, do not override
-                    return {
-                        href: '',
-                        text: '',
-                        override: false,
-                    };
-                }
-                // Value has been set explicitly, use that.
-                return {
-                    href: button.href,
-                    text: button.text,
-                    override: true,
-                };
-            });
-        }
-    }
-    catch (err) {
-        console.warn('Failed to fetch navigation link overrides', err);
-    }
-    return [];
-};
-// Updates a navigation link item by its index.
-const updateNavigationLink = (index, text, href) => {
-    document
-        .querySelectorAll('#header ul.rbx-navbar')
-        .forEach((navigationBar) => {
-        const navigationLinks = Array.from(navigationBar.querySelectorAll('li>a.nav-menu-title:first-child'));
-        const link = navigationLinks[index >= 0 ? index : navigationLinks.length + index];
-        if (link) {
-            (0,_utils__WEBPACK_IMPORTED_MODULE_1__.setText)(link, text);
-            link.setAttribute('href', href);
-        }
-    });
-};
-
 
 
 /***/ }),

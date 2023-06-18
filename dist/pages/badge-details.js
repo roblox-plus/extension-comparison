@@ -704,6 +704,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "TradeStatusType": () => (/* reexport safe */ _enums_trade_status_type__WEBPACK_IMPORTED_MODULE_4__["default"]),
 /* harmony export */   "getCatalogLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getCatalogLink),
 /* harmony export */   "getGamePassLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getGamePassLink),
+/* harmony export */   "getGroupLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getGroupLink),
 /* harmony export */   "getIdFromUrl": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getIdFromUrl),
 /* harmony export */   "getLibraryLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getLibraryLink),
 /* harmony export */   "getPlaceLink": () => (/* reexport safe */ _utils_linkify__WEBPACK_IMPORTED_MODULE_5__.getPlaceLink),
@@ -737,6 +738,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getCatalogLink": () => (/* binding */ getCatalogLink),
 /* harmony export */   "getGamePassLink": () => (/* binding */ getGamePassLink),
+/* harmony export */   "getGroupLink": () => (/* binding */ getGroupLink),
 /* harmony export */   "getIdFromUrl": () => (/* binding */ getIdFromUrl),
 /* harmony export */   "getLibraryLink": () => (/* binding */ getLibraryLink),
 /* harmony export */   "getPlaceLink": () => (/* binding */ getPlaceLink),
@@ -755,6 +757,9 @@ const getSEOLink = (id, name, path) => {
                 .replace(/-+$/, '') || 'redirect';
     }
     return new URL(`https://www.roblox.com/${path}/${id}/${name}`);
+};
+const getGroupLink = (groupId, groupName) => {
+    return getSEOLink(groupId, groupName, 'groups');
 };
 const getGamePassLink = (gamePassId, gamePassName) => {
     return getSEOLink(gamePassId, gamePassName, 'game-pass');
