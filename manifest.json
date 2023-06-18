@@ -1,5 +1,5 @@
 {
-  "version": "2.4.187",
+  "version": "2.4.197",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Adds features and notifiers made by WebGL3D to the Roblox website",
@@ -262,6 +262,15 @@
       "run_at": "document_end"
     }
   ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "upload_asset_rules",
+        "enabled": true,
+        "path": "upload-asset-rules.json"
+      }
+    ]
+  },
   "browser_action": {
     "default_icon": {
       "19": "/images/icons/icon_32x32.png"
@@ -273,8 +282,6 @@
     "alarms",
     "gcm",
     "contextMenus",
-    "webRequest",
-    "webRequestBlocking",
     "declarativeNetRequest",
     "tts",
     "notifications",
