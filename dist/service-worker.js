@@ -4607,7 +4607,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "avatar": () => (/* reexport module object */ _services_avatar__WEBPACK_IMPORTED_MODULE_1__),
 /* harmony export */   "badges": () => (/* reexport module object */ _services_badges__WEBPACK_IMPORTED_MODULE_2__),
 /* harmony export */   "currency": () => (/* reexport module object */ _services_currency__WEBPACK_IMPORTED_MODULE_3__),
-/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_21__.executeNotifier),
+/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_22__.executeNotifier),
 /* harmony export */   "followings": () => (/* reexport module object */ _services_followings__WEBPACK_IMPORTED_MODULE_4__),
 /* harmony export */   "friends": () => (/* reexport module object */ _services_friends__WEBPACK_IMPORTED_MODULE_5__),
 /* harmony export */   "gameLaunch": () => (/* reexport module object */ _services_game_launch__WEBPACK_IMPORTED_MODULE_6__),
@@ -4645,8 +4645,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../services/trades */ "./src/js/services/trades/index.ts");
 /* harmony import */ var _services_transactions__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../services/transactions */ "./src/js/services/transactions/index.ts");
 /* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../services/users */ "./src/js/services/users/index.ts");
-/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
-/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
+
 
 
 
@@ -4670,13 +4672,21 @@ __webpack_require__.r(__webpack_exports__);
 
 
 chrome.browserAction.setTitle({
-    title: `${_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_20__.manifest.name} ${_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_20__.manifest.version}`,
+    title: `${_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_21__.manifest.name} ${_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_21__.manifest.version}`,
 });
 chrome.browserAction.onClicked.addListener(() => {
     chrome.tabs.create({
-        url: _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_20__.manifest.homepage_url,
+        url: _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_21__.manifest.homepage_url,
         active: true,
     });
+});
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_20__.addListener)('extension.reload', async () => {
+    setTimeout(() => {
+        chrome.runtime.reload();
+    }, 250);
+}, {
+    levelOfParallelism: 1,
+    allowExternalConnections: true,
 });
 
 })();
