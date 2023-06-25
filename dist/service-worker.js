@@ -46,6 +46,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var _a;
 
 
 // All the listeners, set in the background page.
@@ -56,7 +57,7 @@ const externalResponseHandlers = {};
 // Send a message to a destination, and get back the result.
 const sendMessage = (destination, message, external) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
-        var _a;
+        var _b;
         const serializedMessage = JSON.stringify(message);
         if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
             // Message is from the background page, to the background page.
@@ -104,7 +105,7 @@ const sendMessage = (destination, message, external) => __awaiter(void 0, void 0
                 }
             });
         }
-        else if ((_a = document.body) === null || _a === void 0 ? void 0 : _a.dataset.extensionId) {
+        else if ((_b = document.body) === null || _b === void 0 ? void 0 : _b.dataset.extensionId) {
             // Message is being sent by the native browser tab.
             const messageId = crypto.randomUUID();
             const timeout = setTimeout(() => {
@@ -232,7 +233,7 @@ if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) 
         return true;
     });
 }
-else if (chrome === null || chrome === void 0 ? void 0 : chrome.runtime) {
+else if ((_a = globalThis.chrome) === null || _a === void 0 ? void 0 : _a.runtime) {
     console.debug(`Not attaching listener for messages, because we're not in the background.`);
     if (!window.messageServiceConnection) {
         const port = (window.messageServiceConnection = chrome.runtime.connect(chrome.runtime.id, {
@@ -413,9 +414,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "isBackgroundPage": () => (/* binding */ isBackgroundPage),
 /* harmony export */   "manifest": () => (/* binding */ manifest)
 /* harmony export */ });
-var _a, _b, _c;
-const manifest = (_a = chrome === null || chrome === void 0 ? void 0 : chrome.runtime) === null || _a === void 0 ? void 0 : _a.getManifest();
-const isBackgroundPage = ((_b = chrome === null || chrome === void 0 ? void 0 : chrome.runtime) === null || _b === void 0 ? void 0 : _b.getURL(((_c = manifest === null || manifest === void 0 ? void 0 : manifest.background) === null || _c === void 0 ? void 0 : _c.page) || '')) === location.href;
+var _a, _b, _c, _d, _e;
+const manifest = (_b = (_a = globalThis.chrome) === null || _a === void 0 ? void 0 : _a.runtime) === null || _b === void 0 ? void 0 : _b.getManifest();
+const isBackgroundPage = ((_d = (_c = globalThis.chrome) === null || _c === void 0 ? void 0 : _c.runtime) === null || _d === void 0 ? void 0 : _d.getURL(((_e = manifest === null || manifest === void 0 ? void 0 : manifest.background) === null || _e === void 0 ? void 0 : _e.page) || '')) ===
+    location.href;
 
 
 
@@ -810,6 +812,195 @@ const getIdFromUrl = (url) => {
 
 /***/ }),
 
+/***/ "./src/js/service-worker/notifiers/catalog/index.ts":
+/*!**********************************************************!*\
+  !*** ./src/js/service-worker/notifiers/catalog/index.ts ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _services_followings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../services/followings */ "./src/js/services/followings/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/users */ "./src/js/services/users/index.ts");
+/* harmony import */ var _utils_fetchDataUri__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../utils/fetchDataUri */ "./src/js/utils/fetchDataUri.ts");
+
+
+
+
+const tokenRefreshInterval = 30 * 60 * 1000;
+const notificationIdPrefix = 'catalog_notifier:';
+const isEnabled = () => {
+    return (0,_services_settings__WEBPACK_IMPORTED_MODULE_1__.getToggleSettingValue)('itemNotifier');
+};
+const updateToken = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const enabled = await isEnabled();
+            if (!enabled) {
+                // Do nothing if the notifier is not enabled.
+                resolve();
+                return;
+            }
+            const authenticatedUser = await (0,_services_users__WEBPACK_IMPORTED_MODULE_2__.getAuthenticatedUser)();
+            // @ts-ignore:next-line: https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65809
+            chrome.instanceID.getToken({ authorizedEntity: '303497097698', scope: 'FCM' }, (token) => {
+                fetch('https://api.roblox.plus/v2/itemnotifier/registertoken', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `robloxUserId=${authenticatedUser?.id}&token=${encodeURIComponent(token)}`,
+                })
+                    .then((response) => {
+                    if (response.ok) {
+                        resolve();
+                    }
+                    else {
+                        reject();
+                    }
+                })
+                    .catch(reject);
+            });
+        }
+        catch (err) {
+            reject(err);
+        }
+    });
+};
+const shouldShowNotification = async (creatorName) => {
+    // This logic is no longer valid, but still in use. It doesn't support group creators, it assumes all creators are users that can be followed.
+    // As a result: No notifications for group-created items will be shown.
+    if (!creatorName) {
+        // If there's no creator on the notification, it is assumed to be created by the Roblox account.
+        // And of course everyone wants these notifications.. right?
+        return true;
+    }
+    const authenticatedUser = await (0,_services_users__WEBPACK_IMPORTED_MODULE_2__.getAuthenticatedUser)();
+    if (!authenticatedUser) {
+        // Not logged in, no notification.
+        return false;
+    }
+    if (authenticatedUser.name === creatorName) {
+        // Of course you always want to see your own notifications.
+        return true;
+    }
+    const creator = await (0,_services_users__WEBPACK_IMPORTED_MODULE_2__.getUserByName)(creatorName);
+    if (!creator) {
+        // Couldn't determine who the user is, so no notification will be visible. Cool.
+        return false;
+    }
+    // And the final kicker... you can only see notifications if you follow the creator.
+    const isFollowing = await (0,_services_followings__WEBPACK_IMPORTED_MODULE_0__.isAuthenticatedUserFollowing)(creator.id);
+    return isFollowing;
+};
+const processNotification = async (notification) => {
+    const showNotification = await shouldShowNotification(notification.items?.Creator);
+    if (!showNotification) {
+        console.log('Skipping notification, likely because the authenticated user does not follow the creator', notification);
+        return;
+    }
+    const requireProperties = ['icon', 'url', 'title', 'message'];
+    for (let i = 0; i < requireProperties.length; i++) {
+        if (!notification[requireProperties[i]]) {
+            console.warn(`Skipping notification because there is no ${requireProperties[i]}`, notification);
+            return;
+        }
+    }
+    //console.log('Building notification', notification);
+    const iconUrl = await (0,_utils_fetchDataUri__WEBPACK_IMPORTED_MODULE_3__["default"])(new URL(notification.icon));
+    const notificationOptions = {
+        type: 'basic',
+        iconUrl,
+        title: notification.title,
+        message: notification.message,
+    };
+    if (notification.items && Object.keys(notification.items).length > 0) {
+        notificationOptions.type = 'list';
+        notificationOptions.items = [];
+        notificationOptions.contextMessage = notification.message;
+        for (let title in notification.items) {
+            notificationOptions.items.push({
+                title,
+                message: notification.items[title],
+            });
+        }
+    }
+    console.log('Displaying notification', notificationOptions, notification);
+    chrome.notifications.create(`${notificationIdPrefix}${notification.url}`, notificationOptions, () => { });
+};
+const processMessage = async (message) => {
+    try {
+        const enabled = await isEnabled();
+        if (!enabled) {
+            return;
+        }
+        console.log('Processing gcm message', message);
+        switch (message.from) {
+            case '/topics/catalog-notifier':
+            case '/topics/catalog-notifier-premium':
+                if (!message.data?.notification) {
+                    console.warn('Failed to parse gcm message notification', message);
+                    return;
+                }
+                await processNotification(JSON.parse(message.data.notification));
+                return;
+            default:
+                console.warn('Unknown gcm message sender', message);
+                return;
+        }
+    }
+    catch (err) {
+        console.error('Failed to process gcm message', err, message);
+    }
+};
+// @ts-ignore:next-line: https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65809
+chrome.instanceID.onTokenRefresh.addListener(updateToken);
+chrome.gcm.onMessage.addListener(processMessage);
+chrome.notifications.onClicked.addListener((notificationId) => {
+    if (!notificationId.startsWith(notificationIdPrefix)) {
+        return;
+    }
+    const url = notificationId.substring(notificationIdPrefix.length);
+    if (!url.startsWith('https://www.roblox.com/')) {
+        console.warn('Skipped opening URL for notification because it was not for roblox.com', notificationId);
+        return;
+    }
+    chrome.tabs.create({
+        url,
+        active: true,
+    });
+});
+/*
+// Exists for debugging
+declare global {
+  var processMessage: any;
+}
+
+window.processMessage = processMessage;
+//*/
+/* harmony default export */ async function __WEBPACK_DEFAULT_EXPORT__(nextTokenUpdate) {
+    const enabled = await isEnabled();
+    if (!enabled) {
+        return 0;
+    }
+    // Check to see if it's time to refresh the token
+    const now = +new Date();
+    if (nextTokenUpdate && nextTokenUpdate > now) {
+        return nextTokenUpdate;
+    }
+    // Send the token to the server
+    await updateToken();
+    // Update the token again later
+    return now + tokenRefreshInterval;
+}
+
+
+/***/ }),
+
 /***/ "./src/js/service-worker/notifiers/friend-presence/index.ts":
 /*!******************************************************************!*\
   !*** ./src/js/service-worker/notifiers/friend-presence/index.ts ***!
@@ -1039,14 +1230,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
 /* harmony export */   "executeNotifier": () => (/* binding */ executeNotifier)
 /* harmony export */ });
-/* harmony import */ var _friend_presence__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./friend-presence */ "./src/js/service-worker/notifiers/friend-presence/index.ts");
-/* harmony import */ var _trades__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./trades */ "./src/js/service-worker/notifiers/trades/index.ts");
+/* harmony import */ var _catalog__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./catalog */ "./src/js/service-worker/notifiers/catalog/index.ts");
+/* harmony import */ var _friend_presence__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./friend-presence */ "./src/js/service-worker/notifiers/friend-presence/index.ts");
+/* harmony import */ var _trades__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./trades */ "./src/js/service-worker/notifiers/trades/index.ts");
+
 
 
 // Registry of all the notifiers
 const notifiers = {};
-notifiers['notifiers/friend-presence'] = _friend_presence__WEBPACK_IMPORTED_MODULE_0__["default"];
-notifiers['notifiers/trade'] = _trades__WEBPACK_IMPORTED_MODULE_1__["default"];
+notifiers['notifiers/catalog'] = _catalog__WEBPACK_IMPORTED_MODULE_0__["default"];
+notifiers['notifiers/friend-presence'] = _friend_presence__WEBPACK_IMPORTED_MODULE_1__["default"];
+notifiers['notifiers/trade'] = _trades__WEBPACK_IMPORTED_MODULE_2__["default"];
 // TODO: Update to use chrome.storage.session for manifest V3
 const notifierStates = {};
 // Execute a notifier by name.

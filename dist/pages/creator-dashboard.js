@@ -46,6 +46,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var _a;
 
 
 // All the listeners, set in the background page.
@@ -56,7 +57,7 @@ const externalResponseHandlers = {};
 // Send a message to a destination, and get back the result.
 const sendMessage = (destination, message, external) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
-        var _a;
+        var _b;
         const serializedMessage = JSON.stringify(message);
         if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
             // Message is from the background page, to the background page.
@@ -104,7 +105,7 @@ const sendMessage = (destination, message, external) => __awaiter(void 0, void 0
                 }
             });
         }
-        else if ((_a = document.body) === null || _a === void 0 ? void 0 : _a.dataset.extensionId) {
+        else if ((_b = document.body) === null || _b === void 0 ? void 0 : _b.dataset.extensionId) {
             // Message is being sent by the native browser tab.
             const messageId = crypto.randomUUID();
             const timeout = setTimeout(() => {
@@ -232,7 +233,7 @@ if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) 
         return true;
     });
 }
-else if (chrome === null || chrome === void 0 ? void 0 : chrome.runtime) {
+else if ((_a = globalThis.chrome) === null || _a === void 0 ? void 0 : _a.runtime) {
     console.debug(`Not attaching listener for messages, because we're not in the background.`);
     if (!window.messageServiceConnection) {
         const port = (window.messageServiceConnection = chrome.runtime.connect(chrome.runtime.id, {
@@ -413,9 +414,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "isBackgroundPage": () => (/* binding */ isBackgroundPage),
 /* harmony export */   "manifest": () => (/* binding */ manifest)
 /* harmony export */ });
-var _a, _b, _c;
-const manifest = (_a = chrome === null || chrome === void 0 ? void 0 : chrome.runtime) === null || _a === void 0 ? void 0 : _a.getManifest();
-const isBackgroundPage = ((_b = chrome === null || chrome === void 0 ? void 0 : chrome.runtime) === null || _b === void 0 ? void 0 : _b.getURL(((_c = manifest === null || manifest === void 0 ? void 0 : manifest.background) === null || _c === void 0 ? void 0 : _c.page) || '')) === location.href;
+var _a, _b, _c, _d, _e;
+const manifest = (_b = (_a = globalThis.chrome) === null || _a === void 0 ? void 0 : _a.runtime) === null || _b === void 0 ? void 0 : _b.getManifest();
+const isBackgroundPage = ((_d = (_c = globalThis.chrome) === null || _c === void 0 ? void 0 : _c.runtime) === null || _d === void 0 ? void 0 : _d.getURL(((_e = manifest === null || manifest === void 0 ? void 0 : manifest.background) === null || _e === void 0 ? void 0 : _e.page) || '')) ===
+    location.href;
 
 
 
