@@ -1349,7 +1349,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _catalog__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./catalog */ "./src/js/service-worker/notifiers/catalog/index.ts");
 /* harmony import */ var _friend_presence__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./friend-presence */ "./src/js/service-worker/notifiers/friend-presence/index.ts");
 /* harmony import */ var _group_shout__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./group-shout */ "./src/js/service-worker/notifiers/group-shout/index.ts");
-/* harmony import */ var _trades__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./trades */ "./src/js/service-worker/notifiers/trades/index.ts");
+/* harmony import */ var _startup__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./startup */ "./src/js/service-worker/notifiers/startup/index.ts");
+/* harmony import */ var _trades__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./trades */ "./src/js/service-worker/notifiers/trades/index.ts");
+
 
 
 
@@ -1359,7 +1361,7 @@ const notifiers = {};
 notifiers['notifiers/catalog'] = _catalog__WEBPACK_IMPORTED_MODULE_0__["default"];
 notifiers['notifiers/group-shouts'] = _group_shout__WEBPACK_IMPORTED_MODULE_2__["default"];
 notifiers['notifiers/friend-presence'] = _friend_presence__WEBPACK_IMPORTED_MODULE_1__["default"];
-notifiers['notifiers/trade'] = _trades__WEBPACK_IMPORTED_MODULE_3__["default"];
+notifiers['notifiers/trade'] = _trades__WEBPACK_IMPORTED_MODULE_4__["default"];
 // TODO: Update to use chrome.storage.session for manifest V3
 const notifierStates = {};
 // Execute a notifier by name.
@@ -1399,6 +1401,93 @@ globalThis.notifierStates = notifierStates;
 globalThis.executeNotifier = executeNotifier;
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (notifiers);
+
+
+/***/ }),
+
+/***/ "./src/js/service-worker/notifiers/startup/index.ts":
+/*!**********************************************************!*\
+  !*** ./src/js/service-worker/notifiers/startup/index.ts ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/users */ "./src/js/services/users/index.ts");
+
+
+
+const notificationId = 'startup-notification';
+const displayStartupNotification = async () => {
+    if (!_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.manifest.icons) {
+        console.warn('Missing manifest icons');
+        return;
+    }
+    const authenticatedUser = await (0,_services_users__WEBPACK_IMPORTED_MODULE_2__.getAuthenticatedUser)();
+    chrome.notifications.create(notificationId, {
+        type: 'basic',
+        iconUrl: chrome.extension.getURL(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.manifest.icons[128]),
+        title: 'Roblox+ Started',
+        message: authenticatedUser
+            ? `Hello, ${authenticatedUser.displayName}`
+            : 'You are currently signed out',
+        contextMessage: `${_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.manifest.name} ${_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.manifest.version}, by WebGL3D`,
+    });
+};
+(0,_services_settings__WEBPACK_IMPORTED_MODULE_1__.getSettingValue)('startupNotification')
+    .then(async (setting) => {
+    if (typeof setting !== 'object') {
+        setting = {
+            on: !chrome.extension.inIncognitoContext,
+            visit: false,
+        };
+    }
+    if (!setting.on) {
+        return;
+    }
+    if (setting.visit) {
+        // Only show the startup notification after Roblox has been visited.
+        const updatedListener = (_tabId, _changes, tab) => {
+            return takeAction(tab);
+        };
+        const takeAction = async (tab) => {
+            if (!tab.url) {
+                return;
+            }
+            try {
+                const tabURL = new URL(tab.url);
+                if (!tabURL.hostname.endsWith('.roblox.com')) {
+                    return;
+                }
+                chrome.tabs.onCreated.removeListener(takeAction);
+                chrome.tabs.onUpdated.removeListener(updatedListener);
+                await displayStartupNotification();
+            }
+            catch {
+                // don't care for now
+            }
+        };
+        chrome.tabs.onUpdated.addListener(updatedListener);
+        chrome.tabs.onCreated.addListener(takeAction);
+    }
+    else {
+        await displayStartupNotification();
+    }
+})
+    .catch((err) => {
+    console.warn('Failed to render startup notification', err);
+});
+chrome.notifications.onClicked.addListener((id) => {
+    if (id !== notificationId) {
+        return;
+    }
+    chrome.tabs.create({
+        url: `https://roblox.plus/about/changes?version=${_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.manifest.version}`,
+        active: true,
+    });
+});
 
 
 /***/ }),

@@ -1,5 +1,5 @@
 {
-  "version": "2.4.228",
+  "version": "2.4.234",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Adds features and notifiers made by WebGL3D to the Roblox website",
@@ -47,7 +47,6 @@
         "/js/vanilla/extension/event.js",
         "/js/vanilla/extension/backgroundService.js",
         "/js/vanilla/extension/reload.js",
-        "/js/vanilla/extension/notificationService.js",
         "/js/vanilla/extension/storage.js",
         "/js/vanilla/queuedPromise.js",
         "/js/vanilla/cachedPromise.js",
@@ -240,9 +239,7 @@
   "permissions": [
     "alarms",
     "gcm",
-    "contextMenus",
     "declarativeNetRequest",
-    "tts",
     "notifications",
     "storage",
     "https://*.roblox.com/*",
