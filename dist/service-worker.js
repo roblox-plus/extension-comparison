@@ -5142,6 +5142,7 @@ chrome.browserAction.onClicked.addListener(() => {
     levelOfParallelism: 1,
     allowExternalConnections: true,
 });
+console.log(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_21__.manifest.name, _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_21__.manifest.version, 'started', chrome.extension.inIncognitoContext ? ' in icognito' : '');
 
 })();
 

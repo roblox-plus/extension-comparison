@@ -91,201 +91,6 @@ body:not(.rbx-body) #rplus-widget ul.item-cards {
       padding: 2px 5px; }
 
 /* WebGL3D */
-.rplus-premium-subscriber {
-  background-color: inherit; }
-  .rplus-premium-subscriber body.dark-theme.rplus-dark-theme {
-    /* Global rules */
-    /* Group pages */
-    /* Develop page */
-    /* Game Configuration */
-    /* VIP Server Configuration */
-    /* Builders Club */ }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #Body,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme .tab-content,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme .tab-container + div > div {
-      background: transparent; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] h1,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] h2,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] h3,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] h4,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] h5,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] h6,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper h1,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper h2,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper h3,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper h4,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper h5,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper h6 {
-      color: #fff; }
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] h1 a,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] h2 a,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] h3 a,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] h4 a,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] h5 a,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] h6 a,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper h1 a,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper h2 a,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper h3 a,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper h4 a,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper h5 a,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper h6 a {
-        color: #fff; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .form-label,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .form-label {
-      color: #bdbebe; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] a:link, .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] a:visited, .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] a:active,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper a:link,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper a:visited,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper a:active {
-      color: #fff; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .btn-control,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .btn-control:active,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .btn-control:link,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .btn-control:visited,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .btn-control:hover,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .btn-control,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .btn-control:active,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .btn-control:link,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .btn-control:visited,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .btn-control:hover {
-      color: #18191B; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .SquareTabGray,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .tab-container > div,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .SquareTabGray,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .tab-container > div {
-      background-color: #393B3D;
-      color: #bdbebe; }
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .SquareTabGray a,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .tab-container > div a,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .SquareTabGray a,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .tab-container > div a {
-        color: #bdbebe; }
-        .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .SquareTabGray a:hover,
-        .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .tab-container > div a:hover,
-        .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .SquareTabGray a:hover,
-        .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .tab-container > div a:hover {
-          background-color: transparent;
-          color: #fff; }
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .SquareTabGray:hover, .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .SquareTabGray.tab-active, .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .SquareTabGray.selected,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .tab-container > div:hover,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .tab-container > div.tab-active,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .tab-container > div.selected,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .SquareTabGray:hover,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .SquareTabGray.tab-active,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .SquareTabGray.selected,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .tab-container > div:hover,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .tab-container > div.tab-active,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .tab-container > div.selected {
-        color: #fff; }
-        .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .SquareTabGray:hover a, .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .SquareTabGray.tab-active a, .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .SquareTabGray.selected a,
-        .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .tab-container > div:hover a,
-        .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .tab-container > div.tab-active a,
-        .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .tab-container > div.selected a,
-        .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .SquareTabGray:hover a,
-        .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .SquareTabGray.tab-active a,
-        .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .SquareTabGray.selected a,
-        .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .tab-container > div:hover a,
-        .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .tab-container > div.tab-active a,
-        .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .tab-container > div.selected a {
-          color: #fff; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .verticaltab,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .verticaltab {
-      background-color: #393B3D;
-      color: #bdbebe; }
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .verticaltab a,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .verticaltab a {
-        color: #bdbebe; }
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .verticaltab:hover, .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .verticaltab.selected,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .verticaltab:hover,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .verticaltab.selected {
-        color: #fff; }
-        .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .verticaltab:hover a, .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .verticaltab.selected a,
-        .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .verticaltab:hover a,
-        .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .verticaltab.selected a {
-          color: #fff; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .table-header th,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .table-header th {
-      background-color: #393B3D; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .accord-header,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .accord-header {
-      background: #393B3D; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .status-error,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme form#upload-form[action^="/build/"] .status-confirm,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .status-error,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BodyWrapper .status-confirm {
-      color: #18191B; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #AuditPage h1 a {
-      color: #fff; }
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #AuditPage h1 a:hover {
-        color: #fff; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #AuditPage .AuditLogContainer tr.header td {
-      background-color: #393B3D; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #update-distribution-form,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #payout-form {
-      color: #18191B; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #GroupTitle a {
-      color: #fff !important;
-      font-style: inherit !important; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #MyCreationsTab .widget-name,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #DevelopTabs .widget-name,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #GroupCreationsTab .widget-name {
-      background-color: #393B3D; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #MyCreationsTab .gear-button-wrapper,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #DevelopTabs .gear-button-wrapper,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #GroupCreationsTab .gear-button-wrapper {
-      background-color: transparent !important;
-      border-color: transparent !important; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #MyCreationsTab table.section-header label.checkbox-label,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #DevelopTabs table.section-header label.checkbox-label,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #GroupCreationsTab table.section-header label.checkbox-label {
-      color: #bdbebe; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #MyCreationsTab .item-table .totals-label span,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #DevelopTabs .item-table .totals-label span,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #GroupCreationsTab .item-table .totals-label span {
-      color: #fff; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #MyCreationsTab #build-dropdown-menu a,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #DevelopTabs #build-dropdown-menu a,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #GroupCreationsTab #build-dropdown-menu a {
-      color: #18191B; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #MyCreationsTab td.menu-area a,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #DevelopTabs td.menu-area a,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #GroupCreationsTab td.menu-area a {
-      background-color: #393B3D;
-      color: #bdbebe !important; }
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #MyCreationsTab td.menu-area a.tab-item-selected,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #DevelopTabs td.menu-area a.tab-item-selected,
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #GroupCreationsTab td.menu-area a.tab-item-selected {
-        color: #fff !important; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #LibraryTab .CatalogItemOuter .CatalogItemInner,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #LibraryTab .CatalogItemOuter .SmallCatalogItemView {
-      background: transparent; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #LibraryTab .CatalogItemOuter .NotAPrice,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #LibraryTab .CatalogItemOuter .HoverInfo {
-      color: #fff; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #LibraryTab .CatalogItemOuter .CatalogItemInfoLabel {
-      color: #bdbebe; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #LibraryTab .CatalogItemOuter:hover .CatalogItemInner,
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #LibraryTab .CatalogItemOuter:hover .SmallCatalogItemView {
-      background: #393B3D; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #LibraryTab div#catalog div#dropdown ul li a {
-      color: #bdbebe; }
-      .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #LibraryTab div#catalog div#dropdown ul li a.selectedAssetTypeFilter, .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #LibraryTab div#catalog div#dropdown ul li a:hover {
-        background: #393B3D;
-        color: #fff; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #LibraryTab div#catalog div#dropdown ul#dropdownUl {
-      background: #393B3D; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #LibraryTab #catalog .loading {
-      background-color: #232527; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #universe-configure .missing-start-place {
-      background-color: #393B3D; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #placeForm .headline-banner {
-      background-color: #393B3D; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #configure-form #whitelist.disabled {
-      background: #393B3D; }
-    .rplus-premium-subscriber body.dark-theme.rplus-dark-theme #BCPageContainer .product-summary .product-description {
-      color: #bdbebe; }
-
 /* css/rplus/images.css [5/18/2017] */
 *[class^='rplus-icon-'] {
   padding: 0px !important;
@@ -296,21 +101,22 @@ body:not(.rbx-body) #rplus-widget ul.item-cards {
   width: 32px;
   height: 32px; }
 
-/* WebGL3D */
-/* customIcon.css [4/4/2016] */
-/* Basic Roblox */
-#navigation .rplus-icon {
+/* Navigation Icons */
+#nav-rplus .rplus-icon {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMy45OCAyMi43MiI+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOiNiZGJlYmU7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5wbHVzZ3JleTwvdGl0bGU+PGcgaWQ9IkxheWVyXzIiIGRhdGEtbmFtZT0iTGF5ZXIgMiI+PGcgaWQ9IkxheWVyXzEtMiIgZGF0YS1uYW1lPSJMYXllciAxIj48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0yMi43OCwxMi44NEgyMC44N0wyMi40LDdsLjE5LS43NGExLjc1LDEuNzUsMCwwLDAtMS4yNi0yLjE1TDYuMTQuMDZBMS42MSwxLjYxLDAsMCwwLDUuNywwYTEuNzYsMS43NiwwLDAsMC0uOS4yNEExLjgyLDEuODIsMCwwLDAsNCwxLjM3TC4wNSwxNi41N0ExLjc3LDEuNzcsMCwwLDAsMS4zMiwxOC43bDE1LjE3LDRhMS4zNSwxLjM1LDAsMCwwLC40OSwwLDEuNzYsMS43NiwwLDAsMCwxLjcxLTEuMzJsLjIzLS44OWguMzRhMS4xOCwxLjE4LDAsMCwwLDEuMTctMS4xOHYtMi40aDIuNEExLjE5LDEuMTksMCwwLDAsMjQsMTUuNzVWMTRhMS4xOCwxLjE4LDAsMCwwLTEuMTgtMS4xOFpNMTcsMjEsMS44MiwxNyw1Ljc1LDEuNzdsMTUuMTMsNC0xLDMuNzNhMS4xOCwxLjE4LDAsMCwwLS43LS4yNEgxNy40N2ExLjE4LDEuMTgsMCwwLDAtMS4xOCwxLjE4aDB2Mi40aC0yLjRBMS4xOCwxLjE4LDAsMCwwLDEyLjcxLDE0aDB2MS43M2ExLjE4LDEuMTgsMCwwLDAsMS4xOCwxLjE4aDIuNHYyLjRhMS4xNiwxLjE2LDAsMCwwLC43OCwxLjFabTUuODUtNS4yMUgxOS42NmEuNDYuNDYsMCwwLDAtLjQ1LjQ1aDB2My4xM0gxNy40N1YxNi4yaDBhLjQ3LjQ3LDAsMCwwLS40Ni0uNDVIMTMuODlWMTRIMTdjLjQzLDAsLjQ2LS40Ni40Ni0uNDZoMFYxMC40NGgxLjc0djMuMTNoMGEuNDUuNDUsMCwwLDAsLjQ1LjQ2aDMuMTVaIi8+PHJlY3QgY2xhc3M9ImNscy0xIiB4PSI5LjcyIiB5PSI5LjgyIiB3aWR0aD0iMy4xNiIgaGVpZ2h0PSIzLjE2IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMi41NiAxOS40OSkgcm90YXRlKC03NS40OSkiLz48L2c+PC9nPjwvc3ZnPg==);
+  background-size: 100%;
+  background-repeat: no-repeat;
+  height: 28px;
+  width: 28px;
+  vertical-align: middle;
+  display: inline-block; }
+
+#nav-rplus:hover .rplus-icon {
   background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMy45OSAyMi42NyI+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOiMxOTE5MTk7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5wbHVzYmxhY2tfMTwvdGl0bGU+PGcgaWQ9IkxheWVyXzIiIGRhdGEtbmFtZT0iTGF5ZXIgMiI+PGcgaWQ9IkxheWVyXzEtMiIgZGF0YS1uYW1lPSJMYXllciAxIj48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0yMi43OSwxMi43OUgyMC44OEwyMi40MSw2LjlsLjE5LS43NEExLjc2LDEuNzYsMCwwLDAsMjEuMzcsNGgwTDYuMTUuMDZBMS43MiwxLjcyLDAsMCwwLDUuNzEsMGExLjc2LDEuNzYsMCwwLDAtLjkuMjRBMS43OCwxLjc4LDAsMCwwLDQsMS4zMkwuMDYsMTYuNTJhMS43NiwxLjc2LDAsMCwwLDEuMjcsMi4xNUwxNi41LDIyLjYyYTEuNjEsMS42MSwwLDAsMCwuNDQuMDUsMS43NywxLjc3LDAsMCwwLDEuNzEtMS4zMmwuMjMtLjg5aC4zNGExLjE5LDEuMTksMCwwLDAsMS4xNy0xLjE4di0yLjRoMi40QTEuMTksMS4xOSwwLDAsMCwyNCwxNS43MlYxNGExLjE5LDEuMTksMCwwLDAtMS4xNS0xLjIxWk0xNywyMC45MSwxLjc4LDE3LDUuNzEsMS43N2wxNS4xOCw0LTEsMy43M2ExLjIxLDEuMjEsMCwwLDAtLjctLjI0SDE3LjQ4YTEuMTgsMS4xOCwwLDAsMC0xLjE4LDEuMThoMHYyLjRIMTMuOUExLjE4LDEuMTgsMCwwLDAsMTIuNzIsMTR2MS43YTEuMTgsMS4xOCwwLDAsMCwxLjE4LDEuMThoMi40djIuNGExLjE2LDEuMTYsMCwwLDAsLjc4LDEuMVptNS44LTUuMjFIMTkuNjdjLS40MywwLS40NS40Ni0uNDUuNDZoMHYzLjEzSDE3LjQ4VjE2LjE1aDBhLjQ1LjQ1LDAsMCwwLS40Ni0uNDZIMTMuOVYxNEgxN2MuNDMsMCwuNDYtLjQ2LjQ2LS40NmgwVjEwLjM5aDEuNzR2My4xM2gwYS40NS40NSwwLDAsMCwuNDUuNDZoMy4xNVoiLz48cmVjdCBjbGFzcz0iY2xzLTEiIHg9IjkuNzIiIHk9IjkuNzYiIHdpZHRoPSIzLjE2IiBoZWlnaHQ9IjMuMTYiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yLjUxIDE5LjQ0KSByb3RhdGUoLTc1LjQ5KSIvPjwvZz48L2c+PC9zdmc+); }
 
-#navigation.dark-theme .rplus-icon,
-.dark-theme #navigation .rplus-icon {
-  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMy45OCAyMi43MiI+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOiNiZGJlYmU7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5wbHVzZ3JleTwvdGl0bGU+PGcgaWQ9IkxheWVyXzIiIGRhdGEtbmFtZT0iTGF5ZXIgMiI+PGcgaWQ9IkxheWVyXzEtMiIgZGF0YS1uYW1lPSJMYXllciAxIj48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0yMi43OCwxMi44NEgyMC44N0wyMi40LDdsLjE5LS43NGExLjc1LDEuNzUsMCwwLDAtMS4yNi0yLjE1TDYuMTQuMDZBMS42MSwxLjYxLDAsMCwwLDUuNywwYTEuNzYsMS43NiwwLDAsMC0uOS4yNEExLjgyLDEuODIsMCwwLDAsNCwxLjM3TC4wNSwxNi41N0ExLjc3LDEuNzcsMCwwLDAsMS4zMiwxOC43bDE1LjE3LDRhMS4zNSwxLjM1LDAsMCwwLC40OSwwLDEuNzYsMS43NiwwLDAsMCwxLjcxLTEuMzJsLjIzLS44OWguMzRhMS4xOCwxLjE4LDAsMCwwLDEuMTctMS4xOHYtMi40aDIuNEExLjE5LDEuMTksMCwwLDAsMjQsMTUuNzVWMTRhMS4xOCwxLjE4LDAsMCwwLTEuMTgtMS4xOFpNMTcsMjEsMS44MiwxNyw1Ljc1LDEuNzdsMTUuMTMsNC0xLDMuNzNhMS4xOCwxLjE4LDAsMCwwLS43LS4yNEgxNy40N2ExLjE4LDEuMTgsMCwwLDAtMS4xOCwxLjE4aDB2Mi40aC0yLjRBMS4xOCwxLjE4LDAsMCwwLDEyLjcxLDE0aDB2MS43M2ExLjE4LDEuMTgsMCwwLDAsMS4xOCwxLjE4aDIuNHYyLjRhMS4xNiwxLjE2LDAsMCwwLC43OCwxLjFabTUuODUtNS4yMUgxOS42NmEuNDYuNDYsMCwwLDAtLjQ1LjQ1aDB2My4xM0gxNy40N1YxNi4yaDBhLjQ3LjQ3LDAsMCwwLS40Ni0uNDVIMTMuODlWMTRIMTdjLjQzLDAsLjQ2LS40Ni40Ni0uNDZoMFYxMC40NGgxLjc0djMuMTNoMGEuNDUuNDUsMCwwLDAsLjQ1LjQ2aDMuMTVaIi8+PHJlY3QgY2xhc3M9ImNscy0xIiB4PSI5LjcyIiB5PSI5LjgyIiB3aWR0aD0iMy4xNiIgaGVpZ2h0PSIzLjE2IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMi41NiAxOS40OSkgcm90YXRlKC03NS40OSkiLz48L2c+PC9nPjwvc3ZnPg==); }
-
-#navigation li:hover .rplus-icon {
-  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMy45OSAyMi42NyI+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOiNlMTIyMWE7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5wbHVzcmVkPC90aXRsZT48ZyBpZD0iTGF5ZXJfMiIgZGF0YS1uYW1lPSJMYXllciAyIj48ZyBpZD0iTGF5ZXJfMS0yIiBkYXRhLW5hbWU9IkxheWVyIDEiPjxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTIyLjc5LDEyLjc5SDIwLjg4TDIyLjQxLDYuOWwuMTktLjc0QTEuNzYsMS43NiwwLDAsMCwyMS4zNyw0aDBMNi4xNS4wNkExLjcyLDEuNzIsMCwwLDAsNS43MSwwYTEuNzYsMS43NiwwLDAsMC0uOS4yNEExLjc4LDEuNzgsMCwwLDAsNCwxLjMyTC4wNiwxNi41MmExLjc2LDEuNzYsMCwwLDAsMS4yNywyLjE1TDE2LjUsMjIuNjJhMS42MSwxLjYxLDAsMCwwLC40NC4wNSwxLjc3LDEuNzcsMCwwLDAsMS43MS0xLjMybC4yMy0uODloLjM0YTEuMTksMS4xOSwwLDAsMCwxLjE3LTEuMTh2LTIuNGgyLjRBMS4xOSwxLjE5LDAsMCwwLDI0LDE1LjcyVjE0YTEuMTksMS4xOSwwLDAsMC0xLjE1LTEuMjFaTTE3LDIwLjkxLDEuNzgsMTcsNS43MSwxLjc3bDE1LjE4LDQtMSwzLjczYTEuMjEsMS4yMSwwLDAsMC0uNy0uMjRIMTcuNDhhMS4xOCwxLjE4LDAsMCwwLTEuMTgsMS4xOGgwdjIuNEgxMy45QTEuMTgsMS4xOCwwLDAsMCwxMi43MiwxNHYxLjdhMS4xOCwxLjE4LDAsMCwwLDEuMTgsMS4xOGgyLjR2Mi40YTEuMTYsMS4xNiwwLDAsMCwuNzgsMS4xWm01LjgtNS4yMUgxOS42N2MtLjQzLDAtLjQ1LjQ2LS40NS40NmgwdjMuMTNIMTcuNDhWMTYuMTVoMGEuNDUuNDUsMCwwLDAtLjQ2LS40NkgxMy45VjE0SDE3Yy40MywwLC40Ni0uNDYuNDYtLjQ2aDBWMTAuMzloMS43NHYzLjEzaDBhLjQ1LjQ1LDAsMCwwLC40NS40NmgzLjE1WiIvPjxyZWN0IGNsYXNzPSJjbHMtMSIgeD0iOS43MiIgeT0iOS43NiIgd2lkdGg9IjMuMTYiIGhlaWdodD0iMy4xNiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTIuNTEgMTkuNDQpIHJvdGF0ZSgtNzUuNDkpIi8+PC9nPjwvZz48L3N2Zz4=); }
-
-#navigation li > a[href*='rplus']:hover {
-  color: #e0221a; }
+#navigation.dark-theme #nav-rplus:hover .rplus-icon,
+.dark-theme #navigation #nav-rplus:hover .rplus-icon {
+  filter: invert(1); }
 
 /* WebGL3D */
 img.emoji {
