@@ -1022,6 +1022,49 @@ const loadAuthenticatedUserCreatorGroups = async () => {
 
 /***/ }),
 
+/***/ "./src/js/services/groups/get-group-shout.ts":
+/*!***************************************************!*\
+  !*** ./src/js/services/groups/get-group-shout.ts ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+
+
+const messageDestination = 'groupsService.getGroupShout';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 90 * 1000);
+// Fetches the group shout.
+const getGroupShout = (groupId) => {
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, { groupId });
+};
+// Loads the groups the user is a member of.
+const loadGroupShout = async (groupId) => {
+    const response = await fetch(`https://groups.roblox.com/v1/groups/${groupId}`);
+    if (!response.ok) {
+        throw `Failed to load group shout for group ${groupId}`;
+    }
+    const result = await response.json();
+    return result.shout?.body || '';
+};
+// Listen for messages sent to the service worker.
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.groupId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadGroupShout(message.groupId));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getGroupShout);
+
+
+/***/ }),
+
 /***/ "./src/js/services/groups/get-user-groups.ts":
 /*!***************************************************!*\
   !*** ./src/js/services/groups/get-user-groups.ts ***!
@@ -1130,16 +1173,19 @@ const loadUserPrimaryGroup = async (userId) => {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getCreatorGroups": () => (/* reexport safe */ _get_creator_groups__WEBPACK_IMPORTED_MODULE_0__["default"]),
-/* harmony export */   "getUserGroups": () => (/* reexport safe */ _get_user_groups__WEBPACK_IMPORTED_MODULE_1__["default"]),
-/* harmony export */   "getUserPrimaryGroup": () => (/* reexport safe */ _get_user_primary_group__WEBPACK_IMPORTED_MODULE_2__["default"])
+/* harmony export */   "getGroupShout": () => (/* reexport safe */ _get_group_shout__WEBPACK_IMPORTED_MODULE_1__["default"]),
+/* harmony export */   "getUserGroups": () => (/* reexport safe */ _get_user_groups__WEBPACK_IMPORTED_MODULE_2__["default"]),
+/* harmony export */   "getUserPrimaryGroup": () => (/* reexport safe */ _get_user_primary_group__WEBPACK_IMPORTED_MODULE_3__["default"])
 /* harmony export */ });
 /* harmony import */ var _get_creator_groups__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./get-creator-groups */ "./src/js/services/groups/get-creator-groups.ts");
-/* harmony import */ var _get_user_groups__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./get-user-groups */ "./src/js/services/groups/get-user-groups.ts");
-/* harmony import */ var _get_user_primary_group__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./get-user-primary-group */ "./src/js/services/groups/get-user-primary-group.ts");
+/* harmony import */ var _get_group_shout__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./get-group-shout */ "./src/js/services/groups/get-group-shout.ts");
+/* harmony import */ var _get_user_groups__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./get-user-groups */ "./src/js/services/groups/get-user-groups.ts");
+/* harmony import */ var _get_user_primary_group__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./get-user-primary-group */ "./src/js/services/groups/get-user-primary-group.ts");
 
 
 
-globalThis.groupsService = { getCreatorGroups: _get_creator_groups__WEBPACK_IMPORTED_MODULE_0__["default"], getUserGroups: _get_user_groups__WEBPACK_IMPORTED_MODULE_1__["default"], getUserPrimaryGroup: _get_user_primary_group__WEBPACK_IMPORTED_MODULE_2__["default"] };
+
+globalThis.groupsService = { getCreatorGroups: _get_creator_groups__WEBPACK_IMPORTED_MODULE_0__["default"], getGroupShout: _get_group_shout__WEBPACK_IMPORTED_MODULE_1__["default"], getUserGroups: _get_user_groups__WEBPACK_IMPORTED_MODULE_2__["default"], getUserPrimaryGroup: _get_user_primary_group__WEBPACK_IMPORTED_MODULE_3__["default"] };
 
 
 

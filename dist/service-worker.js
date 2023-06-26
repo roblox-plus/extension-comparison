@@ -821,7 +821,7 @@ const getIdFromUrl = (url) => {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _services_followings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../services/followings */ "./src/js/services/followings/index.ts");
 /* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
@@ -982,7 +982,7 @@ declare global {
 
 window.processMessage = processMessage;
 //*/
-/* harmony default export */ async function __WEBPACK_DEFAULT_EXPORT__(nextTokenUpdate) {
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async (nextTokenUpdate) => {
     const enabled = await isEnabled();
     if (!enabled) {
         return 0;
@@ -996,7 +996,7 @@ window.processMessage = processMessage;
     await updateToken();
     // Update the token again later
     return now + tokenRefreshInterval;
-}
+});
 
 
 /***/ }),
@@ -1218,6 +1218,122 @@ chrome.notifications.onButtonClicked.addListener(async (notificationId) => {
 
 /***/ }),
 
+/***/ "./src/js/service-worker/notifiers/group-shout/index.ts":
+/*!**************************************************************!*\
+  !*** ./src/js/service-worker/notifiers/group-shout/index.ts ***!
+  \**************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var roblox__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! roblox */ "./libs/roblox/dist/index.js");
+/* harmony import */ var _services_groups__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../services/groups */ "./src/js/services/groups/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
+/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../services/users */ "./src/js/services/users/index.ts");
+/* harmony import */ var _utils_fetchDataUri__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../utils/fetchDataUri */ "./src/js/utils/fetchDataUri.ts");
+
+
+
+
+
+
+// The prefix for the ID of the notification to display.
+const notificationIdPrefix = 'group-shout-notifier-';
+// Returns all the groups that we want to load the group shouts for.
+const getGroups = async () => {
+    const groupMap = [];
+    const enabled = await (0,_services_settings__WEBPACK_IMPORTED_MODULE_2__.getToggleSettingValue)('groupShoutNotifier');
+    if (!enabled) {
+        // Not enabled, skip.
+        return groupMap;
+    }
+    const authenticatedUser = await (0,_services_users__WEBPACK_IMPORTED_MODULE_4__.getAuthenticatedUser)();
+    if (!authenticatedUser) {
+        // Not logged in, no notifier.
+        return groupMap;
+    }
+    const mode = await (0,_services_settings__WEBPACK_IMPORTED_MODULE_2__.getSettingValue)('groupShoutNotifier_mode');
+    if (mode === 'whitelist') {
+        // Only specific groups should be notified on.
+        const list = await (0,_services_settings__WEBPACK_IMPORTED_MODULE_2__.getSettingValue)('groupShoutNotifierList');
+        if (typeof list !== 'object') {
+            return groupMap;
+        }
+        for (let rawId in list) {
+            const id = Number(rawId);
+            if (id && typeof list[rawId] === 'string') {
+                groupMap.push({
+                    id,
+                    name: list[rawId],
+                });
+            }
+        }
+    }
+    else {
+        // All groups the user is in should be notified on.
+        const groups = await (0,_services_groups__WEBPACK_IMPORTED_MODULE_1__.getUserGroups)(authenticatedUser.id);
+        groups.forEach((group) => {
+            groupMap.push({
+                id: group.id,
+                name: group.name,
+            });
+        });
+    }
+    return groupMap;
+};
+chrome.notifications.onClicked.addListener((notificationId) => {
+    if (!notificationId.startsWith(notificationIdPrefix)) {
+        return;
+    }
+    chrome.tabs.create({
+        url: (0,roblox__WEBPACK_IMPORTED_MODULE_0__.getGroupLink)(Number(notificationId.substring(notificationIdPrefix.length)), 'redirect').href,
+        active: true,
+    });
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async (previousState) => {
+    const newState = {};
+    const groups = await getGroups();
+    const promises = groups.map(async (group) => {
+        try {
+            const groupShout = await (0,_services_groups__WEBPACK_IMPORTED_MODULE_1__.getGroupShout)(group.id);
+            newState[group.id] = groupShout;
+            if (previousState &&
+                previousState.hasOwnProperty(group.id) &&
+                previousState[group.id] !== groupShout &&
+                groupShout) {
+                // Send notification, the shout has changed.
+                const groupIcon = await (0,_services_thumbnails__WEBPACK_IMPORTED_MODULE_3__.getGroupIcon)(group.id);
+                if (groupIcon.state !== roblox__WEBPACK_IMPORTED_MODULE_0__.ThumbnailState.Completed) {
+                    return;
+                }
+                const notificationIcon = await (0,_utils_fetchDataUri__WEBPACK_IMPORTED_MODULE_5__["default"])(new URL(groupIcon.imageUrl));
+                chrome.notifications.create(`${notificationIdPrefix}${group.id}`, {
+                    type: 'basic',
+                    title: group.name,
+                    message: groupShout,
+                    contextMessage: 'Roblox+ Group Shout Notifier',
+                    iconUrl: notificationIcon,
+                });
+            }
+        }
+        catch (err) {
+            console.error('Failed to check group for group shout notifier', err, group);
+            if (previousState && previousState.hasOwnProperty(group.id)) {
+                newState[group.id] = previousState[group.id];
+            }
+        }
+    });
+    await Promise.all(promises);
+    return newState;
+});
+
+
+/***/ }),
+
 /***/ "./src/js/service-worker/notifiers/index.ts":
 /*!**************************************************!*\
   !*** ./src/js/service-worker/notifiers/index.ts ***!
@@ -1232,15 +1348,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _catalog__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./catalog */ "./src/js/service-worker/notifiers/catalog/index.ts");
 /* harmony import */ var _friend_presence__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./friend-presence */ "./src/js/service-worker/notifiers/friend-presence/index.ts");
-/* harmony import */ var _trades__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./trades */ "./src/js/service-worker/notifiers/trades/index.ts");
+/* harmony import */ var _group_shout__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./group-shout */ "./src/js/service-worker/notifiers/group-shout/index.ts");
+/* harmony import */ var _trades__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./trades */ "./src/js/service-worker/notifiers/trades/index.ts");
+
 
 
 
 // Registry of all the notifiers
 const notifiers = {};
 notifiers['notifiers/catalog'] = _catalog__WEBPACK_IMPORTED_MODULE_0__["default"];
+notifiers['notifiers/group-shouts'] = _group_shout__WEBPACK_IMPORTED_MODULE_2__["default"];
 notifiers['notifiers/friend-presence'] = _friend_presence__WEBPACK_IMPORTED_MODULE_1__["default"];
-notifiers['notifiers/trade'] = _trades__WEBPACK_IMPORTED_MODULE_2__["default"];
+notifiers['notifiers/trade'] = _trades__WEBPACK_IMPORTED_MODULE_3__["default"];
 // TODO: Update to use chrome.storage.session for manifest V3
 const notifierStates = {};
 // Execute a notifier by name.
@@ -2594,6 +2713,50 @@ const loadAuthenticatedUserCreatorGroups = async () => {
 
 /***/ }),
 
+/***/ "./src/js/services/groups/get-group-shout.ts":
+/*!***************************************************!*\
+  !*** ./src/js/services/groups/get-group-shout.ts ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
+
+
+const messageDestination = 'groupsService.getGroupShout';
+const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 90 * 1000);
+// Fetches the group shout.
+const getGroupShout = (groupId) => {
+    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, { groupId });
+};
+// Loads the groups the user is a member of.
+const loadGroupShout = async (groupId) => {
+    const response = await fetch(`https://groups.roblox.com/v1/groups/${groupId}`);
+    if (!response.ok) {
+        throw `Failed to load group shout for group ${groupId}`;
+    }
+    const result = await response.json();
+    return result.shout?.body || '';
+};
+// Listen for messages sent to the service worker.
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
+    // Check the cache
+    return cache.getOrAdd(`${message.groupId}`, () => 
+    // Queue up the fetch request, when not in the cache
+    loadGroupShout(message.groupId));
+}, {
+    levelOfParallelism: 1,
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getGroupShout);
+
+
+/***/ }),
+
 /***/ "./src/js/services/groups/get-user-groups.ts":
 /*!***************************************************!*\
   !*** ./src/js/services/groups/get-user-groups.ts ***!
@@ -2705,16 +2868,19 @@ const loadUserPrimaryGroup = async (userId) => {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getCreatorGroups": () => (/* reexport safe */ _get_creator_groups__WEBPACK_IMPORTED_MODULE_0__["default"]),
-/* harmony export */   "getUserGroups": () => (/* reexport safe */ _get_user_groups__WEBPACK_IMPORTED_MODULE_1__["default"]),
-/* harmony export */   "getUserPrimaryGroup": () => (/* reexport safe */ _get_user_primary_group__WEBPACK_IMPORTED_MODULE_2__["default"])
+/* harmony export */   "getGroupShout": () => (/* reexport safe */ _get_group_shout__WEBPACK_IMPORTED_MODULE_1__["default"]),
+/* harmony export */   "getUserGroups": () => (/* reexport safe */ _get_user_groups__WEBPACK_IMPORTED_MODULE_2__["default"]),
+/* harmony export */   "getUserPrimaryGroup": () => (/* reexport safe */ _get_user_primary_group__WEBPACK_IMPORTED_MODULE_3__["default"])
 /* harmony export */ });
 /* harmony import */ var _get_creator_groups__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./get-creator-groups */ "./src/js/services/groups/get-creator-groups.ts");
-/* harmony import */ var _get_user_groups__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./get-user-groups */ "./src/js/services/groups/get-user-groups.ts");
-/* harmony import */ var _get_user_primary_group__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./get-user-primary-group */ "./src/js/services/groups/get-user-primary-group.ts");
+/* harmony import */ var _get_group_shout__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./get-group-shout */ "./src/js/services/groups/get-group-shout.ts");
+/* harmony import */ var _get_user_groups__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./get-user-groups */ "./src/js/services/groups/get-user-groups.ts");
+/* harmony import */ var _get_user_primary_group__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./get-user-primary-group */ "./src/js/services/groups/get-user-primary-group.ts");
 
 
 
-globalThis.groupsService = { getCreatorGroups: _get_creator_groups__WEBPACK_IMPORTED_MODULE_0__["default"], getUserGroups: _get_user_groups__WEBPACK_IMPORTED_MODULE_1__["default"], getUserPrimaryGroup: _get_user_primary_group__WEBPACK_IMPORTED_MODULE_2__["default"] };
+
+globalThis.groupsService = { getCreatorGroups: _get_creator_groups__WEBPACK_IMPORTED_MODULE_0__["default"], getGroupShout: _get_group_shout__WEBPACK_IMPORTED_MODULE_1__["default"], getUserGroups: _get_user_groups__WEBPACK_IMPORTED_MODULE_2__["default"], getUserPrimaryGroup: _get_user_primary_group__WEBPACK_IMPORTED_MODULE_3__["default"] };
 
 
 

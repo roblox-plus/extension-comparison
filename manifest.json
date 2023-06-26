@@ -1,5 +1,5 @@
 {
-  "version": "2.4.225",
+  "version": "2.4.228",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Adds features and notifiers made by WebGL3D to the Roblox website",
@@ -58,10 +58,7 @@
         "/js/archive/prefunc.js",
         "/js/vanilla/timedCache.js",
         "/js/vanilla/batchItemProcessor.js",
-        "/js/roblox/thumbnails.js",
         "/js/roblox/users.js",
-        "/js/roblox/groups.js",
-        "/js/archive/preroblox.js",
         "/js/rplus/RobloxPlus.js",
         "/js/rplus/premium.js"
       ],
