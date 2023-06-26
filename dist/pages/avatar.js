@@ -59,7 +59,7 @@ const filterAllItems = () => {
         filterItemCard(element);
     });
 };
-window.addEventListener('DOMNodeInserted', (event) => {
+globalThis.addEventListener('DOMNodeInserted', (event) => {
     if (!(event.target instanceof HTMLElement)) {
         return;
     }

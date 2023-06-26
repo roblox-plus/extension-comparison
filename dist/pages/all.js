@@ -30,13 +30,10 @@ const version = 2.5;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "addListener": () => (/* binding */ addListener),
-/* harmony export */   "getWorkerTab": () => (/* reexport safe */ _tabs__WEBPACK_IMPORTED_MODULE_2__.getWorkerTab),
-/* harmony export */   "sendMessage": () => (/* binding */ sendMessage),
-/* harmony export */   "sendMessageToTab": () => (/* reexport safe */ _tabs__WEBPACK_IMPORTED_MODULE_2__.sendMessageToTab)
+/* harmony export */   "sendMessage": () => (/* binding */ sendMessage)
 /* harmony export */ });
 /* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./constants */ "./libs/extension-messaging/dist/constants.js");
-/* harmony import */ var _tabs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./tabs */ "./libs/extension-messaging/dist/tabs.js");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -59,7 +56,7 @@ const sendMessage = (destination, message, external) => __awaiter(void 0, void 0
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
         var _b;
         const serializedMessage = JSON.stringify(message);
-        if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
+        if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.isServiceWorker) {
             // Message is from the background page, to the background page.
             try {
                 if (listeners[destination]) {
@@ -126,7 +123,7 @@ const sendMessage = (destination, message, external) => __awaiter(void 0, void 0
                     reject(error);
                 },
             };
-            window.postMessage({
+            globalThis.postMessage({
                 version: _constants__WEBPACK_IMPORTED_MODULE_1__.version,
                 extensionId: document.body.dataset.extensionId,
                 destination,
@@ -190,7 +187,7 @@ const addListener = (destination, listener, options = {
     }
 };
 // If we're currently in the background page, listen for messages.
-if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
+if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.isServiceWorker) {
     chrome.runtime.onMessage.addListener((rawMessage, sender, sendResponse) => {
         if (typeof rawMessage !== 'string') {
             // Not for us.
@@ -235,8 +232,8 @@ if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) 
 }
 else if ((_a = globalThis.chrome) === null || _a === void 0 ? void 0 : _a.runtime) {
     console.debug(`Not attaching listener for messages, because we're not in the background.`);
-    if (!window.messageServiceConnection) {
-        const port = (window.messageServiceConnection = chrome.runtime.connect(chrome.runtime.id, {
+    if (!globalThis.messageServiceConnection) {
+        const port = (globalThis.messageServiceConnection = chrome.runtime.connect(chrome.runtime.id, {
             name: 'messageService',
         }));
         port.onMessage.addListener((rawMessage) => {
@@ -266,7 +263,7 @@ else if ((_a = globalThis.chrome) === null || _a === void 0 ? void 0 : _a.runtim
     }
     // chrome.runtime is available, and we got a message from the window
     // this could be a tab trying to get information from the extension
-    window.addEventListener('message', (messageEvent) => __awaiter(void 0, void 0, void 0, function* () {
+    globalThis.addEventListener('message', (messageEvent) => __awaiter(void 0, void 0, void 0, function* () {
         const { extensionId, messageId, destination, message } = messageEvent.data;
         if (extensionId !== chrome.runtime.id ||
             !messageId ||
@@ -279,7 +276,7 @@ else if ((_a = globalThis.chrome) === null || _a === void 0 ? void 0 : _a.runtim
         if (messageEvent.data.version !== _constants__WEBPACK_IMPORTED_MODULE_1__.version) {
             // They did want to contact us, but there was a version mismatch.
             // We can't handle this message.
-            window.postMessage({
+            globalThis.postMessage({
                 extensionId,
                 messageId,
                 success: false,
@@ -291,7 +288,7 @@ else if ((_a = globalThis.chrome) === null || _a === void 0 ? void 0 : _a.runtim
         try {
             const response = yield sendMessage(destination, message, true);
             // Success! Now go tell the client they got everything they wanted.
-            window.postMessage({
+            globalThis.postMessage({
                 extensionId,
                 messageId,
                 success: true,
@@ -301,7 +298,7 @@ else if ((_a = globalThis.chrome) === null || _a === void 0 ? void 0 : _a.runtim
         catch (e) {
             console.debug('Failed to send message to', destination, e);
             // :coffin:
-            window.postMessage({
+            globalThis.postMessage({
                 extensionId,
                 messageId,
                 success: false,
@@ -313,7 +310,7 @@ else if ((_a = globalThis.chrome) === null || _a === void 0 ? void 0 : _a.runtim
 else {
     // Not a background page, and not a content script.
     // This could be a page where we want to listen for calls from the tab.
-    window.addEventListener('message', (messageEvent) => {
+    globalThis.addEventListener('message', (messageEvent) => {
         const { extensionId, messageId, success, data } = messageEvent.data;
         if (extensionId !== document.body.dataset.extensionId ||
             !messageId ||
@@ -340,66 +337,6 @@ else {
 
 
 
-
-/***/ }),
-
-/***/ "./libs/extension-messaging/dist/tabs.js":
-/*!***********************************************!*\
-  !*** ./libs/extension-messaging/dist/tabs.js ***!
-  \***********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getWorkerTab": () => (/* binding */ getWorkerTab),
-/* harmony export */   "sendMessageToTab": () => (/* binding */ sendMessageToTab)
-/* harmony export */ });
-/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./constants */ "./libs/extension-messaging/dist/constants.js");
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-// All the tabs actively connected to the message service.
-const tabs = {};
-// Sends a message to a tab.
-const sendMessageToTab = (destination, message, tab) => __awaiter(void 0, void 0, void 0, function* () {
-    const serializedMessage = JSON.stringify(message);
-    const outboundMessage = JSON.stringify({
-        version: _constants__WEBPACK_IMPORTED_MODULE_1__.version,
-        destination,
-        message: serializedMessage,
-    });
-    console.debug(`Sending message to '${destination}' in tab`, serializedMessage, tab);
-    tab.postMessage(outboundMessage);
-});
-// Fetches a tab that we can send a message to, for work processing.
-const getWorkerTab = () => {
-    const keys = Object.keys(tabs);
-    return keys.length > 0 ? tabs[keys[0]] : undefined;
-};
-if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) {
-    chrome.runtime.onConnect.addListener((port) => {
-        const id = crypto.randomUUID();
-        console.debug('Tab connected', id, port);
-        tabs[id] = port;
-        port.onDisconnect.addListener(() => {
-            console.debug('Disconnecting tab', id, port);
-            delete tabs[id];
-        });
-    });
-}
-
-
-
 /***/ }),
 
 /***/ "./libs/extension-utils/dist/constants/index.js":
@@ -411,13 +348,12 @@ if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage) 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "isBackgroundPage": () => (/* binding */ isBackgroundPage),
+/* harmony export */   "isServiceWorker": () => (/* binding */ isServiceWorker),
 /* harmony export */   "manifest": () => (/* binding */ manifest)
 /* harmony export */ });
-var _a, _b, _c, _d, _e;
+var _a, _b;
 const manifest = (_b = (_a = globalThis.chrome) === null || _a === void 0 ? void 0 : _a.runtime) === null || _b === void 0 ? void 0 : _b.getManifest();
-const isBackgroundPage = ((_d = (_c = globalThis.chrome) === null || _c === void 0 ? void 0 : _c.runtime) === null || _d === void 0 ? void 0 : _d.getURL(((_e = manifest === null || manifest === void 0 ? void 0 : manifest.background) === null || _e === void 0 ? void 0 : _e.page) || '')) ===
-    location.href;
+const isServiceWorker = !globalThis.window;
 
 
 
@@ -456,7 +392,7 @@ var LoadingState;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "LoadingState": () => (/* reexport safe */ _enums_loading_state__WEBPACK_IMPORTED_MODULE_1__["default"]),
-/* harmony export */   "isBackgroundPage": () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.isBackgroundPage),
+/* harmony export */   "isServiceWorker": () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.isServiceWorker),
 /* harmony export */   "manifest": () => (/* reexport safe */ _constants__WEBPACK_IMPORTED_MODULE_0__.manifest),
 /* harmony export */   "wait": () => (/* reexport safe */ _utils_wait__WEBPACK_IMPORTED_MODULE_2__["default"])
 /* harmony export */ });
@@ -35767,8 +35703,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../services/trades */ "./src/js/services/trades/index.ts");
 /* harmony import */ var _utils_authenticatedUser__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../utils/authenticatedUser */ "./src/js/utils/authenticatedUser.ts");
 /* harmony import */ var _bubble__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./bubble */ "./src/js/pages/all/navigation/bubble.ts");
-/* harmony import */ var _robux__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./robux */ "./src/js/pages/all/navigation/robux.ts");
-/* harmony import */ var _widget__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./widget */ "./src/js/pages/all/navigation/widget/index.tsx");
+/* harmony import */ var _links__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./links */ "./src/js/pages/all/navigation/links.ts");
+/* harmony import */ var _robux__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./robux */ "./src/js/pages/all/navigation/robux.ts");
+/* harmony import */ var _widget__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./widget */ "./src/js/pages/all/navigation/widget/index.tsx");
+
 
 
 
@@ -35817,8 +35755,8 @@ const getTradeBubbleCount = async (refresh) => {
 setInterval(async () => {
     const shouldRefresh = await refreshEnabled();
     // Update the Robux count.
-    const robux = await (0,_robux__WEBPACK_IMPORTED_MODULE_8__.getRobux)(shouldRefresh);
-    (0,_robux__WEBPACK_IMPORTED_MODULE_8__.setRobux)(robux);
+    const robux = await (0,_robux__WEBPACK_IMPORTED_MODULE_9__.getRobux)(shouldRefresh);
+    (0,_robux__WEBPACK_IMPORTED_MODULE_9__.setRobux)(robux);
     // Update the friend request count.
     const friendRequests = await getFriendRequestBubbleCount(shouldRefresh);
     (0,_bubble__WEBPACK_IMPORTED_MODULE_7__.setBubbleValue)('nav-friends', friendRequests);
@@ -35828,6 +35766,20 @@ setInterval(async () => {
     // Update the trade count.
     const trades = await getTradeBubbleCount(shouldRefresh);
     (0,_bubble__WEBPACK_IMPORTED_MODULE_7__.setBubbleValue)('nav-trade', trades);
+    // Update navigation links.
+    const links = await (0,_links__WEBPACK_IMPORTED_MODULE_8__.getLinkOverrides)();
+    if (links.length === 2) {
+        // First element in the array is the third link in the navigation bar.
+        // Which is also the link that is second to last.
+        if (links[0].override) {
+            (0,_links__WEBPACK_IMPORTED_MODULE_8__.updateNavigationLink)(-2, links[0].text, links[0].href);
+        }
+        // Second element in the array is the fourth link in the navigation bar.
+        // Which is also the link that is also the last link in the navigation bar.
+        if (links[1].override) {
+            (0,_links__WEBPACK_IMPORTED_MODULE_8__.updateNavigationLink)(-1, links[1].text, links[1].href);
+        }
+    }
     // Control panel link.
     let controlPanelLink = document.querySelector('a#nav-rplus');
     if (!controlPanelLink && _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_0__.manifest.homepage_url) {
@@ -35859,18 +35811,89 @@ setInterval(async () => {
     }
     const header = document.getElementById('header');
     const settingsButton = document.getElementById('navbar-settings');
-    let widgetButtonContainer = document.getElementById(_widget__WEBPACK_IMPORTED_MODULE_9__.button.id);
+    let widgetButtonContainer = document.getElementById(_widget__WEBPACK_IMPORTED_MODULE_10__.button.id);
     if (!widgetButtonContainer && settingsButton && header) {
-        settingsButton.append(_widget__WEBPACK_IMPORTED_MODULE_9__.button);
-        (0,_widget__WEBPACK_IMPORTED_MODULE_9__.render)(header);
+        settingsButton.append(_widget__WEBPACK_IMPORTED_MODULE_10__.button);
+        (0,_widget__WEBPACK_IMPORTED_MODULE_10__.render)(header);
     }
 }, 500);
-window.navigationBar = {
-    getRobux: _robux__WEBPACK_IMPORTED_MODULE_8__.getRobux,
-    setRobux: _robux__WEBPACK_IMPORTED_MODULE_8__.setRobux,
+globalThis.navigationBar = {
+    getRobux: _robux__WEBPACK_IMPORTED_MODULE_9__.getRobux,
+    setRobux: _robux__WEBPACK_IMPORTED_MODULE_9__.setRobux,
     getBubbleValue: _bubble__WEBPACK_IMPORTED_MODULE_7__.getBubbleValue,
     setBubbleValue: _bubble__WEBPACK_IMPORTED_MODULE_7__.setBubbleValue,
+    updateNavigationLink: _links__WEBPACK_IMPORTED_MODULE_8__.updateNavigationLink,
 };
+
+
+/***/ }),
+
+/***/ "./src/js/pages/all/navigation/links.ts":
+/*!**********************************************!*\
+  !*** ./src/js/pages/all/navigation/links.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getLinkOverrides": () => (/* binding */ getLinkOverrides),
+/* harmony export */   "updateNavigationLink": () => (/* binding */ updateNavigationLink)
+/* harmony export */ });
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./src/js/pages/all/navigation/utils.ts");
+
+
+const getLinkOverrides = async () => {
+    try {
+        const setting = await (0,_services_settings__WEBPACK_IMPORTED_MODULE_0__.getSettingValue)('navigation');
+        if (setting.buttons) {
+            return setting.buttons.map((button) => {
+                if (!button.href || !button.text) {
+                    // Blank value, do not override.
+                    return {
+                        href: '',
+                        text: '',
+                        override: false,
+                    };
+                }
+                if ((button.href === '/develop' && button.text === 'Create') ||
+                    (button.href.startsWith('/robux') && button.text === 'Robux')) {
+                    // default value, do not override
+                    return {
+                        href: '',
+                        text: '',
+                        override: false,
+                    };
+                }
+                // Value has been set explicitly, use that.
+                return {
+                    href: button.href,
+                    text: button.text,
+                    override: true,
+                };
+            });
+        }
+    }
+    catch (err) {
+        console.warn('Failed to fetch navigation link overrides', err);
+    }
+    return [];
+};
+// Updates a navigation link item by its index.
+const updateNavigationLink = (index, text, href) => {
+    document
+        .querySelectorAll('#header ul.rbx-navbar')
+        .forEach((navigationBar) => {
+        const navigationLinks = Array.from(navigationBar.querySelectorAll('li>a.nav-menu-title:first-child'));
+        const link = navigationLinks[index >= 0 ? index : navigationLinks.length + index];
+        if (link) {
+            (0,_utils__WEBPACK_IMPORTED_MODULE_1__.setText)(link, text);
+            link.setAttribute('href', href);
+        }
+    });
+};
+
 
 
 /***/ }),
@@ -36083,9 +36106,9 @@ function App({ button, panel }) {
                 setSearchValue(e.data.searchValue);
             }
         };
-        window.addEventListener('message', openWidget);
+        globalThis.addEventListener('message', openWidget);
         return () => {
-            window.removeEventListener('message', openWidget);
+            globalThis.removeEventListener('message', openWidget);
         };
     }, [setSearchValue]);
     (0,react__WEBPACK_IMPORTED_MODULE_2__.useEffect)(() => {
@@ -36682,7 +36705,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const messageDestination = 'currencyService.history.';
-if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.isBackgroundPage) {
+if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.isServiceWorker) {
     (0,db_js__WEBPACK_IMPORTED_MODULE_2__.open)({
         server: 'currencyBalances',
         version: 1,
@@ -36701,7 +36724,7 @@ if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.isBackgroundPage) 
     })
         .then((database) => {
         console.log('Database connection (for robuxHistory) opened.');
-        window.robuxHistoryDatabase = database;
+        globalThis.robuxHistoryDatabase = database;
         // Ensure the amount of stored data doesn't get too out of hand.
         // Only store one year of data.
         setInterval(async () => {
@@ -37600,67 +37623,22 @@ const setSettingValue = (key, value) => {
         value,
     });
 };
-const getValueFromLocalStorage = (key) => {
-    if (!localStorage.hasOwnProperty(key)) {
-        return undefined;
-    }
-    try {
-        const valueArray = JSON.parse(localStorage[key]);
-        if (Array.isArray(valueArray) && valueArray.length > 0) {
-            return valueArray[0];
-        }
-        console.warn(`Setting value in localStorage invalid: ${localStorage[key]} - removing it.`);
-        localStorage.removeItem(key);
-        return undefined;
-    }
-    catch (err) {
-        console.warn(`Failed to parse '${key}' value from localStorage - removing it.`, err);
-        localStorage.removeItem(key);
-        return undefined;
-    }
-};
-(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(`${messageDestinationPrefix}.getSettingValue`, ({ key }) => {
-    return new Promise((resolve, reject) => {
-        // chrome.storage APIs are callback-based until manifest V3.
-        // Currently in migration phase, to migrate settings from localStorage -> chrome.storage.local
-        const value = getValueFromLocalStorage(key);
-        if (value !== undefined) {
-            chrome.storage.local.set({
-                [key]: value,
-            }, () => {
-                localStorage.removeItem(key);
-                resolve(value);
-            });
-        }
-        else {
-            chrome.storage.local.get(key, (values) => {
-                resolve(values[key]);
-            });
-        }
-    });
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(`${messageDestinationPrefix}.getSettingValue`, async ({ key }) => {
+    const values = await chrome.storage.local.get(key);
+    return values[key];
 }, {
     levelOfParallelism: -1,
     allowExternalConnections: true,
 });
-(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(`${messageDestinationPrefix}.setSettingValue`, ({ key, value }) => {
-    return new Promise((resolve, reject) => {
-        // chrome.storage APIs are callback-based until manifest V3.
-        // Currently in migration phase, to migrate settings from localStorage -> chrome.storage.local
-        if (value === undefined) {
-            chrome.storage.local.remove(key, () => {
-                localStorage.removeItem(key);
-                resolve(undefined);
-            });
-        }
-        else {
-            chrome.storage.local.set({
-                [key]: value,
-            }, () => {
-                localStorage.removeItem(key);
-                resolve(undefined);
-            });
-        }
-    });
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(`${messageDestinationPrefix}.setSettingValue`, async ({ key, value }) => {
+    if (value) {
+        await chrome.storage.local.set({
+            [key]: value,
+        });
+    }
+    else {
+        await chrome.storage.local.remove(key);
+    }
 }, {
     levelOfParallelism: -1,
     allowExternalConnections: true,
@@ -38333,56 +38311,41 @@ let previousTab = undefined;
 let protocolLauncherTab = undefined;
 // Attempt to launch the protocol URL in the current tab.
 const tryDirectLaunch = (protocolUrl) => {
-    if (!_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.isBackgroundPage && location) {
+    if (!_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.isServiceWorker && location) {
         location.href = protocolUrl;
         return true;
     }
     return false;
 };
 // Launch the protocol URL from a service worker.
-const launchProtocolUrl = (protocolUrl) => {
+const launchProtocolUrl = async (protocolUrl) => {
     if (tryDirectLaunch(protocolUrl)) {
         // We were able to directly launch the protocol URL.
         // Nothing more to do.
-        return Promise.resolve();
+        return;
     }
-    const workerTab = (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.getWorkerTab)();
-    if (workerTab) {
-        // If we're in the background, and we have a tab that can process the protocol URL, use that instead.
-        // This will ensure that when we use the protocol launcher to launch Roblox, that they have the highest
-        // likihood of already having accepted the protocol launcher permission.
-        (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessageToTab)(messageDestination, {
-            protocolUrl,
-        }, workerTab);
-        return Promise.resolve();
-    }
-    // TODO: Convert to promise signatures when moving to manifest V3.
-    chrome.tabs.query({
+    const currentTab = await chrome.tabs.query({
         active: true,
         currentWindow: true,
-    }, (currentTab) => {
-        previousTab = currentTab[0];
-        if (previousTab) {
-            // Try to open the protocol launcher tab right next to the current tab, so that when it
-            // closes, it will put the user back on the tab they are on now.
-            chrome.tabs.create({
-                url: protocolUrl,
-                index: previousTab.index + 1,
-                windowId: previousTab.windowId,
-            }, (tab) => {
-                protocolLauncherTab = tab;
-            });
-        }
-        else {
-            chrome.tabs.create({ url: protocolUrl });
-            // If we don't know where they were before, then don't try to keep track of anything.
-            previousTab = undefined;
-            protocolLauncherTab = undefined;
-        }
     });
-    return Promise.resolve();
+    previousTab = currentTab[0];
+    if (previousTab) {
+        // Try to open the protocol launcher tab right next to the current tab, so that when it
+        // closes, it will put the user back on the tab they are on now.
+        protocolLauncherTab = await chrome.tabs.create({
+            url: protocolUrl,
+            index: previousTab.index + 1,
+            windowId: previousTab.windowId,
+        });
+    }
+    else {
+        await chrome.tabs.create({ url: protocolUrl });
+        // If we don't know where they were before, then don't try to keep track of anything.
+        previousTab = undefined;
+        protocolLauncherTab = undefined;
+    }
 };
-if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.isBackgroundPage) {
+if (_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_1__.isServiceWorker) {
     chrome.tabs.onRemoved.addListener((tabId) => {
         // Return the user to the tab they were on before, when we're done launching the protocol URL.
         // chrome self-closes the protocol URL tab when opened.
