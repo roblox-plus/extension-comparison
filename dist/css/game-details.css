@@ -11,11 +11,11 @@
   top: -20px;
   left: 0; }
 
-game-badges-list .badge-image {
+.game-badges-list .badge-image {
   border-radius: 100%;
   overflow: hidden;
   position: relative; }
-  game-badges-list .badge-image .rplus-awarded-date {
+  .game-badges-list .badge-image .rplus-awarded-date {
     background-color: rgba(25, 25, 25, 0.6);
     position: absolute;
     left: 0;

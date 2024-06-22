@@ -3180,89 +3180,6 @@ globalThis.localizationService = { getTranslationResource, getTranslationResourc
 
 /***/ }),
 
-/***/ "./src/js/services/premium-payouts/getPremiumPayoutsSummary.ts":
-/*!*********************************************************************!*\
-  !*** ./src/js/services/premium-payouts/getPremiumPayoutsSummary.ts ***!
-  \*********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
-/* harmony import */ var _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/expireableDictionary */ "./src/js/utils/expireableDictionary.ts");
-
-
-const messageDestination = 'premiumPayoutsService.getPremiumPayoutsSummary';
-const cache = new _utils_expireableDictionary__WEBPACK_IMPORTED_MODULE_1__["default"](messageDestination, 60 * 1000);
-const serializeDate = (date) => {
-    return `${date.getFullYear()}-${`${date.getMonth() + 1}`.padStart(2, '0')}-${`${date.getDate()}`.padStart(2, '0')}`;
-};
-// Fetches the Robux balance of the currently authenticated user.
-const getPremiumPayoutsSummary = (universeId, startDate, endDate) => {
-    return (0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.sendMessage)(messageDestination, {
-        universeId,
-        startDate: serializeDate(startDate),
-        endDate: serializeDate(endDate),
-    });
-};
-// Loads the Robux balance of the currently authenticated user.
-const loadPremiumPayoutsSummary = async (universeId, startDate, endDate) => {
-    const response = await fetch(`https://engagementpayouts.roblox.com/v1/universe-payout-history?universeId=${universeId}&startDate=${startDate}&endDate=${endDate}`);
-    if (!response.ok) {
-        throw 'Failed to load premium payouts';
-    }
-    const result = await response.json();
-    const payouts = [];
-    for (let date in result) {
-        const payout = result[date];
-        if (payout.eligibilityType !== 'Eligible') {
-            continue;
-        }
-        payouts.push({
-            date,
-            engagementScore: payout.engagementScore,
-            payoutInRobux: payout.payoutInRobux,
-            payoutType: payout.payoutType,
-        });
-    }
-    return payouts;
-};
-// Listen for messages sent to the service worker.
-(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_0__.addListener)(messageDestination, (message) => {
-    // Check the cache
-    return cache.getOrAdd(`${message.universeId}_${message.startDate}_${message.endDate}`, () => 
-    // Queue up the fetch request, when not in the cache
-    loadPremiumPayoutsSummary(message.universeId, message.startDate, message.endDate));
-}, {
-    levelOfParallelism: 1,
-});
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getPremiumPayoutsSummary);
-
-
-/***/ }),
-
-/***/ "./src/js/services/premium-payouts/index.ts":
-/*!**************************************************!*\
-  !*** ./src/js/services/premium-payouts/index.ts ***!
-  \**************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getPremiumPayoutsSummary": () => (/* reexport safe */ _getPremiumPayoutsSummary__WEBPACK_IMPORTED_MODULE_0__["default"])
-/* harmony export */ });
-/* harmony import */ var _getPremiumPayoutsSummary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getPremiumPayoutsSummary */ "./src/js/services/premium-payouts/getPremiumPayoutsSummary.ts");
-
-globalThis.premiumPayoutsService = { getPremiumPayoutsSummary: _getPremiumPayoutsSummary__WEBPACK_IMPORTED_MODULE_0__["default"] };
-
-
-
-/***/ }),
-
 /***/ "./src/js/services/premium/getPremiumExpirationDate.ts":
 /*!*************************************************************!*\
   !*** ./src/js/services/premium/getPremiumExpirationDate.ts ***!
@@ -4944,7 +4861,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "avatar": () => (/* reexport module object */ _services_avatar__WEBPACK_IMPORTED_MODULE_1__),
 /* harmony export */   "badges": () => (/* reexport module object */ _services_badges__WEBPACK_IMPORTED_MODULE_2__),
 /* harmony export */   "currency": () => (/* reexport module object */ _services_currency__WEBPACK_IMPORTED_MODULE_3__),
-/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_22__.executeNotifier),
+/* harmony export */   "executeNotifier": () => (/* reexport safe */ _notifiers__WEBPACK_IMPORTED_MODULE_21__.executeNotifier),
 /* harmony export */   "followings": () => (/* reexport module object */ _services_followings__WEBPACK_IMPORTED_MODULE_4__),
 /* harmony export */   "friends": () => (/* reexport module object */ _services_friends__WEBPACK_IMPORTED_MODULE_5__),
 /* harmony export */   "gameLaunch": () => (/* reexport module object */ _services_game_launch__WEBPACK_IMPORTED_MODULE_6__),
@@ -4953,14 +4870,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "inventory": () => (/* reexport module object */ _services_inventory__WEBPACK_IMPORTED_MODULE_9__),
 /* harmony export */   "localization": () => (/* reexport module object */ _services_localization__WEBPACK_IMPORTED_MODULE_10__),
 /* harmony export */   "premium": () => (/* reexport module object */ _services_premium__WEBPACK_IMPORTED_MODULE_11__),
-/* harmony export */   "premiumPayouts": () => (/* reexport module object */ _services_premium_payouts__WEBPACK_IMPORTED_MODULE_12__),
-/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_13__),
-/* harmony export */   "privateMessages": () => (/* reexport module object */ _services_private_messages__WEBPACK_IMPORTED_MODULE_14__),
-/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_15__),
-/* harmony export */   "thumbnails": () => (/* reexport module object */ _services_thumbnails__WEBPACK_IMPORTED_MODULE_16__),
-/* harmony export */   "trades": () => (/* reexport module object */ _services_trades__WEBPACK_IMPORTED_MODULE_17__),
-/* harmony export */   "transactions": () => (/* reexport module object */ _services_transactions__WEBPACK_IMPORTED_MODULE_18__),
-/* harmony export */   "users": () => (/* reexport module object */ _services_users__WEBPACK_IMPORTED_MODULE_19__)
+/* harmony export */   "presence": () => (/* reexport module object */ _services_presence__WEBPACK_IMPORTED_MODULE_12__),
+/* harmony export */   "privateMessages": () => (/* reexport module object */ _services_private_messages__WEBPACK_IMPORTED_MODULE_13__),
+/* harmony export */   "settings": () => (/* reexport module object */ _services_settings__WEBPACK_IMPORTED_MODULE_14__),
+/* harmony export */   "thumbnails": () => (/* reexport module object */ _services_thumbnails__WEBPACK_IMPORTED_MODULE_15__),
+/* harmony export */   "trades": () => (/* reexport module object */ _services_trades__WEBPACK_IMPORTED_MODULE_16__),
+/* harmony export */   "transactions": () => (/* reexport module object */ _services_transactions__WEBPACK_IMPORTED_MODULE_17__),
+/* harmony export */   "users": () => (/* reexport module object */ _services_users__WEBPACK_IMPORTED_MODULE_18__)
 /* harmony export */ });
 /* harmony import */ var _services_assets__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/assets */ "./src/js/services/assets/index.ts");
 /* harmony import */ var _services_avatar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/avatar */ "./src/js/services/avatar/index.ts");
@@ -4974,18 +4890,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_inventory__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../services/inventory */ "./src/js/services/inventory/index.ts");
 /* harmony import */ var _services_localization__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../services/localization */ "./src/js/services/localization/index.ts");
 /* harmony import */ var _services_premium__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../services/premium */ "./src/js/services/premium/index.ts");
-/* harmony import */ var _services_premium_payouts__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../services/premium-payouts */ "./src/js/services/premium-payouts/index.ts");
-/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
-/* harmony import */ var _services_private_messages__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../services/private-messages */ "./src/js/services/private-messages/index.ts");
-/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
-/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
-/* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../services/trades */ "./src/js/services/trades/index.ts");
-/* harmony import */ var _services_transactions__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../services/transactions */ "./src/js/services/transactions/index.ts");
-/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../services/users */ "./src/js/services/users/index.ts");
-/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
-/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
-/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
-
+/* harmony import */ var _services_presence__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../services/presence */ "./src/js/services/presence/index.ts");
+/* harmony import */ var _services_private_messages__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../services/private-messages */ "./src/js/services/private-messages/index.ts");
+/* harmony import */ var _services_settings__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../services/settings */ "./src/js/services/settings/index.ts");
+/* harmony import */ var _services_thumbnails__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../services/thumbnails */ "./src/js/services/thumbnails/index.ts");
+/* harmony import */ var _services_trades__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../services/trades */ "./src/js/services/trades/index.ts");
+/* harmony import */ var _services_transactions__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../services/transactions */ "./src/js/services/transactions/index.ts");
+/* harmony import */ var _services_users__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../services/users */ "./src/js/services/users/index.ts");
+/* harmony import */ var _tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! @tix-factory/extension-messaging */ "./libs/extension-messaging/dist/index.js");
+/* harmony import */ var _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! @tix-factory/extension-utils */ "./libs/extension-utils/dist/index.js");
+/* harmony import */ var _notifiers__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./notifiers */ "./src/js/service-worker/notifiers/index.ts");
 
 
 
@@ -5009,15 +4923,15 @@ __webpack_require__.r(__webpack_exports__);
 
 
 chrome.action.setTitle({
-    title: `${_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_21__.manifest.name} ${_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_21__.manifest.version}`,
+    title: `${_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_20__.manifest.name} ${_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_20__.manifest.version}`,
 });
 chrome.action.onClicked.addListener(() => {
     chrome.tabs.create({
-        url: _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_21__.manifest.homepage_url,
+        url: _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_20__.manifest.homepage_url,
         active: true,
     });
 });
-(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_20__.addListener)('extension.reload', async () => {
+(0,_tix_factory_extension_messaging__WEBPACK_IMPORTED_MODULE_19__.addListener)('extension.reload', async () => {
     setTimeout(() => {
         chrome.runtime.reload();
     }, 250);
@@ -5025,7 +4939,7 @@ chrome.action.onClicked.addListener(() => {
     levelOfParallelism: 1,
     allowExternalConnections: true,
 });
-console.log(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_21__.manifest.name, _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_21__.manifest.version, 'started', chrome.extension.inIncognitoContext ? ' in icognito' : '');
+console.log(_tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_20__.manifest.name, _tix_factory_extension_utils__WEBPACK_IMPORTED_MODULE_20__.manifest.version, 'started', chrome.extension.inIncognitoContext ? ' in icognito' : '');
 
 })();
 
