@@ -1,5 +1,5 @@
 {
-  "version": "3.23.0",
+  "version": "3.27.0",
   "name": "Roblox+",
   "short_name": "Roblox+",
   "description": "Extends the features available on roblox.com",
@@ -162,15 +162,6 @@
       "run_at": "document_end"
     }
   ],
-  "declarative_net_request": {
-    "rule_resources": [
-      {
-        "id": "upload_asset_rules",
-        "enabled": true,
-        "path": "redirect-settings-page.json"
-      }
-    ]
-  },
   "action": {
     "default_icon": {
       "16": "./images/icons/logo16.png",
@@ -182,7 +173,6 @@
   "permissions": [
     "alarms",
     "gcm",
-    "declarativeNetRequest",
     "notifications",
     "storage"
   ],
